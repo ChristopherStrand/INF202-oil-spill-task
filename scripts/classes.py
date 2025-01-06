@@ -10,17 +10,17 @@ class Point:
 
 class Cell:
     def __init__(self, index: int, points: list[Point]) -> None:
-    """
-    Initiliazes a Cell with ID (its position in the Mesh Cells list)
-    and a list of points for the Cell
+        """
+        Initiliazes a Cell with ID (its position in the Mesh Cells list)
+        and a list of points for the Cell
 
-    Args:
-    - index: 
-    - points: 
-    """
-    self.index = index
-    self.points = points
-    self._neighbors = []
+        Args:
+        - index: 
+        - points: 
+        """
+        self.index = index
+        self.points = points
+        self._neighbors = []
 
     @property
     def points(self):
@@ -59,7 +59,7 @@ class Mesh:
         Returns:
         - Triangle and Line objects.
         """
-        
+
         self.points = []
         self.cells = []
 
@@ -85,10 +85,11 @@ class Mesh:
     def find_neighbors(self) -> None:
         """
         Finds neighboring cells for each cell in the mesh.
+
+        First checks if it is a Triangle or a Line by how many points they contain. 
         """
         for cell in self.cells:
             neighbors = []
-            # Iterate over other cells to find neighbors
             if len(cell.points) == 3:
                 for other_cell in self.cells:
                     if other_cell != cell:
@@ -100,7 +101,7 @@ class Mesh:
             elif len(cell.points) == 2:
                 for other_cell in self.cells:
                     if other_cell != cell:
-                        # Check if they share exactly two points
+                        # Check if they share 1 point if other_cell is a Line og 2 points if other_cell is a Triangle
                         shared_points = set(cell._points).intersection(set(other_cell._points))
                         if len(shared_points) == 1 and len(other_cell.points) == 2 or len(shared_points) == 2 and len(other_cell.points) == 3:
                             neighbors.append(other_cell)
@@ -108,9 +109,11 @@ class Mesh:
             # Store the neighboring cells for this cell
             cell._neighbors = neighbors
 
-    def print_neighbors(self, cell_index: int) -> None:
+
+
+"""    def print_neighbors(self, cell_index: int) -> None:
         cell = next((cell for cell in self.cells if cell.index == cell_index), None)
         if cell:
             print(cell)
         else:
-            print(f"Cell {cell_index} does not exist in the mesh.")
+            print(f"Cell {cell_index} does not exist in the mesh.")"""
