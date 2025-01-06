@@ -19,7 +19,7 @@ class Cell:
         - points: 
         """
         self.index = index
-        self.points = points
+        self._points = points
         self._neighbors = []
         self.oil_amount = oil_amount
         
