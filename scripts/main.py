@@ -1,8 +1,6 @@
 import meshio
+import classes
 
-msh = meshio.read("../meshes/bay.msh")
-
-points = msh.points
-cells = msh.cells
-print(points)
-print(cells)
+mesh = classes.Mesh("../meshes/bay.msh")
+mesh.find_neighbors()
+mesh.print_neighbors(4)
