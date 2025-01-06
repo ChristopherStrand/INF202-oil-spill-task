@@ -1,0 +1,14 @@
+variables structure: 
+    my_numbers or my_nums
+    my_strings
+
+max variable length: 
+    10 chars
+
+docstrings/ comments lots
+
+
+
+
+
+
