@@ -1,4 +1,5 @@
 import meshio
+import math_function
 
 class Point:
     def __init__(self, x: float, y: float) -> None:
@@ -21,7 +22,7 @@ class Cell:
         self.index = index
         self._points = points
         self._neighbors = []
-        self.oil_amount = oil_amount
+        self.oil_amount = 0
         
 
     @property
