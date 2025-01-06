@@ -8,9 +8,6 @@ class Point:
         self.x = x
         self.y = y
 
-    def __str__(self):
-        return f"({self.x}, {self.y})"
-
 class Cell:
     def __init__(self, index: int, points: list[Point]) -> None:
         """
@@ -117,14 +114,5 @@ class Mesh:
         cell = next((cell for cell in self.cells if cell.index == cell_index), None)
         if cell:
             print(cell)
-            for point in cell.points:
-                print(point)
         else:
             print(f"Cell {cell_index} does not exist in the mesh.")
-
-
-
-
-
-
-
