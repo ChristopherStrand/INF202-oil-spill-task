@@ -7,6 +7,8 @@ max variable length:
 
 docstrings/ comments lots
 
+type hints
+
 
 
 
