@@ -13,5 +13,41 @@ def velocity(x_n: npt.NDArray[np.float32]) -> npt.NDArray[np.float32]:
 def midpoint(coordinates: npt.NDArray[np.float32]) -> npt.NDArray[np.float32]:
     return (1/3)*(coordinates[0]+coordinates[1]+coordinates[2])
 
-def area() -> np.float32:
-    return 0.5*abs(())
+""" def area() -> np.float32:
+    return 0.5*abs(()) """
+
+def calculate_area(points: list) -> float:
+    x0, y0 = points[0].x, points[0].y
+    x1, y1 = points[1].x, points[1].y
+    x2, y2 = points[2].x, points[2].y
+    
+    return 0.5 * abs((x0 - x2)*(y1 - y0) - (x0 - x1)*(y2 - y0))
+
+
+# calculating the change of oil in cell
+def calculate_change(cell: object, neighbors: list[int]) -> int: 
+    #kan bli et problem å hente ut punktene, sjekke getter for celle og str metode for point
+    points = cell.points
+    print(points)
+    area = calculate_area(points)
+    
+    sum = 0
+    for neighbor in neighbors:
+        sum += 
+    
+    
+    
+    
+def calculate_flux( , A):
+    F = -dt/A 
+    
+def g(a , b , v, w):
+    if 
+    
+    
+
+    
+    
+    
+    
+  
