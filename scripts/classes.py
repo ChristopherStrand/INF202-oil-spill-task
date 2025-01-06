@@ -21,6 +21,7 @@ class Cell:
         self.index = index
         self.points = points
         self._neighbors = []
+        self.oil_amount = oil_amount
 
     @property
     def points(self):
