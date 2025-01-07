@@ -42,6 +42,9 @@ class Cell:
     def points(self) -> list[np.float32]:
         return self._points 
     
+    def neighbors(self) -> list[object]:
+        return self._neighbors
+    
     def store_neighbors(self, neighboring_cells: list[object]):
         self._neighbors = neighboring_cells
 
@@ -120,9 +123,7 @@ class Mesh:
             cell.store_neighbors(neighbors)
 
     def print_neighbors(self, cell_index: int) -> None:
-        for c in self._cells:
-            if c.index == cell_index:
-                print(c)
-                break
-        else:
-            print(f"Cell {cell_index} does not exist in the mesh.")
+        try:
+            print(f"The neighbors of {cell_index} is {self._cells[cell_index].neighbors()}")
+        except IndexError:
+            print(f"Cell {cell_index} does not exist in cells")
