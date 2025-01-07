@@ -48,15 +48,15 @@ class Cell:
     def store_neighbors(self, neighboring_cells: list[object]):
         self._neighbors = neighboring_cells
 
-    def __str__(self) -> str:
-        """
-        Checks if Cell is Boundary and returns a string with its neighbors
-        """
-        is_boundary = len(self._neighbors) < 2
-        neighbor_indices = [neighbor.index for neighbor in self._neighbors]
-        boundary_status = "Boundary" if is_boundary else "Internal"
+    # def __str__(self) -> str:
+    #     """
+    #     Checks if Cell is Boundary and returns a string with its neighbors
+    #     """
+    #     is_boundary = len(self._neighbors) < 2
+    #     neighbor_indices = [neighbor.index for neighbor in self._neighbors]
+    #     boundary_status = "Boundary" if is_boundary else "Internal"
         
-        return f"Cell {self._index} ({boundary_status}): Neighbors -> {neighbor_indices}"
+    #     return f"Cell {self._index} ({boundary_status}): Neighbors -> {neighbor_indices}"
 
 
 class Triangle(Cell):
@@ -88,7 +88,8 @@ class Mesh:
         #Generates a list containing cell objects of the type line or triangle
         self._cells = []
         for cell_types in msh.cells:
-            if cell_types.type != "vertex":
+            types = cell_types.type
+            if types != "vertex" and types != "line":
                 self._cells.extend([self.cell_factory(cell) for cell in cell_types.data])
 
     def cell_factory(self, cell: list[int]) -> object:
@@ -104,23 +105,30 @@ class Mesh:
         return cell_map[cell_check](self._cell_index, points)
             
 
-    def find_neighbors(self) -> None:
+    def find_neighbors(self, cell_index: int) -> None:
         """
-        Finds neighboring cells for each cell in the mesh.
+        Finds neighboring cells for the cell specified.
         First checks if it is a Triangle or a Line by how many points they contain. 
         """
-        for cell in self._cells:
-            neighbors = []
-            if len(cell.points()) == 3:
-                for other_cell in self._cells:
-                    if other_cell != cell:
-                        # Check if they share exactly two points
-                        shared_points = set(cell._points).intersection(set(other_cell._points))
-                        if len(shared_points) == 2:
-                            neighbors.append(other_cell)
+        neighboring_cells = []
+        points_in_cell = self._cells[cell_index].points()
+        
+        #Checks triangles for neighbors
+        if len(points_in_cell) == 3:
+            #The points of the current cell, avoiding using a for loop to save performance
+            point_0 = points_in_cell[0].index()
+            point_1 = points_in_cell[1].index()
+            point_2 = points_in_cell[2].index()
+            for cells in self._cells:
+                point_indices = [points.index() for points in cells.points()]
+                #Checks if two different cells has exactly two points equal eachother. 
+                #This is done by taking the sum of three boolean statements that are true if the cell, 
+                #whose neighbors are being checked, have a point that is equal in the cell being checked.
+                if sum((point_0 in point_indices, point_1 in point_indices, point_2 in point_indices)) == 2:
+                    neighboring_cells.append(cells)
 
             #Store neighbors in each cell
-            cell.store_neighbors(neighbors)
+            self._cells[cell_index].store_neighbors(neighboring_cells)
 
     def print_neighbors(self, cell_index: int) -> None:
         try:
