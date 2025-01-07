@@ -1,6 +1,6 @@
 import meshio
 import math_function
-import math_function
+import numpy as np
 
 class Point:
     def __init__(self, index: int, x: float, y: float) -> None:
@@ -8,8 +8,16 @@ class Point:
         Initializes a Point with x and y coordinates
         """
         self._index = index
-        self.x = x
-        self.y = y
+        self._x = x
+        self._y = y
+
+    #Returns the index of the point in the point list from mesh
+    def index(self):
+        return self._index
+    
+    #Returns the coordinates of the point
+    def coordinates(self):
+        return np.array(self._x, self._y)
 
 class Cell:
     def __init__(self, index: int, points: list[Point]) -> None:
@@ -21,16 +29,18 @@ class Cell:
         - index: 
         - points: 
         """
-        self.index = index
-        self._points = points
+        self._index = index
         self._points = points
         self._neighbors = []
-        self.oil_amount = 0
-        
+        self._oil_amount = 0
 
-    @property
+    #Returns the index of the cell from the cell list
+    def index(self):
+        return self._index
+    
+    #Returns all points contained within this cell with their index in the point list
     def points(self):
-        return self._points
+        return self._points 
 
     def __str__(self) -> str:
         """
@@ -40,7 +50,7 @@ class Cell:
         neighbor_indices = [neighbor.index for neighbor in self._neighbors]
         boundary_status = "Boundary" if is_boundary else "Internal"
         
-        return f"Cell {self.index} ({boundary_status}): Neighbors -> {neighbor_indices}"
+        return f"Cell {self._index} ({boundary_status}): Neighbors -> {neighbor_indices}"
 
 
 class Triangle(Cell):
@@ -65,7 +75,7 @@ class Mesh:
             - Triangle and Line objects.
     """
     def __init__(self, msh_file: str) -> None:
-        self._cell_index = 0 #The index of a cell in _cells
+        self._cell_index = -1 #The index of a cell in _cells
         msh = meshio.read(msh_file) #Reads the meshfile 
         #Generates a list containing point objects
         self._points = [Point(index, points[0], points[1]) for index, points in enumerate(msh.points)]
@@ -115,8 +125,6 @@ class Mesh:
             # Store the neighboring cells for this cell
             cell._neighbors = neighbors
  
- 
-
     def print_neighbors(self, cell_index: int) -> None:
         for c in self._cells:
             if c.index == cell_index:
