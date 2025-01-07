@@ -1,10 +1,12 @@
 import meshio
+import math_function
 
 class Point:
-    def __init__(self, x: float, y: float) -> None:
+    def __init__(self, index: int, x: float, y: float) -> None:
         """
         Initializes a Point with x and y coordinates
         """
+        self._index = index
         self.x = x
         self.y = y
 
@@ -21,7 +23,8 @@ class Cell:
         self.index = index
         self._points = points
         self._neighbors = []
-
+        self.oil_amount = 0
+        
     @property
     def points(self):
         return self._points
@@ -48,37 +51,37 @@ class Line(Cell):
 
 
 class Mesh:
-    def __init__(self, msh_file: str) -> None:
-        """
+    """
         Initializes empty lists for points and cells and reads the mesh file. The initializer then makes Triangle and Line objects from the mesh file,
         each with a index and a list of points. 
 
         Args:
-        - msh_file: a Mesh file, denoted by .msh
+            - msh_file: a Mesh file, denoted by .msh
 
         Returns:
-        - Triangle and Line objects.
-        """
+            - Triangle and Line objects.
+    """
 
-        self._points = []
-        self._cells = []
-        self.cell_index = 0
+    def __init__(self, msh_file: str) -> None:
+        self._cell_index = 0 #The index of a cell in _cells
+        msh = meshio.read(msh_file) #Reads the meshfile 
+        #Generates a list containing point objects
+        self._points = [Point(index, points[0], points[1]) for index, points in enumerate(msh.points)]
+        #Generates a list containing cell objects of the type line or triangle
+        for cell_types in msh.cells:
+            if cell_types.type != "vertex":
+                self._cells = [self.cell_factory(cell) for cell in cell_types.data] #A list containing cell objects
 
-        msh = meshio.read(msh_file)
-
-        # Adds the points to a list
-        self._points = [Point(points[0], points[1]) for index, points in enumerate(msh.points)]
-        # Adds the cells to a list
-        self._cells = [self.cell_factory(cell) for cell in msh.cells[0].data] + [self.cell_factory(cell) for cell in msh.cells[1].data]
-
-    # Add cells to the mesh based on their type
     def cell_factory(self, cell: list[int]) -> object:
         cell_check = len(cell)
+        print(cell_check, cell)
         cell_map = {
             2:Line,
             3:Triangle
         }
-        self.cell_index += 1
+        self._cell_index += 1
+
+        return cell_map[cell_check](cell, self._points)
             
 
     def find_neighbors(self) -> None:
@@ -89,7 +92,7 @@ class Mesh:
         """
         for cell in self._cells:
             neighbors = []
-            if len(cell._points) == 3:
+            if len(cell.points) == 3:
                 for other_cell in self._cells:
                     if other_cell != cell:
                         # Check if they share exactly two points
@@ -97,12 +100,12 @@ class Mesh:
                         if len(shared_points) == 2:
                             neighbors.append(other_cell)
 
-            elif len(cell._points) == 2:
+            elif len(cell.points) == 2:
                 for other_cell in self._cells:
                     if other_cell != cell:
                         # Check if they share 1 point if other_cell is a Line og 2 points if other_cell is a Triangle
                         shared_points = set(cell._points).intersection(set(other_cell._points))
-                        if len(shared_points) == 1 and len(other_cell._points) == 2 or len(shared_points) == 2 and len(other_cell._points) == 3:
+                        if len(shared_points) == 1 and len(other_cell.points) == 2 or len(shared_points) == 2 and len(other_cell.points) == 3:
                             neighbors.append(other_cell)
                     
             # Store the neighboring cells for this cell
