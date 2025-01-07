@@ -99,7 +99,7 @@ class Mesh:
             3: Triangle
             }
 
-        points = np.array([self._points[i] for i in cell])
+        points = np.array([self._points[i] for i in cell]) #Stores
         self._cell_index += 1
         
         return cell_map[cell_check](self._cell_index, points)
@@ -114,13 +114,16 @@ class Mesh:
         
         #Checks triangles for neighbors
         if points_in_cell.size == 3: 
-            point_indicies = [point.index() for point in points_in_cell]
+            #Makes a list of the indicies for the points in the cell who's neighbors is being found
+            point_indicies = [point.index() for point in points_in_cell] 
             for cells in self._cells:
+                #Makes a list of the indicies for the points in the cell currently being checked if is a neighbor
                 point_indicies_check = [point.index() for point in cells.points()]
+                #Finds where the two arrays overlap and appends it as neighbor if it has two overlapping elements
                 if np.intersect1d(point_indicies, point_indicies_check).size == 2: 
                     neighboring_cells.append(cells.index())
 
-            #Store neighbors in each cell
+            #Store neighbors in each cell, stores the neighbors in the cell that was checked
             self._cells[cell_index].store_neighbors(neighboring_cells)
 
     def print_neighbors(self, cell_index: int) -> None:
