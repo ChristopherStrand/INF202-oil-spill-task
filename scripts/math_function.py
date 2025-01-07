@@ -61,11 +61,10 @@ def calculate_change(cell: object, neighbors: list[int]) -> int:
     for neighbour in cell.neighbors:
         mid_cell = midpoint(cell.points)
         mid_ngh = midpoint(neighbour.points)
+        scaled_normal_vector = unit_normal_vector(""" points """)
         v_mid = (velocity(mid_cell) + velocity(mid_ngh)) / 2
         sum = sum + calculate_flux(
-            cell.oil_amount,
-            neighbour.oil_amount,
-            v_mid,
+            cell.oil_amount, neighbour.oil_amount, scaled_normal_vector, v_mid
         )
     return sum
 
