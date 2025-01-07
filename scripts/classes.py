@@ -89,7 +89,7 @@ class Mesh:
         self._cells = []
         for cell_types in msh.cells:
             types = cell_types.type
-            if types != "vertex" and types != "line":
+            if types != "vertex" and types != "line": #Ignores lines since they aren't relevant for the task
                 self._cells.extend([self.cell_factory(cell) for cell in cell_types.data])
 
     def cell_factory(self, cell: list[int]) -> object:
