@@ -8,8 +8,7 @@ class Point:
         Initializes a Point with x and y coordinates
         """
         self._index = index
-        self._x = x
-        self._y = y
+        self._coordinates = np.array(x, y)
 
     #Returns the index of the point in the point list from mesh
     def index(self):
@@ -17,7 +16,7 @@ class Point:
     
     #Returns the coordinates of the point
     def coordinates(self):
-        return np.array(self._x, self._y)
+        return self._coordinates
 
 class Cell:
     def __init__(self, index: int, points: list[Point]) -> None:
