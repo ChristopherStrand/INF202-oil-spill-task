@@ -1,4 +1,5 @@
 import meshio
+import math_function
 
 class Point:
     def __init__(self, x: float, y: float) -> None:
@@ -19,9 +20,9 @@ class Cell:
         - points: 
         """
         self.index = index
-        self.points = points
+        self._points = points
         self._neighbors = []
-        self.oil_amount = oil_amount
+        self.oil_amount = 0
         
 
     @property
@@ -110,12 +111,11 @@ class Mesh:
                     
             # Store the neighboring cells for this cell
             cell._neighbors = neighbors
+ 
 
-
-
-"""    def print_neighbors(self, cell_index: int) -> None:
+    def print_neighbors(self, cell_index: int) -> None:
         cell = next((cell for cell in self.cells if cell.index == cell_index), None)
         if cell:
             print(cell)
         else:
-            print(f"Cell {cell_index} does not exist in the mesh.")"""
+            print(f"Cell {cell_index} does not exist in the mesh.")
