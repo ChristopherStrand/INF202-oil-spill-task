@@ -125,7 +125,7 @@ class Mesh:
                 #This is done by taking the sum of three boolean statements that are true if the cell, 
                 #whose neighbors are being checked, have a point that is equal in the cell being checked.
                 if sum((point_0 in point_indices, point_1 in point_indices, point_2 in point_indices)) == 2:
-                    neighboring_cells.append(cells)
+                    neighboring_cells.append(cells.index())
 
             #Store neighbors in each cell
             self._cells[cell_index].store_neighbors(neighboring_cells)

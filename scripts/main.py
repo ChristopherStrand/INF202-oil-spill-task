@@ -6,6 +6,6 @@ mesh = classes.Mesh("meshes/bay.msh")
 # x = np.array(mesh._cells)
 # print(x.dtype)
 # print(x[x.dtype == classes.Triangle])
-print(mesh._cells[4])
+
 mesh.find_neighbors(4)
 mesh.print_neighbors(4)
