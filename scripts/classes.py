@@ -61,29 +61,23 @@ class Mesh:
         Returns:
             - Triangle and Line objects.
     """
-
     def __init__(self, msh_file: str) -> None:
-        self._cell_index = 0 #The index of a cell in _cells
-        msh = meshio.read(msh_file) #Reads the meshfile 
-        #Generates a list containing point objects
-        self._points = [Point(index, points[0], points[1]) for index, points in enumerate(msh.points)]
-        #Generates a list containing cell objects of the type line or triangle
-        for cell_types in msh.cells:
-            if cell_types.type != "vertex":
-                self._cells = [self.cell_factory(cell) for cell in cell_types.data] #A list containing cell objects
+        self._cell_index = 0
+        msh = meshio.read(msh_file)
+        self._points = [Point(index, *points[:2]) for index, points in enumerate(msh.points)]
+        self._cells = []
+        for cell_block in msh.cells:
+            if cell_block.type in ["triangle", "line"]:
+                self._cells.extend([self.cell_factory(cell, cell_block.type) for cell in cell_block.data])
 
-    def cell_factory(self, cell: list[int]) -> object:
-        cell_check = len(cell)
-        print(cell_check, cell)
-        cell_map = {
-            2:Line,
-            3:Triangle
-        }
+    def cell_factory(self, cell_data: list[int], cell_type: str) -> Cell:
+        points = [self._points[idx] for idx in cell_data]
         self._cell_index += 1
-
-        return cell_map[cell_check](cell, self._points)
+        if cell_type == "triangle":
+            return Triangle(self._cell_index, points)
+        elif cell_type == "line":
+            return Line(self._cell_index, points)
             
-
     def find_neighbors(self) -> None:
         """
         Finds neighboring cells for each cell in the mesh.
