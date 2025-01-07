@@ -126,4 +126,3 @@ class Mesh:
                 break
         else:
             print(f"Cell {cell_index} does not exist in the mesh.")
-            print(f"Cell {cell_index} does not exist in the mesh.")
