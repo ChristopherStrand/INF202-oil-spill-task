@@ -1,6 +1,7 @@
 import meshio
 import math_function
 import numpy as np
+import numpy.typing as npt
 
 class Point:
     def __init__(self, index: int, x: float, y: float) -> None:
@@ -11,11 +12,11 @@ class Point:
         self._coordinates = np.array(x, y)
 
     #Returns the index of the point in the point list from mesh
-    def index(self):
+    def index(self) -> int:
         return self._index
     
     #Returns the coordinates of the point
-    def coordinates(self):
+    def coordinates(self) -> npt.NDArray[np.float32]:
         return self._coordinates
 
 class Cell:
@@ -34,11 +35,11 @@ class Cell:
         self._oil_amount = 0
 
     #Returns the index of the cell from the cell list
-    def index(self):
+    def index(self) -> int:
         return self._index
     
     #Returns all points contained within this cell with their index in the point list
-    def points(self):
+    def points(self) -> list[np.float32]:
         return self._points 
 
     def __str__(self) -> str:
