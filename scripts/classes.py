@@ -60,26 +60,25 @@ class Mesh:
         - Triangle and Line objects.
         """
 
-        self.points = []
-        self.cells = []
+        self._points = []
+        self._cells = []
+        self.cell_index = 0
 
         msh = meshio.read(msh_file)
 
-        # Add points to the mesh
-        for i, point in enumerate(msh.points):
-            self.points.append(Point(point[0], point[1]))
+        # Adds the points to a list
+        self._points = [Point(points[0], points[1]) for index, points in enumerate(msh.points)]
+        # Adds the cells to a list
+        self._cells = [self.cell_factory(cell) for cell in msh.cells[0].data] + [self.cell_factory(cell) for cell in msh.cells[1].data]
 
-        # Add cells to the mesh based on their type
-        cell_index = 0
-        for cell_block in msh.cells:
-            if cell_block.type == "triangle":
-                for cell in cell_block.data:
-                    self.cells.append(Triangle(cell_index, [self.points[p] for p in cell]))
-                    cell_index += 1
-            elif cell_block.type == "line":
-                for cell in cell_block.data:
-                    self.cells.append(Line(cell_index, [self.points[p] for p in cell]))
-                    cell_index += 1
+    # Add cells to the mesh based on their type
+    def cell_factory(self, cell: list[int]) -> object:
+        cell_check = len(cell)
+        cell_map = {
+            2:Line,
+            3:Triangle
+        }
+        self.cell_index += 1
             
 
     def find_neighbors(self) -> None:
@@ -88,22 +87,22 @@ class Mesh:
 
         First checks if it is a Triangle or a Line by how many points they contain. 
         """
-        for cell in self.cells:
+        for cell in self._cells:
             neighbors = []
-            if len(cell.points) == 3:
-                for other_cell in self.cells:
+            if len(cell._points) == 3:
+                for other_cell in self._cells:
                     if other_cell != cell:
                         # Check if they share exactly two points
                         shared_points = set(cell._points).intersection(set(other_cell._points))
                         if len(shared_points) == 2:
                             neighbors.append(other_cell)
 
-            elif len(cell.points) == 2:
-                for other_cell in self.cells:
+            elif len(cell._points) == 2:
+                for other_cell in self._cells:
                     if other_cell != cell:
                         # Check if they share 1 point if other_cell is a Line og 2 points if other_cell is a Triangle
                         shared_points = set(cell._points).intersection(set(other_cell._points))
-                        if len(shared_points) == 1 and len(other_cell.points) == 2 or len(shared_points) == 2 and len(other_cell.points) == 3:
+                        if len(shared_points) == 1 and len(other_cell._points) == 2 or len(shared_points) == 2 and len(other_cell._points) == 3:
                             neighbors.append(other_cell)
                     
             # Store the neighboring cells for this cell
@@ -111,7 +110,7 @@ class Mesh:
  
 
     def print_neighbors(self, cell_index: int) -> None:
-        cell = next((cell for cell in self.cells if cell.index == cell_index), None)
+        cell = next((cell for cell in self._cells if cell.index == cell_index), None)
         if cell:
             print(cell)
         else:
