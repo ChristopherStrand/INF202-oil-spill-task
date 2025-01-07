@@ -1,11 +1,13 @@
 import meshio
 import math_function
+import math_function
 
 class Point:
-    def __init__(self, x: float, y: float) -> None:
+    def __init__(self, index: int, x: float, y: float) -> None:
         """
         Initializes a Point with x and y coordinates
         """
+        self._index = index
         self.x = x
         self.y = y
 
@@ -20,6 +22,7 @@ class Cell:
         - points: 
         """
         self.index = index
+        self._points = points
         self._points = points
         self._neighbors = []
         self.oil_amount = 0
@@ -51,50 +54,43 @@ class Line(Cell):
 
 
 class Mesh:
-    def __init__(self, msh_file: str) -> None:
-        """
+    """
         Initializes empty lists for points and cells and reads the mesh file. The initializer then makes Triangle and Line objects from the mesh file,
         each with a index and a list of points. 
 
         Args:
-        - msh_file: a Mesh file, denoted by .msh
+            - msh_file: a Mesh file, denoted by .msh
 
         Returns:
-        - Triangle and Line objects.
-        """
-
-        self.points = []
-        self.cells = []
-
+            - Triangle and Line objects.
+    """
+    def __init__(self, msh_file: str) -> None:
+        self._cell_index = 0
         msh = meshio.read(msh_file)
-
-        # Add points to the mesh
-        for i, point in enumerate(msh.points):
-            self.points.append(Point(point[0], point[1]))
-
-        # Add cells to the mesh based on their type
-        cell_index = 0
+        self._points = [Point(index, *points[:2]) for index, points in enumerate(msh.points)]
+        self._cells = []
         for cell_block in msh.cells:
-            if cell_block.type == "triangle":
-                for cell in cell_block.data:
-                    self.cells.append(Triangle(cell_index, [self.points[p] for p in cell]))
-                    cell_index += 1
-            elif cell_block.type == "line":
-                for cell in cell_block.data:
-                    self.cells.append(Line(cell_index, [self.points[p] for p in cell]))
-                    cell_index += 1
-            
+            if cell_block.type in ["triangle", "line"]:
+                self._cells.extend([self.cell_factory(cell, cell_block.type) for cell in cell_block.data])
 
+    def cell_factory(self, cell_data: list[int], cell_type: str) -> Cell:
+        points = [self._points[idx] for idx in cell_data]
+        self._cell_index += 1
+        if cell_type == "triangle":
+            return Triangle(self._cell_index, points)
+        elif cell_type == "line":
+            return Line(self._cell_index, points)
+            
     def find_neighbors(self) -> None:
         """
         Finds neighboring cells for each cell in the mesh.
 
         First checks if it is a Triangle or a Line by how many points they contain. 
         """
-        for cell in self.cells:
+        for cell in self._cells:
             neighbors = []
             if len(cell.points) == 3:
-                for other_cell in self.cells:
+                for other_cell in self._cells:
                     if other_cell != cell:
                         # Check if they share exactly two points
                         shared_points = set(cell._points).intersection(set(other_cell._points))
@@ -102,7 +98,7 @@ class Mesh:
                             neighbors.append(other_cell)
 
             elif len(cell.points) == 2:
-                for other_cell in self.cells:
+                for other_cell in self._cells:
                     if other_cell != cell:
                         # Check if they share 1 point if other_cell is a Line og 2 points if other_cell is a Triangle
                         shared_points = set(cell._points).intersection(set(other_cell._points))
@@ -112,10 +108,12 @@ class Mesh:
             # Store the neighboring cells for this cell
             cell._neighbors = neighbors
  
+ 
 
     def print_neighbors(self, cell_index: int) -> None:
         cell = next((cell for cell in self.cells if cell.index == cell_index), None)
         if cell:
             print(cell)
         else:
+            print(f"Cell {cell_index} does not exist in the mesh.")
             print(f"Cell {cell_index} does not exist in the mesh.")
