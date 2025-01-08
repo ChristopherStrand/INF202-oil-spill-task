@@ -11,10 +11,11 @@ x_star = (0.35, 0.45)  # Intial start position
 
 
 # Barycentric coordinate system
-def point_in_triangle(pt: npt.NDArray, tri_points: npt.NDArray) -> bool:
+def point_in_triangle(pt: npt.NDArray, tri_points: list) -> bool:
     """
     Returns True if point lies in cell
     """
+
     A = calculate_area(tri_points)
 
     A1 = calculate_area([pt, tri_points[0], tri_points[1]])
@@ -26,11 +27,11 @@ def point_in_triangle(pt: npt.NDArray, tri_points: npt.NDArray) -> bool:
     return abs(A - (A1 + A2 + A3)) < epsilon
 
 
-def find_initial_cell(x_star: npt.NDArray, cells: list) -> Cell:
+def find_initial_cell(x_star: npt.NDArray, cells: list) -> int:
     try:
-        for cell in mesh.cells:
-            if point_in_triangle(x_star, cell.points):
-                return cell
+        for cell in cells:
+            if point_in_triangle(x_star, cell.point_coordinates):
+                return cell.index
     except:
         print(f"Point {x_star} was not found in the mesh")
 

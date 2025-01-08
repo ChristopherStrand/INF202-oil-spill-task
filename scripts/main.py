@@ -20,7 +20,10 @@ math_function.initial_oil_amount(mesh._cells)
 # if oil != 0 in neighbor
 # find neighbors for each neighbor of original cell
 # calculate change
-print(math_function.find_initial_cell([0.35, 0.45], mesh._cells))
+initial_cell = math_function.find_initial_cell([0.35, 0.45], mesh._cells)
+print(initial_cell)
+print(mesh.find_neighbors(initial_cell))
+
 
 """ initialneighbors = mesh.find_neighbors(first_cell) """
 
