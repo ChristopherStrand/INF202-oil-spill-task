@@ -34,8 +34,8 @@ def calculate_time(func):
 def løk():
     for i in range(0, 500):
         mesh.find_neighbors(i)
-        #mesh.print_neighbors(i)
-
 løk()
 
+mesh.find_neighbors(4)
+mesh.print_neighbors(4)
 
