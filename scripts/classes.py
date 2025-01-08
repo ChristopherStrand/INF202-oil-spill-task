@@ -136,7 +136,7 @@ class Mesh:
         cell_check = len(cell)
         cell_map = {2: Line, 3: Triangle}
 
-        points = [self._points[i].index for i in cell]
+        points = [self._points[i] for i in cell]
         self._cell_index += 1
 
         return cell_map[cell_check](self._cell_index, points)

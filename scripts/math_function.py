@@ -22,7 +22,11 @@ def velocity(x_n: npt.NDArray[np.float32]) -> npt.NDArray[np.float32]:
 
 # Same as X_mid from task description. Should return a vector
 def midpoint(coordinates: npt.NDArray[np.float32]) -> npt.NDArray[np.float32]:
-    return (1 / 3) * (coordinates[0] + coordinates[1] + coordinates[2])
+    return (1 / 3) * (
+        coordinates[0].coordinates
+        + coordinates[1].coordinates
+        + coordinates[2].coordinates
+    )
 
 
 # takes in two point(sharing with neighbour) and returns a numpy array/vector
