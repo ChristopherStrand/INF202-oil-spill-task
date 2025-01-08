@@ -67,19 +67,19 @@ def g(a, b, v, w):
 
 
 # calculating the change of oil in cell
-def calculate_change(cell: object, dt) -> int:
+def calculate_change(cell, neighbors, dt):
     area = calculate_area(cell.points)
-    sum = 0
-    for neighbour in cell.neighbors:
+    total_flux = 0
+    for neighbor in neighbors:
         mid_cell = midpoint(cell.points)
-        mid_ngh = midpoint(neighbour.points)
-        scaled_normal_vector = unit_normal_vector(""" points """)
-        v_mid = (velocity(mid_cell) + velocity(mid_ngh)) / 2
-        sum = sum + calculate_flux(
-            cell.oil_amount, neighbour.oil_amount, scaled_normal_vector, v_mid, area, dt
-        )
-    return sum
+        mid_neighbor = midpoint(neighbor.points)
+        scaled_normal_vector = unit_normal_vector(mid_cell, mid_neighbor)
+        v_mid = (velocity(mid_cell) + velocity(mid_neighbor)) / 2
+        flux = g(cell.oil_amount, neighbor.oil_amount, scaled_normal_vector, v_mid)
+        total_flux += flux
+    return -dt / area * total_flux
 
 
+""" 
 def calculate_flux(oil_amount, neighbours_oil_amount, v_mid, nv, A, dt):
-    return -dt / A * g(oil_amount, neighbours_oil_amount, v_mid, nv)
+    return -dt / A * g(oil_amount, neighbours_oil_amount, v_mid, nv) """
