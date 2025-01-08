@@ -12,10 +12,12 @@ class Point:
         self._coordinates = np.array(x, y)
 
     #Returns the index of the point in the point list from mesh
+    @property
     def index(self) -> int:
         return self._index
     
     #Returns the coordinates of the point
+    @property
     def coordinates(self) -> npt.NDArray[np.float32]:
         return self._coordinates
 
@@ -34,18 +36,21 @@ class Cell:
         self._neighbors = []
         self._oil_amount = 0
 
+    @property
     def index(self) -> int:
         """
         Returns the index of the cell from the cell list
         """
         return self._index
     
+    @property
     def points(self) -> list[np.float32]:
         """
         Returns all points contained within this cell with their index in the point list
         """
         return self._points 
     
+    @property
     def neighbors(self) -> list[int]:
         """
         Returns neighbors if they have been stored previously
@@ -55,8 +60,9 @@ class Cell:
 
         else:
             return self._neighbors
-    
-    def store_neighbors(self, neighboring_cells: list[int]) -> None:
+        
+    @neighbors.setter
+    def neighbors(self, neighboring_cells: list[int]) -> None:
         """
         Stores the neighbors found in find_neighbors() from the mesh class in this cell
         """
@@ -117,29 +123,29 @@ class Mesh:
         self._cell_index += 1
         
         return cell_map[cell_check](self._cell_index, points)
-            
+ 
     def find_neighbors(self, cell_index: int) -> None:
         """
         Finds neighboring cells for the cell specified, neighbors share exactly two elements
         """
         neighboring_cells = []
-        points_in_cell = self._cells[cell_index].points()
+        points_in_cell = self._cells[cell_index].points
         
         #Assuming cells with more points than triangles have a neighbors if they share two points. This function is extendable for any cell type
         #Makes a list of the indicies for the points in the cell who's neighbors is being found
-        point_indicies = np.array([point.index() for point in points_in_cell])
+        point_indicies = np.array([point.index for point in points_in_cell])
         for cells in self._cells:
             #Makes a list of the indicies for the points in the cell currently being checked if is a neighbor
-            point_indicies_check = np.array([point.index() for point in cells.points()])
+            point_indicies_check = np.array([point.index for point in cells.points])
             #Finds where the two arrays overlap and appends it as neighbor if it has two overlapping elements
             if np.intersect1d(point_indicies, point_indicies_check).size == 2: 
-                neighboring_cells.append(cells.index())
+                neighboring_cells.append(cells.index)
 
         #Store neighbors in each cell, stores the neighbors in the cell that was checked
-        self._cells[cell_index].store_neighbors(neighboring_cells)
+        self._cells[cell_index].neighbors = neighboring_cells
 
     def print_neighbors(self, cell_index: int) -> None:
         try:
-            print(f"The neighbors of {cell_index} is {self._cells[cell_index].neighbors()}")
+            print(f"The neighbors of {cell_index} is {self._cells[cell_index].neighbors}")
         except IndexError:
             print(f"Cell {cell_index} does not exist in cells")
