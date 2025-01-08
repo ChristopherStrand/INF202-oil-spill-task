@@ -44,7 +44,7 @@ class Cell:
         return self._index
     
     @property
-    def points(self) -> list[np.float32]:
+    def points(self) -> list[int]:
         """
         Returns all points contained within this cell with their index in the point list
         """
@@ -123,6 +123,14 @@ class Mesh:
         self._cell_index += 1
         
         return cell_map[cell_check](self._cell_index, points)
+    
+    @property
+    def points(self) -> list[object]:
+        """
+        Returns the list of all point objects
+        """
+        return self._points 
+    
  
     def find_neighbors(self, cell_index: int) -> None:
         """
