@@ -119,7 +119,7 @@ class Mesh:
             3: Triangle
             }
 
-        points = np.array([self._points[i].index for i in cell])
+        points = [self._points[i].index for i in cell]
         self._cell_index += 1
         
         return cell_map[cell_check](self._cell_index, points)
@@ -143,8 +143,7 @@ class Mesh:
         #Makes a list of the indicies for the points in the cell who's neighbors is being found
         for cells in self._cells:
             #Finds where the two arrays overlap and appends it as neighbor if it has two overlapping elements. 
-            #Size counts all elements in the array unlike shape which finds how many rows and columns
-            if np.intersect1d(points_in_cell, cells.points).size == 2: 
+            if len(set(points_in_cell) & set(cells.points)) == 2: 
                 neighboring_cells.append(cells.index)
 
         #Store neighbors in each cell, stores the neighbors in the cell that was checked
