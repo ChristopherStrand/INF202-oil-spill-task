@@ -9,6 +9,28 @@ x_star = (0.35, 0.45)  # Intial start position
 
 # Index 0 represents x value in the position vector x, and index 1 represents the y value in the position vector x
 
+# Barycentric coordinate system
+def point_in_triangle(pt: npt.NDArray, tri_points: npt.NDArray) -> bool:
+    """
+    Returns True if point lies in cell
+    """
+    A = math_function.calculate_area(tri_points)
+
+    A1 = math_function.calculate_area([pt, tri_points[0], tri_points[1]])
+    A2 = math_function.calculate_area([pt, tri_points[1], tri_points[2]])
+    A3 = math_function.calculate_area([pt, tri_points[2], tri_points[0]])
+
+    epsilon = 1e-10
+
+    return abs(A - (A1 + A2 + A3)) < epsilon
+
+def find_initial_cell(x_star: npt.NDArray, cells: list) -> Cell:
+    try:
+        for cell in mesh.cells:
+            if point_in_triangle(x_star, cell.points):
+                return cell
+    except:
+        print(f"Point {x_star} was not found in the mesh")
 
 def initial_oil_amount(cells):
     for cell in cells:
