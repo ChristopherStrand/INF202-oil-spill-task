@@ -143,7 +143,7 @@ class Mesh:
 
         return cell_map[cell_check](self._cell_index, points)
       
-   @property
+    @property
     def cells(self) -> list[object]:
         """
         Returns the list of all point objects
