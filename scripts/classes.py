@@ -10,7 +10,7 @@ class Point:
         Initializes a Point with x and y coordinates
         """
         self._index = index
-        self._coordinates = np.array(x, y)
+        self._coordinates = np.array([x, y])
 
     # Returns the index of the point in the point list from mesh
     @property

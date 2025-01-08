@@ -6,19 +6,14 @@ import math_function
 
 mesh = classes.Mesh("../meshes/bay.msh")
 
+dt = 0.1
 
-def initial_oil_amount():
-    for cell in mesh._cells:
-        cell_midpoint = math_function.midpoint(cell.points)
-        print(cell_midpoint)
-        """ cell._oil_amount = initial_oil_distrobution(cell_midpoint)
-        print(cell._oil_amount) """
+math_function.initial_oil_amount(mesh._cells)
+# finding starting cell
+# find neighbors
+# calculate_change
 
-
-def initial_oil_distrobution(midpoint, x=0.35, y=0.45):
-    x_mid, y_mid = midpoint
-    u = -((x_mid - x) ** 2 + (y_mid - y) ** 2) / 0.01
-    return u
+# if oil != 0
 
 
-print(initial_oil_amount())
+math_function.calculate_change(cell)

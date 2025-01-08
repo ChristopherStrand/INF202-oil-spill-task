@@ -10,9 +10,18 @@ x_star = (0.35, 0.45)  # Intial start position
 # Index 0 represents x value in the position vector x, and index 1 represents the y value in the position vector x
 
 
-# Same as function u from task description. Should not return a vector
-def oil_distro(t: float, x_n: npt.NDArray[np.float32]) -> np.float32:
-    return np.e ** (-(((x_n[0] - x_star[0]) ** 2 + (x_n[1] - x_star[1]) ** 2) / (0.01)))
+def initial_oil_amount(cells):
+    for cell in cells:
+        cell_midpoint = midpoint(cell.points)
+        """ print(cell_midpoint) """
+        cell._oil_amount = initial_oil_distrobution(cell_midpoint)
+        print(cell._oil_amount)
+
+
+def initial_oil_distrobution(midpoint, x=0.35, y=0.45):
+    x_mid, y_mid = midpoint
+    u = np.exp(-((x_mid - x) ** 2 + (y_mid - y) ** 2) / 0.01)
+    return u
 
 
 # Same as function v from task description. Should return a vector
@@ -58,8 +67,7 @@ def g(a, b, v, w):
 
 
 # calculating the change of oil in cell
-def calculate_change(cell: object, neighbors: list[int]) -> int:
-    # kan bli et problem å hente ut punktene, sjekke getter for celle og str metode for point
+def calculate_change(cell: object, dt) -> int:
     area = calculate_area(cell.points)
     sum = 0
     for neighbour in cell.neighbors:
@@ -68,10 +76,10 @@ def calculate_change(cell: object, neighbors: list[int]) -> int:
         scaled_normal_vector = unit_normal_vector(""" points """)
         v_mid = (velocity(mid_cell) + velocity(mid_ngh)) / 2
         sum = sum + calculate_flux(
-            cell.oil_amount, neighbour.oil_amount, scaled_normal_vector, v_mid
+            cell.oil_amount, neighbour.oil_amount, scaled_normal_vector, v_mid, area, dt
         )
     return sum
 
 
-def calculate_flux(oil_amount, neighbours_oil_amount, v_mid, nv):
+def calculate_flux(oil_amount, neighbours_oil_amount, v_mid, nv, A, dt):
     return -dt / A * g(oil_amount, neighbours_oil_amount, v_mid, nv)
