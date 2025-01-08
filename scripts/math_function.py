@@ -31,11 +31,7 @@ def unit_normal_vector(point1, point2) -> npt.NDArray[np.float32]:
     normal_vector = np.array([-vector[1], vector[0]])
     return normal_vector / np.linalg.norm(normal_vector)
 
-
-""" def area() -> np.float32:
-    return 0.5*abs(()) """
-
-
+# calculating the area of the cell
 def calculate_area(points: list) -> float:
     x0, y0 = points[0]
     x1, y1 = points[1]
