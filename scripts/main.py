@@ -3,12 +3,16 @@ import classes
 import numpy as np
 import time
 import math_function
+import cv2 as cv
+import plotting
 
 mesh = classes.Mesh("../meshes/bay.msh")
 
 dt = 0.1
 
 math_function.initial_oil_amount(mesh._cells)
+plotting.plotting_mesh(mesh._cells)
+
 # finding starting cell
 # find neighbors
 # calculate_change
