@@ -34,18 +34,32 @@ class Cell:
         self._neighbors = []
         self._oil_amount = 0
 
-    #Returns the index of the cell from the cell list
     def index(self) -> int:
+        """
+        Returns the index of the cell from the cell list
+        """
         return self._index
     
-    #Returns all points contained within this cell with their index in the point list
     def points(self) -> list[np.float32]:
+        """
+        Returns all points contained within this cell with their index in the point list
+        """
         return self._points 
     
-    def neighbors(self) -> list[object]:
-        return self._neighbors
+    def neighbors(self) -> list[int]:
+        """
+        Returns neighbors if they have been stored previously
+        """
+        if len(self._neighbors) == 0:
+            print(f"Cell {self._index} does not contain a neighbor currently")
+
+        else:
+            return self._neighbors
     
-    def store_neighbors(self, neighboring_cells: list[object]):
+    def store_neighbors(self, neighboring_cells: list[int]) -> None:
+        """
+        Stores the neighbors found in find_neighbors() from the mesh class in this cell
+        """
         self._neighbors = neighboring_cells
 
     # def __str__(self) -> str:
@@ -92,39 +106,37 @@ class Mesh:
             if types != "vertex" and types != "line": #Ignores lines since they aren't relevant for the task
                 self._cells.extend([self.cell_factory(cell) for cell in cell_types.data])
 
-    def cell_factory(self, cell: list[int]) -> object:
+    def cell_factory(self, cell: list[int]) -> object: #Mainly used for extendability
         cell_check = len(cell)
         cell_map = {
             2: Line,
             3: Triangle
             }
 
-        points = np.array([self._points[i] for i in cell]) #Stores
+        points = [self._points[i] for i in cell] 
         self._cell_index += 1
         
         return cell_map[cell_check](self._cell_index, points)
             
     def find_neighbors(self, cell_index: int) -> None:
         """
-        Finds neighboring cells for the cell specified.
-        First checks if it is a Triangle or a Line by how many points they contain. 
+        Finds neighboring cells for the cell specified, neighbors share exactly two elements
         """
         neighboring_cells = []
         points_in_cell = self._cells[cell_index].points()
         
-        #Checks triangles for neighbors
-        if points_in_cell.size == 3: 
-            #Makes a list of the indicies for the points in the cell who's neighbors is being found
-            point_indicies = [point.index() for point in points_in_cell] 
-            for cells in self._cells:
-                #Makes a list of the indicies for the points in the cell currently being checked if is a neighbor
-                point_indicies_check = [point.index() for point in cells.points()]
-                #Finds where the two arrays overlap and appends it as neighbor if it has two overlapping elements
-                if np.intersect1d(point_indicies, point_indicies_check).size == 2: 
-                    neighboring_cells.append(cells.index())
+        #Assuming cells with more points than triangles have a neighbors if they share two points. This function is extendable for any cell type
+        #Makes a list of the indicies for the points in the cell who's neighbors is being found
+        point_indicies = np.array([point.index() for point in points_in_cell])
+        for cells in self._cells:
+            #Makes a list of the indicies for the points in the cell currently being checked if is a neighbor
+            point_indicies_check = np.array([point.index() for point in cells.points()])
+            #Finds where the two arrays overlap and appends it as neighbor if it has two overlapping elements
+            if np.intersect1d(point_indicies, point_indicies_check).size == 2: 
+                neighboring_cells.append(cells.index())
 
-            #Store neighbors in each cell, stores the neighbors in the cell that was checked
-            self._cells[cell_index].store_neighbors(neighboring_cells)
+        #Store neighbors in each cell, stores the neighbors in the cell that was checked
+        self._cells[cell_index].store_neighbors(neighboring_cells)
 
     def print_neighbors(self, cell_index: int) -> None:
         try:

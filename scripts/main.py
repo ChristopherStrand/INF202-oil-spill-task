@@ -15,3 +15,6 @@ print(f"2056: {indexify(cells[2056].points())}, 45: {indexify(cells[45].points()
 mesh.find_neighbors(4)
 mesh.print_neighbors(4)
 
+mesh.find_neighbors(5)
+mesh.print_neighbors(5)
+
