@@ -1,5 +1,6 @@
 venv/
 env/
 INF202_env
+__pycache__
 
 
