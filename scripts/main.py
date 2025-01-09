@@ -2,46 +2,33 @@ import meshio
 import classes
 import numpy as np
 import time
-
-
-# temp function
-def indexify(point_list):
-    return [i.index for i in point_list]
-
+import math_function
+import cv2 as cv
+import plotting
 
 mesh = classes.Mesh("../meshes/bay.msh")
-# x = np.array(mesh._cells)
-# print(x.dtype)
-# print(x[x.dtype == classes.Triangle])
-# cells = mesh._cells
-# print(f"2056: {indexify(cells[2056].points)}, 45: {indexify(cells[45].points)}, 46: {indexify(cells[46].points)}")
+
+dt = 0.1
+
+math_function.initial_oil_amount(mesh._cells)
+plotting.plotting_mesh(mesh._cells)
+
+# finding starting cell
+# find neighbors
+# calculate_change
+
+# if oil != 0 in neighbor
+# find neighbors for each neighbor of original cell
+# calculate change
+
+# if oil != 0 in neighbor
+# find neighbors for each neighbor of original cell
+# calculate change
+initial_cell = math_function.find_initial_cell([0.35, 0.45], mesh._cells)
+print(initial_cell)
+print(mesh.find_neighbors(initial_cell))
 
 
-def calculate_time(func):
-    # added arguments inside the inner1,
-    # if function takes any arguments,
-    # can be added like this.
-    def inner1(*args, **kwargs):
+""" initialneighbors = mesh.find_neighbors(first_cell) """
 
-        # storing time before function execution
-        begin = time.time()
-
-        func(*args, **kwargs)
-
-        # storing time after function execution
-        end = time.time()
-        print(f"Total time taken in : {func.__name__} {end - begin:.6f}")
-
-    return inner1
-
-
-@calculate_time
-def løk():
-    for i in range(0, 500):
-        mesh.find_neighbors(i)
-
-
-løk()
-
-mesh.find_neighbors(4)
-mesh.print_neighbors(4)
+""" math_function.calculate_change(5) """

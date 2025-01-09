@@ -11,7 +11,7 @@ class Point:
         Initializes a Point with x and y coordinates
         """
         self._index = index
-        self._coordinates = np.array(x, y)
+        self._coordinates = np.array([x, y])
 
     # Returns the index of the point in the point list from mesh
     @property
@@ -40,6 +40,10 @@ class Cell:
         self._neighbors = []
         self._oil_amount = 0
         
+    @property
+    def point_coordinates(self) -> list:
+        return [point.coordinates for point in self._points]
+
     @property
     def oil_amount(self):
         return self._oil_amount
@@ -138,7 +142,7 @@ class Mesh:
         cell_check = len(cell)
         cell_map = {2: Line, 3: Triangle}
 
-        points = [self._points[i].index for i in cell]
+        points = [self._points[i] for i in cell]
         self._cell_index += 1
 
         return cell_map[cell_check](self._cell_index, points)

@@ -10,11 +10,46 @@ x_star = np.array((0.35, 0.45))  # Intial start position
 # Index 0 represents x value in the position vector x, and index 1 represents the y value in the position vector x
 
 
-# Same as function u from task description. Should not return a vector
-def oil_distro(t: float, x_n: npt.NDArray[np.float32]) -> np.float32:
-    numerator = np.sum(((x_n-x_star)**2))
-    denominator = -0.01
-    return np.e**(numerator/denominator)
+
+# Barycentric coordinate system
+def point_in_triangle(pt: npt.NDArray, tri_points: list) -> bool:
+    """
+    Returns True if point lies in cell
+    """
+
+    A = calculate_area(tri_points)
+
+    A1 = calculate_area([pt, tri_points[0], tri_points[1]])
+    A2 = calculate_area([pt, tri_points[1], tri_points[2]])
+    A3 = calculate_area([pt, tri_points[2], tri_points[0]])
+
+    epsilon = 1e-10
+
+    return abs(A - (A1 + A2 + A3)) < epsilon
+
+
+def find_initial_cell(x_star: npt.NDArray, cells: list) -> int:
+    try:
+        for cell in cells:
+            if point_in_triangle(x_star, cell.point_coordinates):
+                return cell.index
+    except:
+        print(f"Point {x_star} was not found in the mesh")
+
+
+def initial_oil_amount(cells):
+    for cell in cells:
+        cell_midpoint = midpoint(cell.points)
+        """ print(cell_midpoint) """
+        cell._oil_amount = initial_oil_distrobution(cell_midpoint)
+        print(cell._oil_amount)
+
+
+def initial_oil_distrobution(midpoint, x=0.35, y=0.45):
+    x_mid, y_mid = midpoint
+    u = np.exp(-((x_mid - x) ** 2 + (y_mid - y) ** 2) / 0.01)
+    return u
+
 
 
 # Same as function v from task description. Should return a vector
@@ -24,7 +59,11 @@ def velocity(x_n: npt.NDArray[np.float32]) -> npt.NDArray[np.float32]:
 
 # Same as X_mid from task description. Should return a vector
 def midpoint(coordinates: npt.NDArray[np.float32]) -> npt.NDArray[np.float32]:
-    return (1 / 3) * (coordinates[0] + coordinates[1] + coordinates[2])
+    return (1 / 3) * (
+        coordinates[0].coordinates
+        + coordinates[1].coordinates
+        + coordinates[2].coordinates
+    )
 
 
 # takes in two point(sharing with neighbour) and returns a numpy array/vector
@@ -52,20 +91,19 @@ def g(a, b, v, w):
 
 
 # calculating the change of oil in cell
-def calculate_change(cell: object, neighbors: list[int]) -> int:
-    # kan bli et problem å hente ut punktene, sjekke getter for celle og str metode for point
+def calculate_change(cell, neighbors, dt):
     area = calculate_area(cell.points)
-    sum = 0
-    for neighbour in cell.neighbors:
+    total_flux = 0
+    for neighbor in neighbors:
         mid_cell = midpoint(cell.points)
-        mid_ngh = midpoint(neighbour.points)
-        scaled_normal_vector = unit_normal_vector(""" points """)
-        v_mid = (velocity(mid_cell) + velocity(mid_ngh)) / 2
-        sum = sum + calculate_flux(
-            cell.oil_amount, neighbour.oil_amount, scaled_normal_vector, v_mid
-        )
-    return sum
+        mid_neighbor = midpoint(neighbor.points)
+        scaled_normal_vector = unit_normal_vector(mid_cell, mid_neighbor)
+        v_mid = (velocity(mid_cell) + velocity(mid_neighbor)) / 2
+        flux = g(cell.oil_amount, neighbor.oil_amount, scaled_normal_vector, v_mid)
+        total_flux += flux
+    return -dt / area * total_flux
 
 
-def calculate_flux(oil_amount, neighbours_oil_amount, v_mid, nv):
-    return -dt / A * g(oil_amount, neighbours_oil_amount, v_mid, nv)
+""" 
+def calculate_flux(oil_amount, neighbours_oil_amount, v_mid, nv, A, dt):
+    return -dt / A * g(oil_amount, neighbours_oil_amount, v_mid, nv) """
