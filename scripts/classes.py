@@ -41,7 +41,7 @@ class Cell:
         self._oil_amount = 0
         
     @property
-    def point_coordinates(self) -> list:
+    def coordinates(self) -> list:
         return [point.coordinates for point in self._points]
 
     @property
