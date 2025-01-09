@@ -5,9 +5,10 @@ This file contains the mathmatical functions used in main.py
 import numpy as np
 import numpy.typing as npt
 
-x_star = (0.35, 0.45)  # Intial start position
+x_star = np.array((0.35, 0.45))  # Intial start position
 
 # Index 0 represents x value in the position vector x, and index 1 represents the y value in the position vector x
+
 
 
 # Barycentric coordinate system
@@ -50,6 +51,7 @@ def initial_oil_distrobution(midpoint, x=0.35, y=0.45):
     return u
 
 
+
 # Same as function v from task description. Should return a vector
 def velocity(x_n: npt.NDArray[np.float32]) -> npt.NDArray[np.float32]:
     return (x_n[1] - 0.2 * [x_n[0]], -x_n[0])
@@ -70,11 +72,7 @@ def unit_normal_vector(point1, point2) -> npt.NDArray[np.float32]:
     normal_vector = np.array([-vector[1], vector[0]])
     return normal_vector / np.linalg.norm(normal_vector)
 
-
-""" def area() -> np.float32:
-    return 0.5*abs(()) """
-
-
+# calculating the area of the cell
 def calculate_area(points: list) -> float:
     x0, y0 = points[0]
     x1, y1 = points[1]

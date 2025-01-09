@@ -4,6 +4,7 @@ import numpy as np
 import numpy.typing as npt
 
 
+
 class Point:
     def __init__(self, index: int, x: float, y: float) -> None:
         """
@@ -23,6 +24,7 @@ class Point:
         return self._coordinates
 
 
+
 class Cell:
     def __init__(self, index: int, points: npt.NDArray[np.float32]) -> None:
         """
@@ -37,7 +39,7 @@ class Cell:
         self._points = points
         self._neighbors = []
         self._oil_amount = 0
-
+        
     @property
     def point_coordinates(self) -> list:
         return [point.coordinates for point in self._points]
@@ -59,6 +61,7 @@ class Cell:
         """
         return self._index
 
+    # getter for points
     @property
     def points(self) -> list[int]:
         """
@@ -93,7 +96,6 @@ class Cell:
     #     boundary_status = "Boundary" if is_boundary else "Internal"
 
     #     return f"Cell {self._index} ({boundary_status}): Neighbors -> {neighbor_indices}"
-
 
 class Triangle(Cell):
     def __init__(self, index: int, points: npt.NDArray[np.float32]) -> None:
@@ -144,7 +146,14 @@ class Mesh:
         self._cell_index += 1
 
         return cell_map[cell_check](self._cell_index, points)
-
+      
+    @property
+    def cells(self) -> list[object]:
+        """
+        Returns the list of all point objects
+        """
+        return self._cells
+      
     @property
     def points(self) -> list[object]:
         """
