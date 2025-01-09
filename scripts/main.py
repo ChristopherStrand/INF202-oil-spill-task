@@ -3,7 +3,6 @@ import classes
 import numpy as np
 import time
 import math_function
-import cv2 as cv
 import plotting
 
 mesh = classes.Mesh("../meshes/bay.msh")
