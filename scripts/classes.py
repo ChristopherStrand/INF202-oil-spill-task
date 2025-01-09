@@ -168,12 +168,10 @@ class Mesh:
         neighboring_cells = []
         points_in_cell = self._cells[cell_index].points
 
-        # Assuming cells with more points than triangles have a neighbors if they share two points. This function is extendable for any cell type
-        # Makes a list of the indicies for the points in the cell who's neighbors is being found
-        for cells in self._cells:
-            # Finds where the two arrays overlap and appends it as neighbor if it has two overlapping elements.
-            if len(set(points_in_cell) & set(cells.points)) == 2:
-                neighboring_cells.append(cells.index)
+        # Assuming cells with more points than triangles have are neighbors if they share two points. 
+        # This function is extendable for any cell type that meets that criteria
+        # Makes a list with the indicies of the neighbors for the specified cell
+        neighboring_cells = [cells.index for cells in self._cells if len(set(points_in_cell) & set(cells.points)) == 2]
 
         # Store neighbors in each cell, stores the neighbors in the cell that was checked
         self._cells[cell_index].neighbors = neighboring_cells
@@ -185,3 +183,8 @@ class Mesh:
             )
         except IndexError:
             print(f"Cell {cell_index} does not exist in cells")
+
+if __name__ == "__main__":
+    mesh = Mesh("meshes/bay.msh")
+    mesh.find_neighbors(4)
+    mesh.print_neighbors(4)
