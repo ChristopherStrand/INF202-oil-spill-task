@@ -20,9 +20,7 @@ def plotting_mesh(cells):
     plt.colorbar(sm, cax=cbar_ax, label="Oil Amount")
 
     for cell in cells:
-        coords = []
-        for point in cell.points:
-            coords.append(point.coordinates)
+        coords = [point.coordinates for point in cell.points]
         coords = np.array(coords)
 
         color = plt.cm.viridis((cell.oil_amount - min_oil) / (max_oil - min_oil))
