@@ -6,12 +6,20 @@ import math_function
 import plotting
 
 mesh = classes.Mesh("../meshes/bay.msh")
-
+cells = mesh.cells
 dt = 0.1
 
 math_function.initial_oil_amount(mesh._cells)
-plotting.plotting_mesh(mesh._cells)
+""" plotting.plotting_mesh(mesh._cells) """
+initial_cell = math_function.find_initial_cell([0.35, 0.45], mesh._cells)
+print(initial_cell)
+print(mesh.find_neighbors(initial_cell))
 
+print(mesh.cells[initial_cell].oil_amount)
+for i in range(1, 20):
+    dt = i / 10
+    math_function.calculate_change(mesh, initial_cell, dt)
+    print(mesh.cells[initial_cell].oil_amount)
 # finding starting cell
 # find neighbors
 # calculate_change
@@ -23,9 +31,6 @@ plotting.plotting_mesh(mesh._cells)
 # if oil != 0 in neighbor
 # find neighbors for each neighbor of original cell
 # calculate change
-initial_cell = math_function.find_initial_cell([0.35, 0.45], mesh._cells)
-print(initial_cell)
-print(mesh.find_neighbors(initial_cell))
 
 
 """ initialneighbors = mesh.find_neighbors(first_cell) """

@@ -4,7 +4,6 @@ import numpy as np
 import numpy.typing as npt
 
 
-
 class Point:
     def __init__(self, index: int, x: float, y: float) -> None:
         """
@@ -24,7 +23,6 @@ class Point:
         return self._coordinates
 
 
-
 class Cell:
     def __init__(self, index: int, points: npt.NDArray[np.float32]) -> None:
         """
@@ -39,7 +37,7 @@ class Cell:
         self._points = points
         self._neighbors = []
         self._oil_amount = 0
-        
+
     @property
     def coordinates(self) -> list:
         return [point.coordinates for point in self._points]
@@ -97,6 +95,7 @@ class Cell:
 
     #     return f"Cell {self._index} ({boundary_status}): Neighbors -> {neighbor_indices}"
 
+
 class Triangle(Cell):
     def __init__(self, index: int, points: npt.NDArray[np.float32]) -> None:
         super().__init__(index, points)
@@ -146,14 +145,14 @@ class Mesh:
         self._cell_index += 1
 
         return cell_map[cell_check](self._cell_index, points)
-      
+
     @property
     def cells(self) -> list[object]:
         """
         Returns the list of all point objects
         """
         return self._cells
-      
+
     @property
     def points(self) -> list[object]:
         """
@@ -165,16 +164,18 @@ class Mesh:
         """
         Finds neighboring cells for the cell specified, neighbors share exactly two elements
         """
+        cell = self._cells[cell_index]
+        points_in_cell = set(cell.points)
         neighboring_cells = []
-        points_in_cell = self._cells[cell_index].points
 
-        # Assuming cells with more points than triangles have are neighbors if they share two points. 
-        # This function is extendable for any cell type that meets that criteria
-        # Makes a list with the indicies of the neighbors for the specified cell
-        neighboring_cells = [cells.index for cells in self._cells if len(set(points_in_cell) & set(cells.points)) == 2]
+        for other_cell in self._cells:
+            if other_cell.index != cell_index:
+                if len(points_in_cell.intersection(set(other_cell.points))) >= 2:
+                    neighboring_cells.append(other_cell)
 
         # Store neighbors in each cell, stores the neighbors in the cell that was checked
         self._cells[cell_index].neighbors = neighboring_cells
+        print(neighboring_cells[0].index, neighboring_cells[1].index, neighboring_cells[2].index)
 
     def print_neighbors(self, cell_index: int) -> None:
         try:
@@ -183,6 +184,7 @@ class Mesh:
             )
         except IndexError:
             print(f"Cell {cell_index} does not exist in cells")
+
 
 if __name__ == "__main__":
     mesh = Mesh("meshes/bay.msh")
