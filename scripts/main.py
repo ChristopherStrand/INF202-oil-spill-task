@@ -17,7 +17,7 @@ print(mesh.find_neighbors(initial_cell))
 
 for i in range(1, 20):
     dt = i / 10
-    math_function.calculate_change(initial_cell, dt)
+    math_function.calculate_change(mesh, initial_cell, dt)
 # finding starting cell
 # find neighbors
 # calculate_change

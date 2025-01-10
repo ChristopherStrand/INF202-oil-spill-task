@@ -164,20 +164,18 @@ class Mesh:
         """
         Finds neighboring cells for the cell specified, neighbors share exactly two elements
         """
+        cell = self._cells[cell_index]
+        points_in_cell = set(cell.points)
         neighboring_cells = []
-        points_in_cell = self._cells[cell_index].points
 
-        # Assuming cells with more points than triangles have are neighbors if they share two points.
-        # This function is extendable for any cell type that meets that criteria
-        # Makes a list with the indicies of the neighbors for the specified cell
-        neighboring_cells = [
-            cells.index
-            for cells in self._cells
-            if len(set(points_in_cell) & set(cells.points)) == 2
-        ]
+        for other_cell in self._cells:
+            if other_cell.index != cell_index:
+                if len(points_in_cell.intersection(set(other_cell.points))) >= 2:
+                    neighboring_cells.append(other_cell)
 
         # Store neighbors in each cell, stores the neighbors in the cell that was checked
         self._cells[cell_index].neighbors = neighboring_cells
+        print(neighboring_cells[0].index, neighboring_cells[1].index, neighboring_cells[2].index)
 
     def print_neighbors(self, cell_index: int) -> None:
         try:

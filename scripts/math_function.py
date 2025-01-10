@@ -52,7 +52,7 @@ def initial_oil_distrobution(midpoint, x=0.35, y=0.45):
 
 # Same as function v from task description. Should return a vector
 def velocity(x_n: npt.NDArray[np.float32]) -> npt.NDArray[np.float32]:
-    return (x_n[1] - 0.2 * [x_n[0]], -x_n[0])
+    return np.array([x_n[1] - 0.2 * x_n[0], -x_n[0]])
 
 
 # Same as X_mid from task description. Should return a vector
@@ -90,16 +90,17 @@ def g(a, b, v, w):
 
 
 # calculating the change of oil in cell
-def calculate_change(cell, dt):
-    area = calculate_area(cell.coordinates)
-    neighbors = cell.neighbors
+def calculate_change(mesh, cell_index, dt):
+    cell_object = mesh.cells[cell_index]
+    area = calculate_area(cell_object.coordinates)
+    neighbors = cell_object.neighbors
     total_flux = 0
     for neighbor in neighbors:
-        mid_cell = midpoint(cell.points)
+        mid_cell = midpoint(cell_object.points)
         mid_neighbor = midpoint(neighbor.points)
         scaled_normal_vector = unit_normal_vector(mid_cell, mid_neighbor)
         v_mid = (velocity(mid_cell) + velocity(mid_neighbor)) / 2
-        flux = g(cell.oil_amount, neighbor.oil_amount, scaled_normal_vector, v_mid)
+        flux = g(cell_object.oil_amount, neighbor.oil_amount, scaled_normal_vector, v_mid)
         total_flux += flux
     return -dt / area * total_flux
 
