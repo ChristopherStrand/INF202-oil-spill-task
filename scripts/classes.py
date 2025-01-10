@@ -85,16 +85,6 @@ class Cell:
         """
         self._neighbors = neighboring_cells
 
-    # def __str__(self) -> str:
-    #     """
-    #     Checks if Cell is Boundary and returns a string with its neighbors
-    #     """
-    #     is_boundary = len(self._neighbors) < 2
-    #     neighbor_indices = [neighbor.index for neighbor in self._neighbors]
-    #     boundary_status = "Boundary" if is_boundary else "Internal"
-
-    #     return f"Cell {self._index} ({boundary_status}): Neighbors -> {neighbor_indices}"
-
 
 class Triangle(Cell):
     def __init__(self, index: int, points: npt.NDArray[np.float32]) -> None:
@@ -164,14 +154,10 @@ class Mesh:
         """
         Finds neighboring cells for the cell specified, neighbors share exactly two elements
         """
-        cell = self._cells[cell_index]
-        points_in_cell = set(cell.points)
         neighboring_cells = []
-
-        for other_cell in self._cells:
-            if other_cell.index != cell_index:
-                if len(points_in_cell.intersection(set(other_cell.points))) >= 2:
-                    neighboring_cells.append(other_cell)
+        points_in_cell = self._cells[cell_index].points
+        
+        neighboring_cells = [other_cell for other_cell in self._cells if len(set(points_in_cell) & set(other_cell.points))]
 
         # Store neighbors in each cell, stores the neighbors in the cell that was checked
         self._cells[cell_index].neighbors = neighboring_cells
