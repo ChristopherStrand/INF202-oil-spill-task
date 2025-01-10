@@ -157,7 +157,7 @@ class Mesh:
         neighboring_cells = []
         points_in_cell = self._cells[cell_index].points
         
-        neighboring_cells = [other_cell for other_cell in self._cells if len(set(points_in_cell) & set(other_cell.points))]
+        neighboring_cells = [other_cell for other_cell in self._cells if len(set(points_in_cell) & set(other_cell.points)) and other_cell.index != cell_index]
 
         # Store neighbors in each cell, stores the neighbors in the cell that was checked
         self._cells[cell_index].neighbors = neighboring_cells
