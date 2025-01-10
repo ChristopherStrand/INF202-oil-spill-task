@@ -177,3 +177,6 @@ if __name__ == "__main__":
     print(mesh.cells[4].coordinates)
     mesh.find_neighbors(4)
     mesh.print_neighbors(4)
+    #[45, 46, 2056]
+    # x = mesh.cells[45].coordinates
+    # print(x)
