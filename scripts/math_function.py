@@ -7,13 +7,11 @@ import numpy.typing as npt
 
 x_star = np.array((0.35, 0.45))  # Intial start position
 
-# Index 0 represents x value in the position vector x, and index 1 represents the y value in the position vector x
-
-
-# Barycentric coordinate system
 def point_in_triangle(pt: npt.NDArray, tri_points: list) -> bool:
     """
     Returns True if point lies in cell
+
+    Uses Barycentric coordinate system to determine if triangles with point and edges in triangle equal the full area (with small error constant epsilon)
     """
 
     A = calculate_area(tri_points)
@@ -27,7 +25,10 @@ def point_in_triangle(pt: npt.NDArray, tri_points: list) -> bool:
     return abs(A - (A1 + A2 + A3)) < epsilon
 
 
-def find_initial_cell(x_star: npt.NDArray, cells: list) -> int:
+def find_initial_cell(cells: list, x_star: npt.NDArray) -> int:
+    """
+    Returns cell index of initial cell
+    """
     try:
         for cell in cells:
             if point_in_triangle(x_star, cell.coordinates):
@@ -35,19 +36,16 @@ def find_initial_cell(x_star: npt.NDArray, cells: list) -> int:
     except:
         print(f"Point {x_star} was not found in the mesh")
 
-
-def initial_oil_amount(cells):
+def initial_oil_distribution(cells, start_point):
+    """
+    Gives intial distribution of oil around start point
+    """
+    x, y = start_point[0], start_point[1]
     for cell in cells:
-        cell_midpoint = midpoint(cell.points)
-        """ print(cell_midpoint) """
-        cell._oil_amount = initial_oil_distrobution(cell_midpoint)
-        """ print(cell._oil_amount) """
+        x_mid, y_mid = midpoint(cell.points)
+        u = np.exp(-((x_mid - x) ** 2 + (y_mid - y) ** 2) / 0.01)
 
-
-def initial_oil_distrobution(midpoint, x=0.35, y=0.45):
-    x_mid, y_mid = midpoint
-    u = np.exp(-((x_mid - x) ** 2 + (y_mid - y) ** 2) / 0.01)
-    return u
+        cell._oil_amount = u
 
 
 # Same as function v from task description. Should return a vector
