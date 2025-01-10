@@ -10,7 +10,6 @@ x_star = np.array((0.35, 0.45))  # Intial start position
 # Index 0 represents x value in the position vector x, and index 1 represents the y value in the position vector x
 
 
-
 # Barycentric coordinate system
 def point_in_triangle(pt: npt.NDArray, tri_points: list) -> bool:
     """
@@ -31,7 +30,7 @@ def point_in_triangle(pt: npt.NDArray, tri_points: list) -> bool:
 def find_initial_cell(x_star: npt.NDArray, cells: list) -> int:
     try:
         for cell in cells:
-            if point_in_triangle(x_star, cell.point_coordinates):
+            if point_in_triangle(x_star, cell.coordinates):
                 return cell.index
     except:
         print(f"Point {x_star} was not found in the mesh")
@@ -42,14 +41,13 @@ def initial_oil_amount(cells):
         cell_midpoint = midpoint(cell.points)
         """ print(cell_midpoint) """
         cell._oil_amount = initial_oil_distrobution(cell_midpoint)
-        print(cell._oil_amount)
+        """ print(cell._oil_amount) """
 
 
 def initial_oil_distrobution(midpoint, x=0.35, y=0.45):
     x_mid, y_mid = midpoint
     u = np.exp(-((x_mid - x) ** 2 + (y_mid - y) ** 2) / 0.01)
     return u
-
 
 
 # Same as function v from task description. Should return a vector
@@ -72,6 +70,7 @@ def unit_normal_vector(point1, point2) -> npt.NDArray[np.float32]:
     normal_vector = np.array([-vector[1], vector[0]])
     return normal_vector / np.linalg.norm(normal_vector)
 
+
 # calculating the area of the cell
 def calculate_area(points: list) -> float:
     x0, y0 = points[0]
@@ -91,8 +90,9 @@ def g(a, b, v, w):
 
 
 # calculating the change of oil in cell
-def calculate_change(cell, neighbors, dt):
-    area = calculate_area(cell.points)
+def calculate_change(cell, dt):
+    area = calculate_area(cell.coordinates)
+    neighbors = cell.neighbors
     total_flux = 0
     for neighbor in neighbors:
         mid_cell = midpoint(cell.points)
