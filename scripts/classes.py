@@ -186,5 +186,6 @@ class Mesh:
 
 if __name__ == "__main__":
     mesh = Mesh("meshes/bay.msh")
+    print(mesh.cells[4])
     mesh.find_neighbors(4)
     mesh.print_neighbors(4)
