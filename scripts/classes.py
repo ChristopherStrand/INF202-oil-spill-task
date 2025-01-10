@@ -135,10 +135,10 @@ class Mesh:
                 types != "vertex" and types != "line"
             ):  # Ignores lines since they aren't relevant for the task
                 self._cells.extend(
-                    [self.cell_factory(cell) for cell in cell_types.data]
+                    [self._cell_factory(cell) for cell in cell_types.data]
                 )
 
-    def cell_factory(self, cell: list[int]) -> object:  # Mainly used for extendability
+    def _cell_factory(self, cell: list[int]) -> object:  # Mainly used for extendability
         cell_check = len(cell)
         cell_map = {2: Line, 3: Triangle}
 
