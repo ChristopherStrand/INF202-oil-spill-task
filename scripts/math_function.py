@@ -54,12 +54,17 @@ def velocity(x_n: npt.NDArray[np.float32]) -> npt.NDArray[np.float32]:
 
 
 # Same as X_mid from task description. Should return a vector
-def midpoint(coordinates: npt.NDArray[np.float32]) -> npt.NDArray[np.float32]:
-    return (1 / 3) * (
-        coordinates[0].coordinates
-        + coordinates[1].coordinates
-        + coordinates[2].coordinates
-    )
+def midpoint(cell: object) -> npt.NDArray[np.float32]:
+    """
+    Same as X_mid from task description. Takes a cell of any shape and finds the midpoint
+    """
+    point_coordinates = cell.coordinates
+    number_of_points = len(point_coordinates)
+    
+    sum_coordinates = np.array([0, 0])
+    for coordinates in point_coordinates:
+        sum_coordinates = sum_coordinates + coordinates
+    return (1/number_of_points) * (sum_coordinates)
 
 
 # takes in two point(sharing with neighbour) and returns a numpy array/vector

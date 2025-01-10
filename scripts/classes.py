@@ -161,7 +161,6 @@ class Mesh:
 
         # Store neighbors in each cell, stores the neighbors in the cell that was checked
         self._cells[cell_index].neighbors = neighboring_cells
-        print(neighboring_cells[0].index, neighboring_cells[1].index, neighboring_cells[2].index)
 
     def print_neighbors(self, cell_index: int) -> None:
         try:
