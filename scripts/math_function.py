@@ -29,12 +29,10 @@ def find_initial_cell(cells: list, x_star: npt.NDArray) -> int:
     """
     Returns cell index of initial cell
     """
-    try:
-        for cell in cells:
-            if point_in_triangle(x_star, cell.coordinates):
-                return cell.index
-    except:
-        print(f"Point {x_star} was not found in the mesh")
+    for cell in cells:
+        if point_in_triangle(x_star, cell.coordinates):
+            return cell.index
+    raise Exception(f"Point {x_star} was not found in the mesh")
 
 def initial_oil_distribution(cells, start_point):
     """
