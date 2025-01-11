@@ -15,14 +15,14 @@ p3 = Point(15, 10, 2.01)
 my_points = [p1, p2, p3]
 
 example_cell = Triangle(4, my_points) 
-Tolerance = 0.000001 #Uses tolerance to test whether x and y are about equal only for float numbers
+tolerance = 0.000001 #Uses tolerance to test whether x and y are about equal only for float numbers
 
 def test_getter_index():
     assert example_cell.index == 4, "The assignment of indices in cells is off"
 
 def test_getter_coordinates():
     x = np.array(example_cell.coordinates)-np.array([[2.657, 2.2], [3.023, 7.39 ], [10.  ,  2.01]])
-    assert np.all(np.less(x, Tolerance))
+    assert np.all(np.less(x, tolerance))
 
 def test_getter_points():
     assert len(example_cell.points) == 3 and [isinstance(point, Point) for point in example_cell.points]
