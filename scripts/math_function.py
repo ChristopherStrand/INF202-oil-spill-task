@@ -25,7 +25,7 @@ def point_in_triangle(pt: npt.NDArray, tri_points: list) -> bool:
     return abs(A - (A1 + A2 + A3)) < epsilon
 
 
-def find_initial_cell(cells: list, x_star: npt.NDArray) -> int:
+def find_initial_cell(cells: list[object], x_star: npt.NDArray[np.float32]) -> int:
     """
     Returns cell index of initial cell
     """
