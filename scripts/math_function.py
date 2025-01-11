@@ -60,7 +60,6 @@ def midpoint(cell: object) -> npt.NDArray[np.float32]:
     """
     point_coordinates = cell.coordinates
     number_of_points = len(point_coordinates)
-    
     sum_coordinates = np.array([0, 0])
     for coordinates in point_coordinates:
         sum_coordinates = sum_coordinates + coordinates
