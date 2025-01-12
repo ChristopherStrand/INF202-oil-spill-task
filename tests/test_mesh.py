@@ -30,8 +30,8 @@ def test_find_neighbors():
     """
     Tests cell 4 for already known neighbors
     """
-    mesh.find_neighbors(4)
-    assert mesh.cells[4].neighbors == [45, 46, 2056], "The neighbors aren't correct"
+    mesh.find_neighbors(4)    
+    assert [ngh.index for ngh in mesh.cells[4].neighbors] == [45, 46, 2056], "The neighbors aren't correct"
 
 def test_getter_cells():
     """
