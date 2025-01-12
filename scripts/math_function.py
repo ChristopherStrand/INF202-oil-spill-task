@@ -5,7 +5,8 @@ This file contains the mathmatical functions used in main.py
 import numpy as np
 import numpy.typing as npt
 
-#x_star = np.array((0.35, 0.45))  # Intial start position
+# x_star = np.array((0.35, 0.45))  # Intial start position
+
 
 def point_in_triangle(pt: npt.NDArray, tri_points: list) -> bool:
     """
@@ -40,8 +41,8 @@ def initial_oil_distribution(cells: list[object], start_point: npt.NDArray[np.fl
     Gives intial distribution of oil around start point
     """
     for cell in cells:
-        midpoint = midpoint(cell.points)
-        u = np.e**(-np.sum((midpoint-start_point)** 2) / 0.01)
+        midpoint_cell = midpoint(cell)
+        u = np.exp(-np.sum((midpoint_cell - start_point) ** 2) / 0.01)
         cell._oil_amount = u
 
 
@@ -58,14 +59,16 @@ def midpoint(cell: object) -> npt.NDArray[np.float32]:
     """
     point_coordinates = cell.coordinates
     number_of_points = len(point_coordinates)
-    
+
     sum_coordinates = np.array([0, 0])
     for coordinates in point_coordinates:
         sum_coordinates = sum_coordinates + coordinates
-    return (1/number_of_points) * (sum_coordinates)
+    return (1 / number_of_points) * (sum_coordinates)
 
 
-def unit_normal_vector(point1: npt.NDArray[np.float32], point2: npt.NDArray[np.float32]) -> npt.NDArray[np.float32]:
+def unit_normal_vector(
+    point1: npt.NDArray[np.float32], point2: npt.NDArray[np.float32]
+) -> npt.NDArray[np.float32]:
     """
     Finds the unit normal vector based on two points. The points must must be on the same facet
     """
@@ -74,7 +77,11 @@ def unit_normal_vector(point1: npt.NDArray[np.float32], point2: npt.NDArray[np.f
     return normal_vector / np.linalg.norm(normal_vector)
 
 
-def calculate_area(coordinates: list[npt.NDArray[np.float32], npt.NDArray[np.float32], npt.NDArray[np.float32]]) -> float:
+def calculate_area(
+    coordinates: list[
+        npt.NDArray[np.float32], npt.NDArray[np.float32], npt.NDArray[np.float32]
+    ]
+) -> float:
     """
     Calculates the area of triangle cells
     """
@@ -108,11 +115,13 @@ def calculate_change(mesh: object, cell_index: int, dt: float):
     neighbors = cell_object.neighbors
     total_flux = 0
     for neighbor in neighbors:
-        mid_cell = midpoint(cell_object.points)
-        mid_neighbor = midpoint(neighbor.points)
+        mid_cell = midpoint(cell_object)
+        mid_neighbor = midpoint(neighbor)
         scaled_normal_vector = unit_normal_vector(mid_cell, mid_neighbor)
         v_mid = (velocity(mid_cell) + velocity(mid_neighbor)) / 2
-        flux = g(cell_object.oil_amount, neighbor.oil_amount, scaled_normal_vector, v_mid)
+        flux = g(
+            cell_object.oil_amount, neighbor.oil_amount, scaled_normal_vector, v_mid
+        )
         total_flux += flux
     return -dt / area * total_flux
 

@@ -5,7 +5,7 @@ import time
 import math_function
 import plotting
 
-mesh = classes.Mesh("../meshes/bay.msh")
+mesh = classes.Mesh("meshes/bay.msh")
 cells = mesh.cells
 dt = 0.1
 start_point = [0.35, 0.45]
@@ -17,11 +17,17 @@ initial_cell = math_function.find_initial_cell(cells, start_point)
 print(initial_cell)
 print(mesh.find_neighbors(initial_cell))
 
+mesh.find_neighbors(4)
+mesh.print_neighbors(4)
+
+
 print(mesh.cells[initial_cell].oil_amount)
 for i in range(1, 20):
     dt = i / 10
     math_function.calculate_change(mesh, initial_cell, dt)
-    print(mesh.cells[initial_cell].oil_amount)
+    """ print(mesh.cells[initial_cell].oil_amount) """
+
+plotting.plotting_mesh(cells)
 
 # finding starting cell
 # find neighbors

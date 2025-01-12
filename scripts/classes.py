@@ -156,8 +156,11 @@ class Mesh:
         """
         neighboring_cells = []
         points_in_cell = self._cells[cell_index].points
-        
-        neighboring_cells = [other_cell for other_cell in self._cells if len(set(points_in_cell) & set(other_cell.points)) and other_cell.index != cell_index]
+
+        # Assuming cells with more points than triangles have are neighbors if they share two points. 
+        # This function is extendable for any cell type that meets that criteria
+        # Makes a list with the indicies of the neighbors for the specified cell
+        neighboring_cells = [cells for cells in self._cells if len(set(points_in_cell) & set(cells.points)) == 2]
 
         # Store neighbors in each cell, stores the neighbors in the cell that was checked
         self._cells[cell_index].neighbors = neighboring_cells
