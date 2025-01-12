@@ -76,6 +76,28 @@ def unit_normal_vector(
     return normal_vector / np.linalg.norm(normal_vector)
 
 
+def checking_direction_normal_vector(point1, point2, midpoint):
+    # check if the normal vector is pointing outwards
+    mid_cor_vector = point1 - midpoint
+    normal_vector = unit_normal_vector(point1, point2)
+    angle = angle_between(mid_cor_vector, normal_vector)
+    if angle > 90:
+        return -normal_vector
+    return normal_vector
+
+
+def angle_between(v1: npt.NDArray[np.float32], v2: npt.NDArray[np.float32]) -> float:
+    dot_product = np.dot(v1, v2)
+    v1_norm = np.linalg.norm(v1)
+    v2_norm = np.linalg.norm(v2)
+
+    if v1_norm == 0 or v2_norm == 0:
+        raise ValueError("Input vectors must have non-zero length.")
+    cos_angle = dot_product / (v1_norm * v2_norm)
+    angle = np.arccos(cos_angle)
+    return angle
+
+
 def calculate_area(
     coordinates: list[
         npt.NDArray[np.float32], npt.NDArray[np.float32], npt.NDArray[np.float32]
