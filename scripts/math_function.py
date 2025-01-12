@@ -138,7 +138,7 @@ def calculate_change(mesh: object, cell_index: int, dt: float):
     for neighbor in neighbors:
         mid_cell = midpoint(cell_object)
         mid_neighbor = midpoint(neighbor)
-        scaled_normal_vector = unit_normal_vector(mid_cell, mid_neighbor)
+        scaled_normal_vector = checking_direction_normal_vector(mid_cell, mid_neighbor)
         v_mid = (velocity(mid_cell) + velocity(mid_neighbor)) / 2
         flux = g(
             cell_object.oil_amount, neighbor.oil_amount, scaled_normal_vector, v_mid
