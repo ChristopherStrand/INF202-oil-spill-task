@@ -21,12 +21,11 @@ mesh.find_neighbors(4)
 mesh.print_neighbors(4)
 
 
-
 print(mesh.cells[initial_cell].oil_amount)
 for i in range(1, 20):
     dt = i / 10
     math_function.calculate_change(mesh, initial_cell, dt)
-    print(mesh.cells[initial_cell].oil_amount)
+    """ print(mesh.cells[initial_cell].oil_amount) """
 
 plotting.plotting_mesh(cells)
 
