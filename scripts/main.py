@@ -24,9 +24,10 @@ mesh.print_neighbors(4)
 # remember to not update oil amount before updating or all cells
 
 print(mesh.cells[initial_cell].oil_amount)
-for i in range(1, 20):
+for i in range(1, 2):
     dt = i / 10
-    math_function.calculate_change(mesh, initial_cell, dt)
+    new_oil_amount = math_function.calculate_change(mesh, initial_cell, dt)
+    """ print(new_oil_amount) """
     """ print(mesh.cells[initial_cell].oil_amount) """
 
 plotting.plotting_mesh(cells)

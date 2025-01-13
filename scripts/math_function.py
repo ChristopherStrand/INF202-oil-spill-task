@@ -79,14 +79,18 @@ def unit_normal_vector(
 # åja punkt - vector går kanskej ikke det... men hvorfor er midpoint vector?
 
 
-def checking_direction_normal_vector(point1, point2, midpoint):
+def checking_direction_normal_vector(
+    point1: object, point2: object, midpoint: npt.NDArray[np.float32]
+) -> npt.NDArray[np.float32]:
+    point1_coords = point1.coordinates
+    point2_coords = point2.coordinates
     # check if the normal vector is pointing outwards
-    mid_cor_vector = point1 - midpoint
-    normal_vector = unit_normal_vector(point1, point2)
-    print(mid_cor_vector)
-    print(normal_vector)
+    mid_cor_vector = point1_coords - midpoint
+    normal_vector = unit_normal_vector(point1_coords, point2_coords)
+    """ print(mid_cor_vector)
+    print(normal_vector) """
     angle = angle_between(mid_cor_vector, normal_vector)
-    if angle > 90:
+    if angle > 0:
         return -normal_vector
     return normal_vector
 
@@ -104,8 +108,7 @@ def angle_between(
     if v1_norm == 0 or v2_norm == 0:
         raise ValueError("Input vectors must have non-zero length.")
     cos_angle = dot_product / (v1_norm * v2_norm)
-    angle = np.arccos(cos_angle)
-    return angle
+    return cos_angle
 
 
 def calculate_area(
@@ -157,6 +160,8 @@ def calculate_change(mesh: object, cell_index: int, dt: float):
             cell_object.oil_amount, neighbor.oil_amount, scaled_normal_vector, v_mid
         )
         total_flux += flux
+        print("flux: ", flux)
+        print("total: ", total_flux)
     return -dt / area * total_flux
 
 
