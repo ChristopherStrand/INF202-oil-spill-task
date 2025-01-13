@@ -22,6 +22,19 @@ class Point:
     def coordinates(self) -> npt.NDArray[np.float32]:
         return self._coordinates
 
+class CellFactory:
+    def __init__(self):
+        self._cell_types = {"Line": LineTypeCell,
+                              "Triangle": TriangleTypeCell,
+                              "Vertex": VertexTypeCell
+                                }
+
+    def register(self, key, name):
+        self._cell_types[key] = num_points
+
+    def __call__(self, animal):
+        key = cell["type"]
+        return self._cell_types[key](cell[num_points])
 
 class Cell:
     def __init__(self, index: int, points: npt.NDArray[np.float32]) -> None:
@@ -180,11 +193,11 @@ class Mesh:
             except IndexError:
                 print(f"Cell {cell_index} does not exist in cells")
 
-if __name__ == "__main__":
-    mesh = Mesh("meshes/bay.msh")
-    print(mesh.cells[4].coordinates)
-    mesh.find_neighbors(4)
-    mesh.print_neighbors(4)
-    #[45, 46, 2056]
-    # x = mesh.cells[45].coordinates
-    # print(x)
+cells = []
+cells_info = [{"type": "Vertex", "num_points": 1},
+             {"type": "Line", "num_points": 2},
+             {"type": "Triangle", "num_points": 3}]
+
+for cell_info in cells_info:
+    cells.append(CellFactory(cell_info))
+    
