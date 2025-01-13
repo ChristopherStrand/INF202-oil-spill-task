@@ -76,9 +76,6 @@ def unit_normal_vector(
     return normal_vector / np.linalg.norm(normal_vector)
 
 
-# åja punkt - vector går kanskej ikke det... men hvorfor er midpoint vector?
-
-
 def checking_direction_normal_vector(
     point1: object, point2: object, midpoint: npt.NDArray[np.float32]
 ) -> npt.NDArray[np.float32]:
