@@ -5,7 +5,7 @@ import time
 import math_function
 import plotting
 
-mesh = classes.Mesh("meshes/bay.msh")
+mesh = classes.Mesh("../meshes/bay.msh")
 cells = mesh.cells
 dt = 0.1
 start_point = [0.35, 0.45]
