@@ -14,7 +14,7 @@ def solve(cells, start_point):
     math_function.initial_oil_distribution(cells, start_point)
     initial_cell = math_function.find_initial_cell(cells, start_point)
 
-    for i in range(1,20):
+    for i in range(0,2):
         dt = i / 10
         timestep()
 
@@ -26,3 +26,4 @@ def timestep():
             math_function.calculate_change(mesh, cell_index, dt)
 
 solve(cells, start_point)
+print(mesh.cells[309].oil_amount)
