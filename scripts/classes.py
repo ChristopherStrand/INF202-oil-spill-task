@@ -37,6 +37,11 @@ class Cell:
         self._points = points
         self._neighbors = []
         self._oil_amount = 0
+        self._midpoint = 0
+        self._area = 0
+        self._normal = 0
+        self._velocity = 0
+        #midpoint, area, normal vector, velocity
 
     @property
     def coordinates(self) -> list:
@@ -84,6 +89,38 @@ class Cell:
         Stores the neighbors found in find_neighbors() from the mesh class in this cell
         """
         self._neighbors = neighboring_cells
+
+    @property
+    def midpoint(self):
+        return self._midpoint
+    
+    @midpoint.setter
+    def midpoint(self, mid_coordinates: npt.NDArray[np.float32]):
+        self._midpoint = mid_coordinates
+    
+    @property
+    def area(self):
+        return self._area
+    
+    @area.setter
+    def area(self, area_of_cell: float):
+        self._area = area_of_cell
+
+    @property
+    def normal(self):
+        return self._normal
+    
+    @normal.setter
+    def area(self, normal_vector: npt.NDArray[np.float32]):
+        self._normal = normal_vector
+
+    @property
+    def velocity(self):
+        return self._velocity
+    
+    @velocity.setter
+    def velocity(self, velocity_vector: npt.NDArray[np.float32]):
+        self._velocity = velocity_vector
 
 
 class Triangle(Cell):
@@ -135,7 +172,7 @@ class Mesh:
         self._cell_index += 1
 
         return cell_map[cell_check](self._cell_index, points)
-
+    
     @property
     def cells(self) -> list[object]:
         """
@@ -150,7 +187,7 @@ class Mesh:
         """
         return self._points
 
-    def find_neighbors(self, cell_index: int) -> None:
+    def _find_neighbors(self, cell_index: int) -> None:
         """
         Finds neighboring cells for the cell specified, neighbors share exactly two elements
         """
@@ -164,6 +201,62 @@ class Mesh:
 
         # Store neighbors in each cell, stores the neighbors in the cell that was checked
         self._cells[cell_index].neighbors = neighboring_cells
+
+
+        # self._midpoint = 0
+        # self._area = 0
+        # self._normal_vector = 0
+        # self._velocity = 0
+    
+    def _midpoint(self, cell_index: int) -> npt.NDArray[np.float32]:
+        """
+        Same as X_mid from task description. Takes a cell of any shape and finds the midpoint
+        """
+        point_coordinates = self._cells[cell_index].coordinates
+        number_of_points = len(point_coordinates)
+        sum_coordinates = np.array([0, 0])
+        for coordinates in point_coordinates:
+            sum_coordinates = sum_coordinates + coordinates
+        return (1 / number_of_points) * (sum_coordinates)
+
+    def _calculate_area(self, cell_index: int) -> float:
+        """
+        Calculates the area of triangle cells
+        """
+        point_coordinates = self._cells[cell_index].coordinates
+        if len(point_coordinates) != 3:
+            raise Exception("Invalid cell, must be a triangle")
+        x0, y0 = point_coordinates[0]
+        x1, y1 = point_coordinates[1]
+        x2, y2 = point_coordinates[2]
+
+        return 0.5 * abs((x0 - x2) * (y1 - y0) - (x0 - x1) * (y2 - y0))
+    
+
+    def _unit_normal_vector(self, cell_index: int) -> npt.NDArray[np.float32]:
+        """
+        Finds the unit normal vector based on two points. The points must must be on the same facet
+        """
+        for ngh in self._cells[cell_index].neighbors:
+            point1, point2 = set(self._cells[cell_index].points) & set(ngh.points)
+            vector = point2 - point1
+            normal_vector = np.array([-vector[1], vector[0]])
+            return normal_vector / np.linalg.norm(normal_vector)
+    
+    
+    def _velocity(self, cell_index: int) -> npt.NDArray[np.float32]:
+        """
+        Finds the velocity of the oil in the midpoint of a cell. Returns a vector
+        """
+        cell_midpoint = self._cells[cell_index].midpoint
+        return np.array([cell_midpoint[1] - 0.2 * cell_midpoint[0], -cell_midpoint[0]])
+
+    def calculate(self, cell_index: int) -> npt.NDArray[np.float32]:
+        current_cell = self._cells[cell_index] 
+        current_cell.midpoint = self._midpoint(cell_index)
+        current_cell.area = self._midpoint(cell_index)
+        current_cell.normal = self._midpoint(cell_index)
+        current_cell.velocity = self._velocity(cell_index)
 
     def print_neighbors(self, cell_index: int, object_output: bool=False) -> None:
         """

@@ -46,36 +46,6 @@ def initial_oil_distribution(cells: list[object], start_point: npt.NDArray[np.fl
         cell._oil_amount = u
 
 
-def velocity(cell_midpoint: npt.NDArray[np.float32]) -> npt.NDArray[np.float32]:
-    """
-    Finds the velocity of the oil in the midpoint of a cell. Returns a vector
-    """
-    return np.array([cell_midpoint[1] - 0.2 * cell_midpoint[0], -cell_midpoint[0]])
-
-
-def midpoint(cell: object) -> npt.NDArray[np.float32]:
-    """
-    Same as X_mid from task description. Takes a cell of any shape and finds the midpoint
-    """
-    point_coordinates = cell.coordinates
-    number_of_points = len(point_coordinates)
-    sum_coordinates = np.array([0, 0])
-    for coordinates in point_coordinates:
-        sum_coordinates = sum_coordinates + coordinates
-    return (1 / number_of_points) * (sum_coordinates)
-
-
-def unit_normal_vector(
-    point1: npt.NDArray[np.float32], point2: npt.NDArray[np.float32]
-) -> npt.NDArray[np.float32]:
-    """
-    Finds the unit normal vector based on two points. The points must must be on the same facet
-    """
-    vector = point2 - point1
-    normal_vector = np.array([-vector[1], vector[0]])
-    return normal_vector / np.linalg.norm(normal_vector)
-
-
 def checking_direction_normal_vector(point1, point2, midpoint):
     # check if the normal vector is pointing outwards
     mid_cor_vector = point1 - midpoint
@@ -96,23 +66,6 @@ def angle_between(v1: npt.NDArray[np.float32], v2: npt.NDArray[np.float32]) -> f
     cos_angle = dot_product / (v1_norm * v2_norm)
     angle = np.arccos(cos_angle)
     return angle
-
-
-def calculate_area(
-    coordinates: list[
-        npt.NDArray[np.float32], npt.NDArray[np.float32], npt.NDArray[np.float32]
-    ]
-) -> float:
-    """
-    Calculates the area of triangle cells
-    """
-    if len(coordinates) != 3:
-        raise Exception("Invalid cell, must be a triangle")
-    x0, y0 = coordinates[0]
-    x1, y1 = coordinates[1]
-    x2, y2 = coordinates[2]
-
-    return 0.5 * abs((x0 - x2) * (y1 - y0) - (x0 - x1) * (y2 - y0))
 
 
 def g(a: float, b: float, v, w):
