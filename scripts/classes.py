@@ -165,14 +165,20 @@ class Mesh:
         # Store neighbors in each cell, stores the neighbors in the cell that was checked
         self._cells[cell_index].neighbors = neighboring_cells
 
-    def print_neighbors(self, cell_index: int) -> None:
-        try:
-            print(
-                f"The neighbors of {cell_index} is {self._cells[cell_index].neighbors}"
-            )
-        except IndexError:
-            print(f"Cell {cell_index} does not exist in cells")
-
+    def print_neighbors(self, cell_index: int, object_output: bool=False) -> None:
+        """
+        Print the neighbors as indicies or objects depending of what is specified. Does not return anything
+        """
+        if object_output == True:
+            try:
+                print(f"The neighbors of {cell_index} is {self._cells[cell_index].neighbors}")
+            except IndexError:
+                print(f"Cell {cell_index} does not exist in cells")
+        else:
+            try:
+                print(f"The neighbors of {cell_index} is {[ngh.index for ngh in self._cells[cell_index].neighbors]}")
+            except IndexError:
+                print(f"Cell {cell_index} does not exist in cells")
 
 if __name__ == "__main__":
     mesh = Mesh("meshes/bay.msh")
