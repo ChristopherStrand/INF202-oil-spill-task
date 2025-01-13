@@ -20,8 +20,8 @@ def solve(cells, start_point):
 
 def timestep():
     for cell in mesh.cells:
-        print(cell)
-        mesh.find_neighbors(cell)
+        cell_index = cell.index
+        mesh.find_neighbors(cell_index)
         for ngh in cell.neighbors:
             math_function.calculate_change(mesh, cell_index, dt)
 
