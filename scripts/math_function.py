@@ -71,11 +71,12 @@ def calculate_change(cell: object, dt: float):
     """
     Calculates how much oil moves from a cell to it's neighbors
     """
-    flux = 0
+    flux = cell.oil_amount
     neighbors = cell.neighbors
+
     for index, neighbor in enumerate(neighbors):
-        normal_vector = cell.normal[index] 
-        v_mid = (cell.velocity + neighbor.velocity) / 2
-        flux = (-dt / cell.area) * g(cell.oil_amount, neighbor.oil_amount, normal_vector, v_mid)
+        scaled_normal = cell.scaled_normal[index]
+        v_mid = 0.5*(cell.velocity + neighbor.velocity)
+        flux = -(dt / cell.area) * g(cell.oil_amount, neighbor.oil_amount, scaled_normal, v_mid)
         flux += flux
     cell.oil_change += flux

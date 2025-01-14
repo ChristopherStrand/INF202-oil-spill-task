@@ -42,6 +42,7 @@ class Cell:
         self._area = 0.0 #Float 
         self._normal = np.float32([0, 0]) #Vector
         self._velocity = np.float32([0, 0]) #Vector
+        self._scaled_normal = np.float32([0, 0])
 
     @property
     def coordinates(self) -> list:
@@ -93,6 +94,14 @@ class Cell:
     @normal.setter
     def normal(self, normal_vector: npt.NDArray[np.float32]):
         self._normal = normal_vector
+    
+    @property
+    def scaled(self):
+        return self._scaled
+
+    @scaled.setter
+    def scaled(self, scaled_vector: npt.NDArray[np.float32]):
+        self._scaled = scaled_vector
 
     @property
     def velocity(self):
@@ -233,7 +242,7 @@ class Mesh:
         return 0.5 * abs((x0 - x2) * (y1 - y0) - (x0 - x1) * (y2 - y0))
     
 
-    def _unit_normal_vector(self, cell_index: int) -> npt.NDArray[np.float32]:
+    def _unit_and_scaled_normal_vector(self, cell_index: int) -> npt.NDArray[np.float32]:
         """
         Finds the unit normal vector based on two points. The points must must be on the same facet
         """
@@ -253,11 +262,13 @@ class Mesh:
 
         cell_ngh = self._cells[cell_index].neighbors
         unit_normal_vectors = [0 for i in cell_ngh]
+        scaled_normal_vectors = [0 for i in cell_ngh]
         for index, ngh in enumerate(cell_ngh):
             #Finds the normal vector
             point1, point2 = set(self._cells[cell_index].points) & set(ngh.points)
             vector = point2.coordinates - point1.coordinates
             normal_vector = np.array([-vector[1], vector[0]])
+            scaled_normal = normal_vector * np.sqrt(np.sum(vector**2))
 
             #Checks if the angle is greater between normal and midpoint to point 1 is greater than 90 degrees. If it is flip the normal
             mid_cor_vector = point1.coordinates - self._cells[cell_index].midpoint
@@ -266,7 +277,8 @@ class Mesh:
                 unit_normal_vectors[index] = -normal_vector / np.linalg.norm(normal_vector)
             else: 
                 unit_normal_vectors[index] = normal_vector / np.linalg.norm(normal_vector)
-        return unit_normal_vectors
+            scaled_normal_vectors[index] = scaled_normal
+        return unit_normal_vectors, scaled_normal_vectors
         
     
     def _velocity(self, cell_index: int) -> npt.NDArray[np.float32]:
@@ -282,7 +294,7 @@ class Mesh:
         current_cell.midpoint = self._midpoint(cell_index)
         current_cell.area = self._calculate_area(cell_index)
         current_cell.velocity = self._velocity(cell_index)
-        current_cell.normal = self._unit_normal_vector(cell_index)
+        current_cell.normal, current_cell.scaled_normal = self._unit_and_scaled_normal_vector(cell_index)
 
         #debug
         # print(f"""Current cell is {cell_index}: 

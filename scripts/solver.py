@@ -27,8 +27,10 @@ def calculate_time(func):
 
 @calculate_time
 def mjau():
-    for cell in mesh.cells[2:5]:
+    for cell in mesh.cells[4:5]:
         mesh.calculate(cell.index)
+        x = cell.velocity
+        print(x)
 
 mjau()
 

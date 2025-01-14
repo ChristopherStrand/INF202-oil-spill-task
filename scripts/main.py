@@ -37,18 +37,22 @@ print("Calculating...")
 for cell in cells:
     mesh.calculate(cell.index)
 
+
 current_time = start_time
 mf.initial_oil_distribution(cells, start_point)
 initial_cell = mf.find_initial_cell(cells, start_point)
 
+# x = mf.calculate_change(cell, current_time)
+
 for steps in range(intervals):
-    plot.plotting_mesh(cells, steps)
+    plot.plotting_mesh(cells, current_time)
     print(f"plotting number {steps}...")
-    print(f"dt: {dt}")
     for cell in cells:
         mf.calculate_change(cell, current_time)
     for cell in cells:
         cell.oil_amount += cell.oil_change
         cell.oil_change = 0
-    current_time += dt
+    current_time = round(current_time+dt, 4)
+plot.plotting_mesh(cells, current_time)
+print(f"plotting number {intervals}...")
     
