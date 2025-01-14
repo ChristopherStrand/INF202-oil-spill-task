@@ -22,6 +22,27 @@ class Point:
     def coordinates(self) -> npt.NDArray[np.float32]:
         return self._coordinates
 
+class CellFactory:
+    def __init__(self):
+        self._cell_types = {"line": LineTypeCell,
+                            "triangle": TriangleTypeCell,
+                            "vertex": VertexTypeCell
+                            }
+
+    def register(self, key: str, cell_class):
+        """
+        Registers a new cell type with the factory
+        """
+        self._cell_types[key] = cell_class
+
+    def __call__(self, cell: dict):
+        """
+        Creates a cell object based on the input dictionary
+        """
+        key = cell["type"]
+        if key not in self._cell_types:
+            raise ValueError(f"Unkown cell type: {key}")
+        return self._cell_types[key](cell["index"], cell["points"])
 
 class Cell:
     def __init__(self, index: int, points: npt.NDArray[np.float32]) -> None:
@@ -48,8 +69,6 @@ class Cell:
 
     @oil_amount.setter
     def oil_amount(self, value):
-        if value < 0:
-            raise ("Oil amount cannot be negative!")
         self._oil_amount = value
 
     @property
@@ -86,14 +105,29 @@ class Cell:
         self._neighbors = neighboring_cells
 
 
-class Triangle(Cell):
+class TriangleTypeCell(Cell):
+    def __init__(self, index: int, points: npt.NDArray[np.float32]) -> None:
+        super().__init__(index, points)
+    
+    @property
+    def type(self) -> str:
+        return "triangle"
+
+class LineTypeCell(Cell):
+    def __init__(self, index: int, points: npt.NDArray[np.float32]) -> None:
+        super().__init__(index, points)
+    
+    @property
+    def type(self) -> str:
+        return "line"
+
+class VertexTypeCell(Cell):
     def __init__(self, index: int, points: npt.NDArray[np.float32]) -> None:
         super().__init__(index, points)
 
-
-class Line(Cell):
-    def __init__(self, index: int, points: npt.NDArray[np.float32]) -> None:
-        super().__init__(index, points)
+    @property
+    def type(self) -> str:
+        return "vertex"
 
 
 class Mesh:
@@ -109,32 +143,32 @@ class Mesh:
     """
 
     def __init__(self, msh_file: str) -> None:
-        self._cell_index = -1  # The index of a cell in _cells
-        msh = meshio.read(msh_file)  # Reads the meshfile
+        self._cell_index = 0
+        self._factory = CellFactory()
+
+        msh = meshio.read(msh_file)
+
         # Generates a list containing point objects
         self._points = [
             Point(index, np.float32(points[0]), np.float32(points[1]))
             for index, points in enumerate(msh.points)
         ]
+
         # Generates a list containing cell objects of the type line or triangle
         self._cells = []
-        for cell_types in msh.cells:
-            types = cell_types.type
-            if (
-                types != "vertex" and types != "line"
-            ):  # Ignores lines since they aren't relevant for the task
-                self._cells.extend(
-                    [self._cell_factory(cell) for cell in cell_types.data]
-                )
-
-    def _cell_factory(self, cell: list[int]) -> object:  # Mainly used for extendability
-        cell_check = len(cell)
-        cell_map = {2: Line, 3: Triangle}
-
-        points = [self._points[i] for i in cell]
-        self._cell_index += 1
-
-        return cell_map[cell_check](self._cell_index, points)
+        for cell_block in msh.cells:
+            cell_type = cell_block.type
+            for cell_data in cell_block.data:
+                cell_info = {
+                    "type": cell_type,
+                    "index": self._cell_index,
+                    "points": [self._points[i] for i in cell_data]
+                }
+                self._cell_index += 1
+                try:
+                    self._cells.append(self._factory(cell_info))
+                except ValueError as e:
+                    print(f"Not able to read cell type {cell_type}: {e}")
 
     @property
     def cells(self) -> list[object]:
@@ -142,13 +176,6 @@ class Mesh:
         Returns the list of all point objects
         """
         return self._cells
-
-    @property
-    def points(self) -> list[object]:
-        """
-        Returns the list of all point objects
-        """
-        return self._points
 
     def find_neighbors(self, cell_index: int) -> None:
         """
@@ -179,12 +206,4 @@ class Mesh:
                 print(f"The neighbors of {cell_index} is {[ngh.index for ngh in self._cells[cell_index].neighbors]}")
             except IndexError:
                 print(f"Cell {cell_index} does not exist in cells")
-
-if __name__ == "__main__":
-    mesh = Mesh("meshes/bay.msh")
-    print(mesh.cells[4].coordinates)
-    mesh.find_neighbors(4)
-    mesh.print_neighbors(4)
-    #[45, 46, 2056]
-    # x = mesh.cells[45].coordinates
-    # print(x)
+    

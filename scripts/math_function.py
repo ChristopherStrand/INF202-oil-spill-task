@@ -111,8 +111,7 @@ def angle_between(
 def calculate_area(
     coordinates: list[
         npt.NDArray[np.float32], npt.NDArray[np.float32], npt.NDArray[np.float32]
-    ]
-) -> float:
+    ]) -> float:
     """
     Calculates the area of triangle cells
     """
@@ -137,28 +136,24 @@ def g(a: float, b: float, v, w):
         return b * dot_product
 
 
-def calculate_change(mesh: object, cell_index: int, dt: float):
+def calculate_change(mesh: object, cell: object, neighbor: object, dt: float):
     """
     Calculates how much oil moves from a cell to it's neighbors
     """
-    cell_object = mesh.cells[cell_index]
-    area = calculate_area(cell_object.coordinates)
-    neighbors = cell_object.neighbors
+    area = calculate_area(cell.coordinates)
     total_flux = 0
-    for neighbor in neighbors:
-        mid_cell = midpoint(cell_object)
-        mid_neighbor = midpoint(neighbor)
-        point1, point2 = set(neighbor.points) & set(cell_object.points)
-        scaled_normal_vector = checking_direction_normal_vector(
-            point1, point2, mid_cell
-        )
-        v_mid = (velocity(mid_cell) + velocity(mid_neighbor)) / 2
-        flux = g(
-            cell_object.oil_amount, neighbor.oil_amount, scaled_normal_vector, v_mid
-        )
-        total_flux += flux
-        print("flux: ", flux)
-        print("total: ", total_flux)
+    mid_cell = midpoint(cell)
+    mid_neighbor = midpoint(neighbor)
+    point1, point2 = set(neighbor.points) & set(cell.points)
+    scaled_normal_vector = checking_direction_normal_vector(
+        point1, point2, mid_cell
+    )
+    v_mid = (velocity(mid_cell) + velocity(mid_neighbor)) / 2
+    flux = g(
+        cell.oil_amount, neighbor.oil_amount, scaled_normal_vector, v_mid
+    )
+    total_flux += flux
+
     return -dt / area * total_flux
 
 
