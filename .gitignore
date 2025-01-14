@@ -6,5 +6,6 @@ tests/__pycache__/
 .vscode
 pytest_cache
 src/Simulation/__pycache__/
+images/
 
 
