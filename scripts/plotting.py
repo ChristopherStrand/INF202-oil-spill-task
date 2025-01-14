@@ -4,7 +4,7 @@ import cv2 as cv
 import os
 
 
-def plotting_mesh(cells, i):
+def plotting_mesh(cells: list[object], dt: float):
     """
     plots a mesh representing the oil distrobution at a spesific time and saves the plot as an image file
     """
@@ -44,6 +44,6 @@ def plotting_mesh(cells, i):
     plt.gca().set_aspect("equal")
     plt.xlim(0, 1)
     plt.ylim(0, 1)
-    filename = f"../images/mesh_plot{i}.png"
+    filename = f"../images/mesh_plot{dt}.png"
     plt.savefig(filename)
     plt.show()
