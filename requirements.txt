@@ -3,3 +3,5 @@ meshio[all]
 pytest
 matplotlib
 cv2
+toml
+argparse
