@@ -5,19 +5,20 @@ import time
 import math_function
 import plotting
 
-mesh = classes.Mesh("./meshes/bay.msh")
+mesh = classes.Mesh("../meshes/bay.msh")
 cells = [cell for cell in mesh.cells if cell.type == "triangle"]
-dt = 0.1
+dt = 0.01
 start_point = [0.35, 0.45]
+
 
 def solve(cells, start_point):
     math_function.initial_oil_distribution(cells, start_point)
     initial_cell = math_function.find_initial_cell(cells, start_point)
 
-    for i in range(0,10):
-        dt = i / 10
+    for i in range(0, 10):
         timestep()
         plotting.plotting_mesh(cells, i)
+
 
 def timestep():
     flux_per_cell = [0] * len(mesh.cells)
@@ -29,12 +30,14 @@ def timestep():
                 change = math_function.calculate_change(mesh, cell, ngh, dt)
                 total_flux += change
 
-            flux_per_cell[cell.index] -= total_flux
+            flux_per_cell[cell.index] += total_flux
 
     for i, flux in enumerate(flux_per_cell):
         if mesh.cells[i].type == "triangle":
+            if i == 309:
+                print(flux)
             mesh.cells[i].oil_amount += flux
 
-solve(cells, start_point)
-print(mesh.cells[1500].oil_amount)
 
+solve(cells, start_point)
+print(mesh.cells[309].oil_amount)

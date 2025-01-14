@@ -81,13 +81,11 @@ def checking_direction_normal_vector(
 ) -> npt.NDArray[np.float32]:
     point1_coords = point1.coordinates
     point2_coords = point2.coordinates
-    # check if the normal vector is pointing outwards
-    mid_cor_vector = point1_coords - midpoint
+    cor_mid = point1_coords - midpoint
     normal_vector = unit_normal_vector(point1_coords, point2_coords)
-    """ print(mid_cor_vector)
-    print(normal_vector) """
-    angle = angle_between(mid_cor_vector, normal_vector)
-    if angle > 0:
+    angle = angle_between(cor_mid, normal_vector)
+    """ print(angle * np.pi / 2) """
+    if angle < np.pi / 2:
         return -normal_vector
     return normal_vector
 
@@ -111,7 +109,8 @@ def angle_between(
 def calculate_area(
     coordinates: list[
         npt.NDArray[np.float32], npt.NDArray[np.float32], npt.NDArray[np.float32]
-    ]) -> float:
+    ]
+) -> float:
     """
     Calculates the area of triangle cells
     """
@@ -141,23 +140,16 @@ def calculate_change(mesh: object, cell: object, neighbor: object, dt: float):
     Calculates how much oil moves from a cell to it's neighbors
     """
     area = calculate_area(cell.coordinates)
-    total_flux = 0
     mid_cell = midpoint(cell)
     mid_neighbor = midpoint(neighbor)
     point1, point2 = set(neighbor.points) & set(cell.points)
-    scaled_normal_vector = checking_direction_normal_vector(
-        point1, point2, mid_cell
-    )
+    """ print("point1: ", point1.coordinates, " point2: ", point2.coordinates) """
+    length = point1.coordinates - point2.coordinates
+    """ print("vector: ", length) """
+    scaled_normal_vector = checking_direction_normal_vector(point1, point2, mid_cell)
     v_mid = (velocity(mid_cell) + velocity(mid_neighbor)) / 2
-    scaled_velocity_vector = v_mid / np.linalg.norm(v_mid)
-    
-    flux = g(
-        cell.oil_amount, neighbor.oil_amount, scaled_velocity_vector, v_mid
-    )
+    """ print("normal vector: ", scaled_normal_vector) """
+
+    flux = g(cell.oil_amount, neighbor.oil_amount, scaled_normal_vector, v_mid)
 
     return -dt / area * flux
-
-
-""" 
-def calculate_flux(oil_amount, neighbours_oil_amount, v_mid, nv, A, dt):
-    return -dt / A * g(oil_amount, neighbours_oil_amount, v_mid, nv) """
