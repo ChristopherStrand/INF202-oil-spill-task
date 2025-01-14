@@ -5,6 +5,6 @@ scripts/__pycache__/
 tests/__pycache__/
 .vscode
 pytest_cache
-src\Simulation\__pycache__\_
+src/Simulation/__pycache__/
 
 
