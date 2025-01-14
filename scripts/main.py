@@ -23,7 +23,8 @@ def timestep():
         cell_index = cell.index
         mesh.find_neighbors(cell_index)
         for ngh in cell.neighbors:
-            math_function.calculate_change(mesh, cell_index, dt)
+            change = math_function.calculate_change(mesh, cell_index, dt)
+            cell.oil_amount -= change
 
 solve(cells, start_point)
 print(mesh.cells[309].oil_amount)
