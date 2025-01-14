@@ -36,12 +36,11 @@ class Cell:
         self._index = index
         self._points = points
         self._neighbors = []
-        self._oil_amount = 0
-        self._midpoint = 0
-        self._area = 0
-        self._normal = 0
-        self._velocity = 0
-        #midpoint, area, normal vector, velocity
+        self._oil_amount = 0.0 #Float 
+        self._midpoint = np.float32([0, 0]) #Vector 
+        self._area = 0.0 #Float 
+        self._normal = np.float32([0, 0]) #Vector
+        self._velocity = np.float32([0, 0]) #Vector
 
     @property
     def coordinates(self) -> list:
@@ -63,6 +62,38 @@ class Cell:
         Returns the index of the cell from the cell list
         """
         return self._index
+    
+    @property
+    def midpoint(self):
+        return self._midpoint
+    
+    @midpoint.setter
+    def midpoint(self, mid_coordinates: npt.NDArray[np.float32]):
+        self._midpoint = mid_coordinates
+    
+    @property
+    def area(self):
+        return self._area
+    
+    @area.setter
+    def area(self, area_of_cell: float):
+        self._area = area_of_cell
+
+    @property
+    def normal(self):
+        return self._normal
+    
+    @normal.setter
+    def normal(self, normal_vector: npt.NDArray[np.float32]):
+        self._normal = normal_vector
+
+    @property
+    def velocity(self):
+        return self._velocity
+    
+    @velocity.setter
+    def velocity(self, velocity_vector: npt.NDArray[np.float32]):
+        self._velocity = velocity_vector
 
     # getter for points
     @property
@@ -89,38 +120,6 @@ class Cell:
         Stores the neighbors found in find_neighbors() from the mesh class in this cell
         """
         self._neighbors = neighboring_cells
-
-    @property
-    def midpoint(self):
-        return self._midpoint
-    
-    @midpoint.setter
-    def midpoint(self, mid_coordinates: npt.NDArray[np.float32]):
-        self._midpoint = mid_coordinates
-    
-    @property
-    def area(self):
-        return self._area
-    
-    @area.setter
-    def area(self, area_of_cell: float):
-        self._area = area_of_cell
-
-    @property
-    def normal(self):
-        return self._normal
-    
-    @normal.setter
-    def area(self, normal_vector: npt.NDArray[np.float32]):
-        self._normal = normal_vector
-
-    @property
-    def velocity(self):
-        return self._velocity
-    
-    @velocity.setter
-    def velocity(self, velocity_vector: npt.NDArray[np.float32]):
-        self._velocity = velocity_vector
 
 
 class Triangle(Cell):
@@ -200,14 +199,8 @@ class Mesh:
         neighboring_cells = [cells for cells in self._cells if len(set(points_in_cell) & set(cells.points)) == 2]
 
         # Store neighbors in each cell, stores the neighbors in the cell that was checked
-        self._cells[cell_index].neighbors = neighboring_cells
+        return neighboring_cells
 
-
-        # self._midpoint = 0
-        # self._area = 0
-        # self._normal_vector = 0
-        # self._velocity = 0
-    
     def _midpoint(self, cell_index: int) -> npt.NDArray[np.float32]:
         """
         Same as X_mid from task description. Takes a cell of any shape and finds the midpoint
@@ -237,12 +230,37 @@ class Mesh:
         """
         Finds the unit normal vector based on two points. The points must must be on the same facet
         """
-        for ngh in self._cells[cell_index].neighbors:
+
+        def _angle_between(v1: npt.NDArray[np.float32], v2: npt.NDArray[np.float32]) -> npt.NDArray[np.float32]:
+            """
+            takes in two vectors, normalizes the dot product and finds the angle between
+            """
+            dot_product = np.dot(v1, v2)
+            v1_norm = np.linalg.norm(v1)
+            v2_norm = np.linalg.norm(v2)
+
+            if v1_norm == 0 or v2_norm == 0:
+                raise ValueError("Input vectors must have non-zero length.")
+            cos_angle = dot_product / (v1_norm * v2_norm)
+            return cos_angle
+
+        cell_ngh = self._cells[cell_index].neighbors
+        unit_normal_vectors = [0 for i in cell_ngh]
+        for index, ngh in enumerate(cell_ngh):
+            #Finds the normal vector
             point1, point2 = set(self._cells[cell_index].points) & set(ngh.points)
-            vector = point2 - point1
+            vector = point2.coordinates - point1.coordinates
             normal_vector = np.array([-vector[1], vector[0]])
-            return normal_vector / np.linalg.norm(normal_vector)
-    
+
+            #Checks if the angle is greater between normal and midpoint to point 1 is greater than 90 degrees. If it is flip the normal
+            mid_cor_vector = point1.coordinates - self._cells[cell_index].midpoint
+            angle = _angle_between(mid_cor_vector, normal_vector)
+            if angle > 0:
+                unit_normal_vectors[index] = -normal_vector / np.linalg.norm(normal_vector)
+            else: 
+                unit_normal_vectors[index] = normal_vector / np.linalg.norm(normal_vector)
+        return unit_normal_vectors
+        
     
     def _velocity(self, cell_index: int) -> npt.NDArray[np.float32]:
         """
@@ -252,11 +270,21 @@ class Mesh:
         return np.array([cell_midpoint[1] - 0.2 * cell_midpoint[0], -cell_midpoint[0]])
 
     def calculate(self, cell_index: int) -> npt.NDArray[np.float32]:
-        current_cell = self._cells[cell_index] 
+        current_cell = self._cells[cell_index]
+        current_cell.neighbors = self._find_neighbors(cell_index)
         current_cell.midpoint = self._midpoint(cell_index)
-        current_cell.area = self._midpoint(cell_index)
-        current_cell.normal = self._midpoint(cell_index)
+        current_cell.area = self._calculate_area(cell_index)
         current_cell.velocity = self._velocity(cell_index)
+        current_cell.normal = self._unit_normal_vector(cell_index)
+
+        #debug
+        # print(f"""Current cell is {cell_index}: 
+        #           midpoint: {current_cell.midpoint}, 
+        #           area: {current_cell.area}, 
+        #           normal: {current_cell.normal}, 
+        #           velocity: {current_cell.velocity}""")
+        # self.print_neighbors(cell_index)
+        
 
     def print_neighbors(self, cell_index: int, object_output: bool=False) -> None:
         """
@@ -269,7 +297,7 @@ class Mesh:
                 print(f"Cell {cell_index} does not exist in cells")
         else:
             try:
-                print(f"The neighbors of {cell_index} is {[ngh.index for ngh in self._cells[cell_index].neighbors]}")
+                print(f"""The neighbors of {cell_index} is {[ngh.index for ngh in self._cells[cell_index].neighbors]}""")
             except IndexError:
                 print(f"Cell {cell_index} does not exist in cells")
 
