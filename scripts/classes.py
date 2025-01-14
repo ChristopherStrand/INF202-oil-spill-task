@@ -37,6 +37,7 @@ class Cell:
         self._points = points
         self._neighbors = []
         self._oil_amount = 0.0 #Float 
+        self._oil_change = 0.0
         self._midpoint = np.float32([0, 0]) #Vector 
         self._area = 0.0 #Float 
         self._normal = np.float32([0, 0]) #Vector
@@ -52,9 +53,15 @@ class Cell:
 
     @oil_amount.setter
     def oil_amount(self, value):
-        if value < 0:
-            raise ("Oil amount cannot be negative!")
         self._oil_amount = value
+
+    @property
+    def oil_change(self):
+        return self._oil_change
+
+    @oil_change.setter
+    def oil_change(self, value):
+        self._oil_change = value
 
     @property
     def index(self) -> int:
