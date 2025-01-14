@@ -45,7 +45,6 @@ def plotting_mesh(cells: list[object], dt: float):
     plt.xlim(0, 1)
     plt.ylim(0, 1)
     filename = f"./images/mesh_plot{dt}.png"
-    print(f"This is a debug statement! {filename}")
     plt.savefig(filename)
     #plt.show()
     

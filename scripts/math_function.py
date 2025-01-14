@@ -77,6 +77,5 @@ def calculate_change(cell: object, dt: float):
     for index, neighbor in enumerate(neighbors):
         scaled_normal = cell.scaled_normal[index]
         v_mid = 0.5*(cell.velocity + neighbor.velocity)
-        flux = -(dt / cell.area) * g(cell.oil_amount, neighbor.oil_amount, scaled_normal, v_mid)
-        flux += flux
+        flux = flux + (-(dt / cell.area) * g(cell.oil_amount, neighbor.oil_amount, scaled_normal, v_mid))
     cell.oil_change += flux
