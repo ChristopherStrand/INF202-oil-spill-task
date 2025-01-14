@@ -44,6 +44,6 @@ def plotting_mesh(cells, i):
     plt.gca().set_aspect("equal")
     plt.xlim(0, 1)
     plt.ylim(0, 1)
-    filename = f"../images/mesh_plot{i}.png"
+    filename = f"images/mesh_plot{i+1}.png"
     plt.savefig(filename)
-    plt.show()
+
