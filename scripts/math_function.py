@@ -149,12 +149,13 @@ def calculate_change(mesh: object, cell: object, neighbor: object, dt: float):
         point1, point2, mid_cell
     )
     v_mid = (velocity(mid_cell) + velocity(mid_neighbor)) / 2
+    scaled_velocity_vector = v_mid / np.linalg.norm(v_mid)
+    
     flux = g(
-        cell.oil_amount, neighbor.oil_amount, scaled_normal_vector, v_mid
+        cell.oil_amount, neighbor.oil_amount, scaled_velocity_vector, v_mid
     )
-    total_flux += flux
 
-    return -dt / area * total_flux
+    return -dt / area * flux
 
 
 """ 
