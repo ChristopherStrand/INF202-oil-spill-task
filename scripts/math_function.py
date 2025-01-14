@@ -67,11 +67,11 @@ def g(a: float, b: float, v, w):
         return b * dot_product
 
 
-def calculate_change(mesh: object, cell_index: int, dt: float):
+def calculate_change(cell: object, cell_index: int, dt: float):
     """
     Calculates how much oil moves from a cell to it's neighbors
     """
-    cell_object = mesh.cells[cell_index]
+    cell_object = [cell_index]
     area = cell_object.area
     neighbors = cell_object.neighbors
     total_flux = 0
@@ -80,7 +80,4 @@ def calculate_change(mesh: object, cell_index: int, dt: float):
         v_mid = (cell_object.velocity + neighbor.velocity) / 2
         flux = g(cell_object.oil_amount, neighbor.oil_amount, normal_vector, v_mid)
         total_flux += flux
-        print("flux: ", flux)
-        print("total: ", total_flux)
     return -dt / area * total_flux
-
