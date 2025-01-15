@@ -15,7 +15,7 @@ def solve(cells, start_point):
     math_function.initial_oil_distribution(cells, start_point)
     initial_cell = math_function.find_initial_cell(cells, start_point)
 
-    for i in range(0, 10):
+    for i in range(0, 50):
         timestep()
         plotting.plotting_mesh(cells, i)
 
@@ -34,8 +34,6 @@ def timestep():
 
     for i, flux in enumerate(flux_per_cell):
         if mesh.cells[i].type == "triangle":
-            if i == 309:
-                print(flux)
             mesh.cells[i].oil_amount += flux
 
 

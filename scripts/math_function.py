@@ -81,13 +81,15 @@ def checking_direction_normal_vector(
 ) -> npt.NDArray[np.float32]:
     point1_coords = point1.coordinates
     point2_coords = point2.coordinates
-    cor_mid = point1_coords - midpoint
-    normal_vector = unit_normal_vector(point1_coords, point2_coords)
-    angle = angle_between(cor_mid, normal_vector)
-    """ print(angle * np.pi / 2) """
-    if angle < np.pi / 2:
-        return -normal_vector
-    return normal_vector
+    length = np.linalg.norm(point1_coords - point2_coords)
+
+    scaled_normal_vector = unit_normal_vector(point1_coords, point2_coords) * length
+    edge_mid = (point1.coordinates + point2.coordinates) / 2
+    mid_mid = edge_mid - midpoint
+    dot_product = np.dot(mid_mid, scaled_normal_vector)
+    if dot_product < 0:
+        scaled_normal_vector = -scaled_normal_vector
+    return scaled_normal_vector
 
 
 def angle_between(
@@ -144,11 +146,9 @@ def calculate_change(mesh: object, cell: object, neighbor: object, dt: float):
     mid_neighbor = midpoint(neighbor)
     point1, point2 = set(neighbor.points) & set(cell.points)
     """ print("point1: ", point1.coordinates, " point2: ", point2.coordinates) """
-    length = point1.coordinates - point2.coordinates
-    """ print("vector: ", length) """
     scaled_normal_vector = checking_direction_normal_vector(point1, point2, mid_cell)
+    """ print("scaled_normal_vector: ", scaled_normal_vector) """
     v_mid = (velocity(mid_cell) + velocity(mid_neighbor)) / 2
-    """ print("normal vector: ", scaled_normal_vector) """
 
     flux = g(cell.oil_amount, neighbor.oil_amount, scaled_normal_vector, v_mid)
 
