@@ -95,10 +95,15 @@ def calculate_change(mesh: object, cell: object, neighbor: object, dt: float):
     area = calculate_area(cell.coordinates)
     mid_cell = midpoint(cell)
     mid_neighbor = midpoint(neighbor)
-    point1, point2 = set(neighbor.points) & set(cell.points)
-    """ print("point1: ", point1.coordinates, " point2: ", point2.coordinates) """
+    points_intersection = list(set(neighbor.points) & set(cell.points))
+    
+    if len(points_intersection) != 2:
+        return 0.0
+
+    point1, point2 = points_intersection
+
+
     scaled_normal_vector = checking_direction_normal_vector(point1, point2, mid_cell)
-    """ print("scaled_normal_vector: ", scaled_normal_vector) """
     v_mid = (velocity(mid_cell) + velocity(mid_neighbor)) / 2
 
     flux = g(cell.oil_amount, neighbor.oil_amount, scaled_normal_vector, v_mid)

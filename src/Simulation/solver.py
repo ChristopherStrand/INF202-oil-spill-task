@@ -1,5 +1,6 @@
 from src.Simulation.mesh import Mesh
 from src.Simulation import math_function
+from src.Simulation.plotting import plotting_mesh
 
 class Solver:
     def __init__(self, filename, start_point):
@@ -27,6 +28,7 @@ class Solver:
     def solve(self):
         math_function.initial_oil_distribution(self._cells, self._start_point)
 
-        for i in range(0, 50):
+        for i in range(0, 100):
             self.timestep()
-            plotting.plotting_mesh(self._cells, i)
+            if i % 5 == 0:
+                plotting_mesh(self._cells, i)
