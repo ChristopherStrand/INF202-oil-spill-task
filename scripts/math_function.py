@@ -71,7 +71,7 @@ def calculate_change(cell: object, dt: float):
     """
     Calculates how much oil moves from a cell to it's neighbors
     """
-    flux = cell.oil_amount
+    flux = 0
     neighbors = cell.neighbors
 
     for index, neighbor in enumerate(neighbors):

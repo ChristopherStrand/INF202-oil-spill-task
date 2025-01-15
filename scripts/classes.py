@@ -41,7 +41,7 @@ class Cell:
         self._midpoint = np.float32([0, 0]) 
         self._area = 0.0 
         self._velocity = np.float32([0, 0]) 
-        self._scaled_normal = np.float32([0, 0])
+        self._scaled_normal = []
 
     @property
     def coordinates(self) -> list:
@@ -87,12 +87,12 @@ class Cell:
         self._area = area_of_cell
     
     @property
-    def scaled(self):
-        return self._scaled
+    def scaled_normal(self):
+        return self._scaled_normal
 
-    @scaled.setter
-    def scaled(self, scaled_vector: npt.NDArray[np.float32]):
-        self._scaled = scaled_vector
+    @scaled_normal.setter
+    def scaled_normal(self, scaled_vector: npt.NDArray[np.float32]):
+        self._scaled_normal = scaled_vector
 
     @property
     def velocity(self):
@@ -131,7 +131,7 @@ class Cell:
         return f"""Current cell is {self._index}: 
                   midpoint: {self._midpoint}, 
                   area: {self._area}, 
-                  normal: {self._unit_normal}, 
+                  normal: {self._scaled_normal}, 
                   velocity: {self._velocity}
                   neighbors: {[ngh.index for ngh in self._neighbors]}"""
 
@@ -145,6 +145,9 @@ class Line(Cell):
     def __init__(self, index: int, points: npt.NDArray[np.float32]) -> None:
         super().__init__(index, points)
 
+class Vertex(Cell):
+    def __init__(self, index: int, points: npt.NDArray[np.float32]) -> None:
+        super().__init__(index, points)
 
 class Mesh:
     """
@@ -162,24 +165,17 @@ class Mesh:
         self._cell_index = -1  # The index of a cell in _cells
         msh = meshio.read(msh_file)  # Reads the meshfile
         # Generates a list containing point objects
-        self._points = [
-            Point(index, np.float32(points[0]), np.float32(points[1]))
-            for index, points in enumerate(msh.points)
-        ]
+        self._points = [Point(index, np.float32(points[0]), np.float32(points[1])) for index, points in enumerate(msh.points)]
         # Generates a list containing cell objects of the type line or triangle
         self._cells = []
         for cell_types in msh.cells:
             types = cell_types.type
-            if (
-                types != "vertex" and types != "line"
-            ):  # Ignores lines since they aren't relevant for the task
-                self._cells.extend(
-                    [self._cell_factory(cell) for cell in cell_types.data]
-                )
+            # Ignores lines since they aren't relevant for the task
+            self._cells.extend([self._cell_factory(cell) for cell in cell_types.data])
 
     def _cell_factory(self, cell: list[int]) -> object:  # Mainly used for extendability
         cell_check = len(cell)
-        cell_map = {2: Line, 3: Triangle}
+        cell_map = {1:Vertex, 2: Line, 3: Triangle}
 
         points = [self._points[i] for i in cell]
         self._cell_index += 1
@@ -231,13 +227,14 @@ class Mesh:
         Calculates the area of triangle cells
         """
         point_coordinates = self._cells[cell_index].coordinates
-        if len(point_coordinates) != 3:
-            raise Exception("Invalid cell, must be a triangle")
-        x0, y0 = point_coordinates[0]
-        x1, y1 = point_coordinates[1]
-        x2, y2 = point_coordinates[2]
+        if len(point_coordinates) == 3:
+            x0, y0 = point_coordinates[0]
+            x1, y1 = point_coordinates[1]
+            x2, y2 = point_coordinates[2]
 
-        return 0.5 * abs((x0 - x2) * (y1 - y0) - (x0 - x1) * (y2 - y0))
+            return 0.5 * abs((x0 - x2) * (y1 - y0) - (x0 - x1) * (y2 - y0))
+        else:
+            return None
     
 
     def _unit_and_scaled_normal_vector(self, cell_index: int) -> list[npt.NDArray[np.float32]]:
@@ -251,7 +248,7 @@ class Mesh:
         scaled_normal_vectors = [0 for i in cell_ngh]
         for index, ngh in enumerate(cell_ngh):
             #Finds the normal vector
-            point1, point2 = set(self._cells[cell_index].points) & set(ngh.points)
+            point2, point1 = set(ngh.points) & set(cell.points)
             edge_vector = point2.coordinates - point1.coordinates
             normal_vector = np.array([-edge_vector[1], edge_vector[0]]) 
 
@@ -299,12 +296,3 @@ class Mesh:
                 print(f"""The neighbors of {cell_index} is {[ngh.index for ngh in self._cells[cell_index].neighbors]}""")
             except IndexError:
                 print(f"Cell {cell_index} does not exist in cells")
-
-if __name__ == "__main__":
-    mesh = Mesh("meshes/bay.msh")
-    print(mesh.cells[4].coordinates)
-    mesh.find_neighbors(4)
-    mesh.print_neighbors(4)
-    #[45, 46, 2056]
-    # x = mesh.cells[45].coordinates
-    # print(x)

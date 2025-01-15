@@ -14,24 +14,48 @@ intervals = 100
 dt = (end_time-start_time)/intervals
 start_point = np.array([0.35, 0.45])
 print(f"dt is {dt}")
-#Finds all midpoints, areas, velocities,  and neighbors
-print("Calculating...")
-for cell in cells:
-    mesh.calculate(cell.index)
 
 
-current_time = start_time
-mf.initial_oil_distribution(cells, start_point)
+def calculate_time(func):   
+    # added arguments inside the inner1,
+    # if function takes any arguments,
+    # can be added like this.
+    def inner1(*args, **kwargs):
 
-for steps in range(intervals):
+        # storing time before function execution
+        begin = time.time()
+        
+        func(*args, **kwargs)
+
+        # storing time after function execution
+        end = time.time()
+        print(f"Total time taken in : {func.__name__} {end - begin:.6f}")
+    return inner1
+
+@calculate_time
+def mjau():
+    #Finds all midpoints, areas, velocities,  and neighbors
+    print("Calculating...")
+    for cell in cells:
+        if type(cell) == classes.Triangle:
+            mesh.calculate(cell.index)
+
+    current_time = start_time
+    mf.initial_oil_distribution(cells, start_point)
+
+    for steps in range(intervals):
+        if steps % 5 == 0:
+            plot.plotting_mesh(cells, current_time)
+            print(f"plotting number {steps}...")
+        for cell in cells:
+            if type(cell) == classes.Triangle:
+                mf.calculate_change(cell, dt)
+        for cell in cells:
+            if type(cell) == classes.Triangle:
+                cell.oil_amount += cell.oil_change
+                cell.oil_change = 0
+        current_time = round(current_time+dt, 4)
     plot.plotting_mesh(cells, current_time)
-    print(f"plotting number {steps}...")
-    for cell in cells:
-        mf.calculate_change(cell, current_time)
-    for cell in cells:
-        cell.oil_amount += cell.oil_change
-        cell.oil_change = 0
-    current_time = round(current_time+dt, 4)
-plot.plotting_mesh(cells, current_time)
-print(f"plotting number {intervals}...")
+    print(f"plotting number {intervals}...")
     
+mjau()
