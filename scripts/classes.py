@@ -36,12 +36,12 @@ class Cell:
         self._index = index
         self._points = points
         self._neighbors = []
-        self._oil_amount = 0.0 #Float 
+        self._oil_amount = 0.0 
         self._oil_change = 0.0
-        self._midpoint = np.float32([0, 0]) #Vector 
-        self._area = 0.0 #Float 
-        self._normal = np.float32([0, 0]) #Vector
-        self._velocity = np.float32([0, 0]) #Vector
+        self._midpoint = np.float32([0, 0]) 
+        self._area = 0.0 
+        self._normal = np.float32([0, 0]) 
+        self._velocity = np.float32([0, 0]) 
         self._scaled_normal = np.float32([0, 0])
 
     @property
@@ -110,7 +110,7 @@ class Cell:
     @velocity.setter
     def velocity(self, velocity_vector: npt.NDArray[np.float32]):
         self._velocity = velocity_vector
-        
+
     @property
     def points(self) -> list[int]:
         """
@@ -264,7 +264,7 @@ class Mesh:
 
             if v1_norm == 0 or v2_norm == 0:
                 raise ValueError("Input vectors must have non-zero length.")
-            cos_angle = dot_product / (v1_norm * v2_norm)
+            cos_angle = np.arccos(dot_product / (v1_norm * v2_norm))
             return cos_angle
 
         cell_ngh = self._cells[cell_index].neighbors
@@ -275,12 +275,12 @@ class Mesh:
             point1, point2 = set(self._cells[cell_index].points) & set(ngh.points)
             vector = point2.coordinates - point1.coordinates
             normal_vector = np.array([-vector[1], vector[0]])
-            scaled_normal = normal_vector * np.sqrt(np.sum(vector**2))
+            scaled_normal = normal_vector * np.linalg.norm(vector)
 
             #Checks if the angle is greater between normal and midpoint to point 1 is greater than 90 degrees. If it is flip the normal
             mid_cor_vector = point1.coordinates - self._cells[cell_index].midpoint
             angle = _angle_between(mid_cor_vector, normal_vector)
-            if angle > 0:
+            if angle > 90:
                 unit_normal_vectors[index] = -normal_vector / np.linalg.norm(normal_vector)
             else: 
                 unit_normal_vectors[index] = normal_vector / np.linalg.norm(normal_vector)
