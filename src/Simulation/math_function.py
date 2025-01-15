@@ -1,0 +1,111 @@
+import numpy as np
+import numpy.typing as npt
+
+
+def initial_oil_distribution(cells: list[object], start_point: npt.NDArray[np.float32]):
+    """
+    Gives intial distribution of oil around start point
+    """
+    for cell in cells:
+        midpoint_cell = midpoint(cell)
+        u = np.exp(-np.sum((midpoint_cell - start_point) ** 2) / 0.01)
+        cell._oil_amount = u
+
+
+def velocity(cell_midpoint: npt.NDArray[np.float32]) -> npt.NDArray[np.float32]:
+    """
+    Finds the velocity of the oil in the midpoint of a cell. Returns a vector
+    """
+    return np.array([cell_midpoint[1] - 0.2 * cell_midpoint[0], -cell_midpoint[0]])
+
+
+def midpoint(cell: object) -> npt.NDArray[np.float32]:
+    """
+    Same as X_mid from task description. Takes a cell of any shape and finds the midpoint
+    """
+    point_coordinates = cell.coordinates
+    number_of_points = len(point_coordinates)
+    sum_coordinates = np.array([0, 0])
+    for coordinates in point_coordinates:
+        sum_coordinates = sum_coordinates + coordinates
+    return (1 / number_of_points) * (sum_coordinates)
+
+
+def unit_normal_vector(
+    point1: npt.NDArray[np.float32], point2: npt.NDArray[np.float32]
+) -> npt.NDArray[np.float32]:
+    """
+    Finds the unit normal vector based on two points. The points must must be on the same facet
+    """
+    vector = point2 - point1
+    normal_vector = np.array([-vector[1], vector[0]])
+    return normal_vector / np.linalg.norm(normal_vector)
+
+
+def checking_direction_normal_vector(
+    point1: object, point2: object, midpoint: npt.NDArray[np.float32]
+) -> npt.NDArray[np.float32]:
+    point1_coords = point1.coordinates
+    point2_coords = point2.coordinates
+    length = np.linalg.norm(point1_coords - point2_coords)
+
+    scaled_normal_vector = unit_normal_vector(point1_coords, point2_coords) * length
+    edge_mid = (point1.coordinates + point2.coordinates) / 2
+    mid_mid = edge_mid - midpoint
+    dot_product = np.dot(mid_mid, scaled_normal_vector)
+    if dot_product < 0:
+        scaled_normal_vector = -scaled_normal_vector
+    return scaled_normal_vector
+
+
+
+def calculate_area(
+    coordinates: list[
+        npt.NDArray[np.float32], npt.NDArray[np.float32], npt.NDArray[np.float32]
+    ]
+) -> float:
+    """
+    Calculates the area of triangle cells
+    """
+    if len(coordinates) != 3:
+        raise Exception("Invalid cell, must be a triangle")
+    x0, y0 = coordinates[0]
+    x1, y1 = coordinates[1]
+    x2, y2 = coordinates[2]
+
+    return 0.5 * abs((x0 - x2) * (y1 - y0) - (x0 - x1) * (y2 - y0))
+
+
+def g(a: float, b: float, v, w):
+    """
+    Required part of calculate_area
+    """
+    dot_product = np.dot(v, w)
+
+    if dot_product > 0:
+        return a * dot_product
+    else:
+        return b * dot_product
+
+
+def calculate_change(mesh: object, cell: object, neighbor: object, dt: float):
+    """
+    Calculates how much oil moves from a cell to it's neighbors
+    """
+    area = calculate_area(cell.coordinates)
+    mid_cell = midpoint(cell)
+    mid_neighbor = midpoint(neighbor)
+    points_intersection = list(set(neighbor.points) & set(cell.points))
+    
+    if len(points_intersection) != 2:
+        return 0.0
+
+    point1, point2 = points_intersection
+
+
+    scaled_normal_vector = checking_direction_normal_vector(point1, point2, mid_cell)
+    v_mid = (velocity(mid_cell) + velocity(mid_neighbor)) / 2
+
+    flux = g(cell.oil_amount, neighbor.oil_amount, scaled_normal_vector, v_mid)
+
+    return -dt / area * flux

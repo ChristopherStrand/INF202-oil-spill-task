@@ -1,5 +1,6 @@
 venv/
 env/
+images/
 INF202_env
 scripts/__pycache__/
 tests/__pycache__/

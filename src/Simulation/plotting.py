@@ -1,6 +1,5 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import cv2 as cv
 import os
 
 
@@ -8,6 +7,10 @@ def plotting_mesh(cells, i):
     """
     plots a mesh representing the oil distrobution at a spesific time and saves the plot as an image file
     """
+
+    if not os.path.isdir("images"):
+        os.mkdir("images")
+
     # defines size and makes an empty numpy array
     plt.figure()
     h = 1000
@@ -44,6 +47,5 @@ def plotting_mesh(cells, i):
     plt.gca().set_aspect("equal")
     plt.xlim(0, 1)
     plt.ylim(0, 1)
-    filename = f"../images/mesh_plot{i}.png"
+    filename = f"./images/mesh_plot{i+1}.png"
     plt.savefig(filename)
-    plt.show()
