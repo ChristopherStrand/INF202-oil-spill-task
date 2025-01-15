@@ -25,15 +25,18 @@ def readConfig(name):
     with open(name, "r") as file:
         config = toml.load(file)
 
-    geometry = config.get("geometry", {})
+    geometry = config["geometry"]
     fish_area = geometry.get("fish_area")
     start_point = geometry.get("initial_oil_area")
     filepath = geometry.get("filepath")
 
-    settings = config.get("settings", {})
+    settings = config["settings"]
     steps = settings.get("nSteps")
     t_start = settings.get("t_start")
     t_end = settings.get("t_end")
+
+    IO = config["IO"]
+    image_freq = IO.get("writeFrequency")
 
     if not filepath or not os.path.exists(filepath):
         raise FileNotFoundError(f"The mesh file {filepath} does not exist.")

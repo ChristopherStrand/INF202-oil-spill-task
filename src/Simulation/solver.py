@@ -2,6 +2,7 @@ from src.Simulation.mesh import Mesh
 from src.Simulation import math_function
 from src.Simulation.plotting import plotting_mesh
 
+
 class Solver:
     def __init__(self, filename, start_point):
         self._mesh = Mesh(filename)
@@ -16,7 +17,9 @@ class Solver:
                 total_flux = 0
                 self._mesh.find_neighbors(cell.index)
                 for ngh in cell.neighbors:
-                    change = math_function.calculate_change(self._mesh, cell, ngh, self._dt)
+                    change = math_function.calculate_change(
+                        self._mesh, cell, ngh, self._dt
+                    )
                     total_flux += change
 
                 flux_per_cell[cell.index] += total_flux
@@ -25,10 +28,10 @@ class Solver:
             if self._mesh.cells[i].type == "triangle":
                 self._mesh.cells[i].oil_amount += flux
 
-    def solve(self):
+    def solve(self, image_freq):
         math_function.initial_oil_distribution(self._cells, self._start_point)
 
         for i in range(0, 100):
             self.timestep()
-            if i % 5 == 0:
+            if i % image_freq == 0:
                 plotting_mesh(self._cells, i)

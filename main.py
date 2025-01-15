@@ -10,5 +10,7 @@ if __name__ == "__main__":
     geometry = config["geometry"]
     filename = geometry.get("filepath")
     start_point = geometry.get("initial_oil_area")
+    IO = config["IO"]
+    image_freq = IO.get("writeFrequency")
     s = Solver(filename, start_point)
-    s.solve()
+    s.solve(image_freq)
