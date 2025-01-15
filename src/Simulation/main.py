@@ -11,6 +11,7 @@ cells = mesh.cells
 start_time = 0.0
 end_time = 1
 intervals = 100
+write_frequency = 5
 dt = (end_time-start_time)/intervals
 start_point = np.array([0.35, 0.45])
 print(f"dt is {dt}")
@@ -44,12 +45,13 @@ def mjau():
     mf.initial_oil_distribution(cells, start_point)
 
     for steps in range(intervals):
-        if steps % 5 == 0:
+        if steps % write_frequency == 0:
             plot.plotting_mesh(cells, current_time)
             print(f"plotting number {steps}...")
         for cell in cells:
             if type(cell) == classes.Triangle:
                 mf.calculate_change(cell, dt)
+                
         for cell in cells:
             if type(cell) == classes.Triangle:
                 cell.oil_amount += cell.oil_change
