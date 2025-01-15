@@ -1,10 +1,5 @@
-"""
-This file contains the mathmatical functions used in main.py
-"""
-
 import numpy as np
 import numpy.typing as npt
-import classes as cls
 
 def initial_oil_distribution(cells: list[object], start_point: npt.NDArray[np.float32]):
     """

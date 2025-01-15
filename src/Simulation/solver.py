@@ -1,12 +1,9 @@
-import classes as cls
-import time
-
-mesh = cls.Mesh("meshes/bay.msh")
-# for cells_with_oil in oil_cells:
-#     if cells_with_oil.oil_amount == 0:
-#         continue
-#     else:
-#         pass
+import numpy as np
+import time #remove
+import src.Simulation.math_function as mf
+import src.Simulation.plotting as plot
+import src.Simulation.mesh as msh
+import src.Simulation.cells as cls
 
 
 def calculate_time(func):   
@@ -26,11 +23,36 @@ def calculate_time(func):
     return inner1
 
 @calculate_time
-def mjau():
-    for cell in mesh.cells[4:5]:
-        mesh.calculate(cell.index)
-        print(cell.coordinates)
-        print(cell.neighbors[2].coordinates)
-        print(cell.unit_normal)
+def find_and_plot(mesh_path: str, start_time: int, end_time: int, intervals: int, write_frequency: int) -> None:
+    """
+    Plots and finds the change over the specified time
+    """
+    mesh = msh.Mesh(mesh_path)
+    cells = mesh.cells
 
-mjau()
+    dt = (end_time-start_time)/intervals
+    start_point = np.array([0.35, 0.45])
+    print(f"dt is {dt}")
+
+    print("Calculating...")
+    for cell in cells:
+        if type(cell) == cls.Triangle:
+            mesh.calculate(cell.index)
+
+    current_time = start_time
+    mf.initial_oil_distribution(cells, start_point)
+    for steps in range(intervals):
+        if steps % write_frequency == 0:
+            plot.plotting_mesh(cells, current_time)
+            print(f"plotting number {steps}...")
+        for cell in cells:
+            if type(cell) == cls.Triangle:
+                mf.calculate_change(cell, dt)
+
+        for cell in cells:
+            if type(cell) == cls.Triangle:
+                cell.oil_amount += cell.oil_change
+                cell.oil_change = 0
+        current_time = round(current_time+dt, 4)
+    plot.plotting_mesh(cells, current_time)
+    print(f"plotting number {intervals}...")
