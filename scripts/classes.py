@@ -110,8 +110,7 @@ class Cell:
     @velocity.setter
     def velocity(self, velocity_vector: npt.NDArray[np.float32]):
         self._velocity = velocity_vector
-
-    # getter for points
+        
     @property
     def points(self) -> list[int]:
         """
@@ -136,6 +135,14 @@ class Cell:
         Stores the neighbors found in find_neighbors() from the mesh class in this cell
         """
         self._neighbors = neighboring_cells
+
+    def __str__(self):
+        return f"""Current cell is {self._index}: 
+                  midpoint: {self._midpoint}, 
+                  area: {self._area}, 
+                  normal: {self._normal}, 
+                  velocity: {self._velocity}
+                  neighbors: {[ngh.index for ngh in self._neighbors]}"""
 
 
 class Triangle(Cell):
@@ -295,14 +302,6 @@ class Mesh:
         current_cell.area = self._calculate_area(cell_index)
         current_cell.velocity = self._velocity(cell_index)
         current_cell.normal, current_cell.scaled_normal = self._unit_and_scaled_normal_vector(cell_index)
-
-        #debug
-        # print(f"""Current cell is {cell_index}: 
-        #           midpoint: {current_cell.midpoint}, 
-        #           area: {current_cell.area}, 
-        #           normal: {current_cell.normal}, 
-        #           velocity: {current_cell.velocity}""")
-        # self.print_neighbors(cell_index)
         
 
     def print_neighbors(self, cell_index: int, object_output: bool=False) -> None:

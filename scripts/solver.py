@@ -29,7 +29,6 @@ def calculate_time(func):
 def mjau():
     for cell in mesh.cells[4:5]:
         mesh.calculate(cell.index)
-        x = cell.midpoint
-        print(x)
+        print(cell)
 
 mjau()
