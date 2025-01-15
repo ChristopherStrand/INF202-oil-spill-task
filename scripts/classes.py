@@ -40,7 +40,6 @@ class Cell:
         self._oil_change = 0.0
         self._midpoint = np.float32([0, 0]) 
         self._area = 0.0 
-        self._normal = np.float32([0, 0]) 
         self._velocity = np.float32([0, 0]) 
         self._scaled_normal = np.float32([0, 0])
 
@@ -86,14 +85,6 @@ class Cell:
     @area.setter
     def area(self, area_of_cell: float):
         self._area = area_of_cell
-
-    @property
-    def normal(self):
-        return self._normal
-    
-    @normal.setter
-    def normal(self, normal_vector: npt.NDArray[np.float32]):
-        self._normal = normal_vector
     
     @property
     def scaled(self):
@@ -140,7 +131,7 @@ class Cell:
         return f"""Current cell is {self._index}: 
                   midpoint: {self._midpoint}, 
                   area: {self._area}, 
-                  normal: {self._normal}, 
+                  normal: {self._unit_normal}, 
                   velocity: {self._velocity}
                   neighbors: {[ngh.index for ngh in self._neighbors]}"""
 
@@ -249,43 +240,33 @@ class Mesh:
         return 0.5 * abs((x0 - x2) * (y1 - y0) - (x0 - x1) * (y2 - y0))
     
 
-    def _unit_and_scaled_normal_vector(self, cell_index: int) -> npt.NDArray[np.float32]:
+    def _unit_and_scaled_normal_vector(self, cell_index: int) -> list[npt.NDArray[np.float32]]:
         """
         Finds the unit normal vector based on two points. The points must must be on the same facet
         """
 
-        def _angle_between(v1: npt.NDArray[np.float32], v2: npt.NDArray[np.float32]) -> npt.NDArray[np.float32]:
-            """
-            takes in two vectors, normalizes the dot product and finds the angle between
-            """
-            dot_product = np.dot(v1, v2)
-            v1_norm = np.linalg.norm(v1)
-            v2_norm = np.linalg.norm(v2)
-
-            if v1_norm == 0 or v2_norm == 0:
-                raise ValueError("Input vectors must have non-zero length.")
-            cos_angle = np.arccos(dot_product / (v1_norm * v2_norm))
-            return cos_angle
-
-        cell_ngh = self._cells[cell_index].neighbors
-        unit_normal_vectors = [0 for i in cell_ngh]
+        cell = self._cells[cell_index]
+        cell_ngh = cell.neighbors
+        
         scaled_normal_vectors = [0 for i in cell_ngh]
         for index, ngh in enumerate(cell_ngh):
             #Finds the normal vector
             point1, point2 = set(self._cells[cell_index].points) & set(ngh.points)
-            vector = point2.coordinates - point1.coordinates
-            normal_vector = np.array([-vector[1], vector[0]])
-            scaled_normal = normal_vector * np.linalg.norm(vector)
+            edge_vector = point2.coordinates - point1.coordinates
+            normal_vector = np.array([-edge_vector[1], edge_vector[0]]) 
 
-            #Checks if the angle is greater between normal and midpoint to point 1 is greater than 90 degrees. If it is flip the normal
-            mid_cor_vector = point1.coordinates - self._cells[cell_index].midpoint
-            angle = _angle_between(mid_cor_vector, normal_vector)
-            if angle > 90:
-                unit_normal_vectors[index] = -normal_vector / np.linalg.norm(normal_vector)
-            else: 
-                unit_normal_vectors[index] = normal_vector / np.linalg.norm(normal_vector)
-            scaled_normal_vectors[index] = scaled_normal
-        return unit_normal_vectors, scaled_normal_vectors
+            #Finds unit normal and scaled normal
+            unit_normal_vector = normal_vector / np.linalg.norm(normal_vector)
+            scaled_normal = unit_normal_vector * np.linalg.norm(edge_vector) #Multiplies by the length of a side
+            
+            midpoint_edge = (point1.coordinates + point2.coordinates)/2
+            middle = midpoint_edge - cell.midpoint
+
+            if np.dot(middle, scaled_normal) < 0:
+                scaled_normal_vectors[index] = -scaled_normal
+            else:
+                scaled_normal_vectors[index] = scaled_normal
+        return scaled_normal_vectors
         
     
     def _velocity(self, cell_index: int) -> npt.NDArray[np.float32]:
@@ -301,7 +282,7 @@ class Mesh:
         current_cell.midpoint = self._midpoint(cell_index)
         current_cell.area = self._calculate_area(cell_index)
         current_cell.velocity = self._velocity(cell_index)
-        current_cell.normal, current_cell.scaled_normal = self._unit_and_scaled_normal_vector(cell_index)
+        current_cell.scaled_normal = self._unit_and_scaled_normal_vector(cell_index)
         
 
     def print_neighbors(self, cell_index: int, object_output: bool=False) -> None:
