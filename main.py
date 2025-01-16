@@ -26,5 +26,11 @@ if __name__ == "__main__":
     #-------Register End------------
 
     solve.find_and_plot(
-        mesh_path, start_time, end_time, intervals, write_frequency, start_point
+        mesh_path, 
+        start_time, 
+        end_time, 
+        intervals, 
+        write_frequency, 
+        start_point,
+        factory
     )
