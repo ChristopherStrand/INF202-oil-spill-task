@@ -69,27 +69,30 @@ def find_and_plot(mesh_path: str, start_time: float, end_time: float, intervals:
     dt = round((end_time-start_time)/intervals, 6)
     print(f"dt is {dt}")
 
+    # Calculates area, midpoint, neighbors etc
     print("Calculating...")
     for cell in cells:
         if isinstance(cell, cls.Triangle):
             mesh.calculate(cell)
-    mesh._cells_within_area(x_area, y_area)
     
+    
+    # Runs if the simulation is suppose to start from a different time
     if restartFile is not None:
-        with open(restartFile, "r") as f:
-            lines = f.readlines()
-            start_interval = lines[0]
-            for line in lines[1:]:
+        with open(restartFile, "r") as file:
+            header = file.readlines()
+            for line in file:
                 index, oil_amount = line.split(";")
                 cells[int(index)].oil_amount = float(oil_amount)
-            print(f"Restarting from {start_time}")
+            print(f"Restarting from {header}")
     
+    # Calculates change and plots
     current_time = start_time
     mesh.initial_oil_distribution(start_point)
-    for steps in range(start_interval, intervals):
+    for steps in range(intervals):
         if steps % write_frequency == 0:
             plot.plotting_mesh(cells, steps)
             print(f"plotting number {steps}...")
+
         for cell in cells:
             if isinstance(cell, cls.Triangle):
                 mesh.calculate_change(cell, dt)
@@ -99,12 +102,19 @@ def find_and_plot(mesh_path: str, start_time: float, end_time: float, intervals:
                 cell.oil_amount += cell.oil_change
                 cell.oil_change = 0
 
-
         current_time = round(current_time+dt, 4)
     plot.plotting_mesh(cells, intervals)
     print(f"plotting number {intervals}...")
 
-    with open("input/restartFile.csv", "w") as f:
-        f.write(f"{current_time}\n")
+    cells_in_area = mesh.cells_within_area(x_area, y_area)
+    oil_in_area = 0
+    for cell in cells_in_area:
+        oil_in_area += cell.oil_amount
+    print(f"The amount of oil in the specified area is {round(oil_in_area, 4)}")
+        
+
+    # Stores the oil amount values such that the simulation can be started from a different time
+    with open("input/restartFile.csv", "w") as file:
+        file.write(f"{end_time}\n")
         for cell in cells:
-            f.write(f"{cell.index};{cell.oil_amount}\n")
+            file.write(f"{cell.index};{cell.oil_amount}\n")

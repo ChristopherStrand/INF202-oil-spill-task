@@ -8,4 +8,5 @@ pytest_cache
 src/Simulation/__pycache__/
 images/
 __pycache__
-
+input/restartFile.csv
+logs/logfile.log

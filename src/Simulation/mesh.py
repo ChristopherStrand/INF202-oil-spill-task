@@ -109,9 +109,15 @@ class Mesh:
     def points(self) -> list[cls.Point]:
         return self._points
     
-    def _cells_within_area(self, x_area: npt.NDArray[np.float32], y_area: npt.NDArray[np.float32]) -> list[cls.Cell]:
-        g = [cell for cell in self._cells if np.array(cell.coordinates).any(axis=0)]
-        print(len(g))
+    def cells_within_area(self, x_area: npt.NDArray[np.float32], y_area: npt.NDArray[np.float32]) -> list[cls.Cell]:
+        cells_within = []
+        for cell in self._cells:
+            for coordinates in cell.coordinates:
+                if (coordinates[0] > x_area[0] and coordinates[0] < x_area[1]) and (coordinates[1] > y_area[0] and coordinates[1] < y_area[1]):
+                    cells_within.append(cell)
+                    break
+        return cells_within
+
 
     def _find_neighbors(self, cell: cls.Cell) -> list[cls.Cell]:
         """
@@ -144,7 +150,6 @@ class Mesh:
         for coordinates in point_coordinates:
             sum_coordinates = sum_coordinates + coordinates
         return (1 / number_of_points) * (sum_coordinates)
-        # return np.mean(cell.coordinates)
 
     def _calculate_area(self, cell: cls.Triangle) -> float:
         """

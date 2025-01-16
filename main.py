@@ -72,12 +72,16 @@ if __name__ == "__main__":
     factory.register(3, cls.Triangle)
     # -------Register End------------
 
-    x = np.array([[0.0, 0.45], [0.1, 1.2], [0.11, 0.23]])
-    print(x[:, 0], "x")
-    print(x[:, 1], "y")
-
     solve.find_and_plot(
-        mesh_path, start_time, end_time, intervals, write_frequency, start_point
+        mesh_path, 
+        start_time, 
+        end_time, 
+        intervals, 
+        write_frequency, 
+        start_point,
+        factory,
+        x_area,
+        y_area
     )
 
     logger.info("Simulation Ended")
