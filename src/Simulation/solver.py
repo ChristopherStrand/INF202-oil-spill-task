@@ -58,7 +58,7 @@ def calculate_time(func):
     return inner1
 
 @calculate_time #Remove this deco
-def find_and_plot(mesh_path: str, start_time: float, end_time: float, intervals: int, write_frequency: int, start_point: npt.NDArray[np.float32], cell_factory: msh.CellFactory, x_area: npt.NDArray[np.float32], y_area: npt.NDArray[np.float32]) -> None:
+def find_and_plot(mesh_path: str, start_time: float, end_time: float, intervals: int, write_frequency: int, start_point: npt.NDArray[np.float32], cell_factory: msh.CellFactory, x_area: npt.NDArray[np.float32], y_area: npt.NDArray[np.float32], restartFile=None) -> None:
     """
     Plots and finds the change over the specified time
     """
@@ -74,10 +74,19 @@ def find_and_plot(mesh_path: str, start_time: float, end_time: float, intervals:
         if isinstance(cell, cls.Triangle):
             mesh.calculate(cell)
     mesh._cells_within_area(x_area, y_area)
-
+    
+    if restartFile is not None:
+        with open(restartFile, "r") as f:
+            lines = f.readlines()
+            start_interval = lines[0]
+            for line in lines[1:]:
+                index, oil_amount = line.split(";")
+                cells[int(index)].oil_amount = float(oil_amount)
+            print(f"Restarting from {start_time}")
+    
     current_time = start_time
     mesh.initial_oil_distribution(start_point)
-    for steps in range(intervals):
+    for steps in range(start_interval, intervals):
         if steps % write_frequency == 0:
             plot.plotting_mesh(cells, steps)
             print(f"plotting number {steps}...")
@@ -94,3 +103,8 @@ def find_and_plot(mesh_path: str, start_time: float, end_time: float, intervals:
         current_time = round(current_time+dt, 4)
     plot.plotting_mesh(cells, intervals)
     print(f"plotting number {intervals}...")
+
+    with open("input/restartFile.csv", "w") as f:
+        f.write(f"{current_time}\n")
+        for cell in cells:
+            f.write(f"{cell.index};{cell.oil_amount}\n")
