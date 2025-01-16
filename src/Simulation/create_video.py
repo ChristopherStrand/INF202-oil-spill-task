@@ -21,8 +21,6 @@ Output:
 
 """
 
-
-
 import cv2 as cv
 
 # list for all image names

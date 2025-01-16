@@ -28,84 +28,111 @@ Typical usage example:
 
 
 import meshio
+import numpy as np
 import numpy.typing as npt
-from src.Simulation.cells import *
+import src.Simulation.cells as cls
+
 
 class CellFactory:
+    """
+    A factory class for creating cell objects based on the number of points they contain.
+
+    This class allows for the registration of different cell types, each corresponding
+    to a specific number of points. Once registered, the factory can create instances
+    of these cell types dynamically based on input data.
+    """
     def __init__(self):
         self._cell_types = {}
+        self._cell_index = -1 # Minus -1 such that the index starts at 0
 
     def register(self, amount_of_points: int, cell_class: object):
         """
-        Registers a new cell type with the factory
+        Registers a new cell type with the factory.
         """
         self._cell_types[amount_of_points] = cell_class
 
-    def __call__(self, cell: list[int], index: int, points_list: list[Point]):
+    def __call__(self, cell: list[int], points_list: list[cls.Point]):
         """
-        Creates a cell object based on the input dictionary
+        Creates a cell object based on the input data.
+
+        Args:
+            cell (list[int]): A list of integers representing point indices in the mesh.
+            index (int): The index of the cell being created in the mesh.
+            points_list (list[cls.Point]): A list of Point objects representing the points
+                                           in the mesh.
+
+        Returns:
+            object: An instance of the registered cell class for the given number of points.
+
+        Raises:
+            Exception: If the number of points in the cell does not match any registered type.
         """
+        self._cell_index += 1
         key = len(cell)
         if key not in self._cell_types:
             raise Exception(f"Unkown cell type: {key}")
-        
         points = [points_list[i] for i in cell]
-        return self._cell_types[key](index, points)
+        return self._cell_types[key](self._cell_index, points)
+
 
 class Mesh:
     """
-    Initializes empty lists for points and cells and reads the mesh file. The initializer then makes Triangle and Line objects from the mesh file,
-    each with a index and a list of points.
+    Represents a computational mesh, containing points and cells, initialized from a mesh file.
+
+    The Mesh class processes mesh files (e.g., `.msh`) to create point and cell objects and
+    provides methods for performing calculations and simulations, such as determining neighbors,
+    computing areas, calculating velocities, and simulating oil distribution and flow.
 
     Args:
-        - msh_file: a Mesh file, denoted by .msh
+        msh_file (str): Path to the mesh file to be read.
+        cell_factory (CellFactory): Factory object for creating cell instances.
 
-    Returns:
-        - Triangle and Line objects.
+    Attributes:
+        _cell_index (int): Tracks the current index of a cell in the mesh.
+        _points (list[cls.Point]): List of Point objects representing points in a mesh.
+        _cells (list[cls.Cell]): List of Cell objects representing cells in a mesh.
     """
 
     def __init__(self, msh_file: str, cell_factory: CellFactory) -> None:
-        self._cell_index = -1  # The index of a cell in _cells
-        msh = meshio.read(msh_file)  # Reads the meshfile
-        # Generates a list containing point objects
-        self._points = [Point(index, np.float32(points[0]), np.float32(points[1])) for index, points in enumerate(msh.points)]
-        # Generates a list containing cell objects
+        msh = meshio.read(msh_file)
+        # Makes a list of points objects
+        self._points = [cls.Point(index, np.float32(points[0]), np.float32(points[1])) for index, points in enumerate(msh.points)]
         self._cells = []
         for cell_types in msh.cells:
-            self._cells.extend([cell_factory(cell, self._cell_index, self._points) for cell in cell_types.data])
+            self._cells.extend([cell_factory(cell, self._points) for cell in cell_types.data])
     
     @property
     def cells(self) -> list[object]:
-        """
-        Returns a list of all cell objects
-        """
         return self._cells
 
     @property
     def points(self) -> list[object]:
-        """
-        Returns a list of all point objects
-        """
         return self._points
 
-    def _find_neighbors(self, cell: Cell) -> list[Cell]:
+    def _find_neighbors(self, cell: cls.Cell) -> list[cls.Cell]:
         """
-        Finds neighboring cells for the cell specified, neighbors share exactly two elements
+        Finds the neighboring cells for a given cell. Neighbors share exactly two points.
+
+        Args:
+            cell (cls.Cell): The cell for which neighbors are to be determined.
+
+        Returns:
+            list[cls.Cell]: List of neighboring cells.
         """
         neighboring_cells = []
         points_in_cell = cell.points
-
-        # Assuming cells with more points than triangles have are neighbors if they share two points. 
-        # This function is extendable for any cell type that meets that criteria
-        # Makes a list with the indicies of the neighbors for the specified cell
         neighboring_cells = [cells for cells in self._cells if len(set(points_in_cell) & set(cells.points)) == 2]
-
-        # Store neighbors in each cell, stores the neighbors in the cell that was checked
         return neighboring_cells
 
-    def _midpoint(self, cell: Cell) -> npt.NDArray[np.float32]:
+    def _midpoint(self, cell: cls.Cell) -> npt.NDArray[np.float32]:
         """
-        Same as X_mid from task description. Takes a cell of any shape and finds the midpoint
+        Computes the midpoint of a cell based on its points.
+
+        Args:
+            cell (cls.Cell): The cell for which the midpoint is calculated.
+
+        Returns:
+            npt.NDArray[np.float32]: Coordinates of the cell's midpoint.
         """
         point_coordinates = cell.coordinates
         number_of_points = len(point_coordinates)
@@ -115,9 +142,15 @@ class Mesh:
         return (1 / number_of_points) * (sum_coordinates)
         # return np.mean(cell.coordinates)
 
-    def _calculate_area(self, cell: Triangle) -> float:
+    def _calculate_area(self, cell: cls.Triangle) -> float:
         """
-        Calculates the area of triangle cells
+        Calculates the area of a triangular cell.
+
+        Args:
+            cell (cls.Triangle): The triangular cell.
+
+        Returns:
+            float: Area of the triangle, or None if the cell is not triangular.
         """
         point_coordinates = cell.coordinates
         if len(point_coordinates) == 3:
@@ -128,44 +161,60 @@ class Mesh:
             return 0.5 * abs((x0 - x2) * (y1 - y0) - (x0 - x1) * (y2 - y0))
         else:
             return None
-    
-
-    def _unit_and_scaled_normal_vector(self, cell: Cell) -> list[npt.NDArray[np.float32]]:
+  
+    def _unit_and_scaled_normal_vector(self, cell: cls.Cell) -> list[npt.NDArray[np.float32]]:
         """
-        Finds the unit normal vector based on two points. The points must must be on the same facet
+        Computes unit and scaled normal vectors for the edges of a cell.
+
+        Args:
+            cell (cls.Cell): The cell for which normal vectors are calculated.
+
+        Returns:
+            list[npt.NDArray[np.float32]]: List of scaled normal vectors for the cell's edges.
         """
 
         cell_ngh = cell.neighbors
-        
         scaled_normal_vectors = [0 for i in cell_ngh]
         for index, ngh in enumerate(cell_ngh):
-            #Finds the normal vector
+            # Finds the normal vector
             point2, point1 = set(ngh.points) & set(cell.points)
             edge_vector = point2.coordinates - point1.coordinates
             normal_vector = np.array([-edge_vector[1], edge_vector[0]]) 
 
-            #Finds unit normal and scaled normal
+            # Finds unit normal and scaled normal
             unit_normal_vector = normal_vector / np.linalg.norm(normal_vector)
-            scaled_normal = unit_normal_vector * np.linalg.norm(edge_vector) #Multiplies by the length of a side
-            
+            scaled_normal = unit_normal_vector * np.linalg.norm(edge_vector)
             midpoint_edge = (point1.coordinates + point2.coordinates)/2
             middle = midpoint_edge - cell.midpoint
 
+            # Check if the normal is pointing outwards or inwards, flips it if it points inwards.
             if np.dot(middle, scaled_normal) < 0:
                 scaled_normal_vectors[index] = -scaled_normal
             else:
                 scaled_normal_vectors[index] = scaled_normal
         return scaled_normal_vectors
-        
     
-    def _velocity(self, cell: Cell) -> npt.NDArray[np.float32]:
+    def _velocity(self, cell: cls.Cell) -> npt.NDArray[np.float32]:
         """
-        Finds the velocity of the oil in the midpoint of a cell. Returns a vector
+        Computes the velocity at the midpoint of a cell.
+
+        Args:
+            cell (cls.Cell): The cell for which velocity is calculated.
+
+        Returns:
+            npt.NDArray[np.float32]: Velocity vector at the cell's midpoint.
         """
         cell_midpoint = cell.midpoint
         return np.array([cell_midpoint[1] - 0.2 * cell_midpoint[0], -cell_midpoint[0]])
 
-    def calculate(self, cell: Cell) -> npt.NDArray[np.float32]:
+    def calculate(self, cell: cls.Cell) -> npt.NDArray[np.float32]:
+        """
+        Computes and assigns properties (neighbors, midpoint, area, velocity, normals) for a cell.
+
+        Args:
+            cell (cls.Cell): The cell to calculate properties for.
+        """
+
         cell.neighbors = self._find_neighbors(cell)
         cell.midpoint = self._midpoint(cell)
         cell.area = self._calculate_area(cell)
@@ -174,7 +223,10 @@ class Mesh:
 
     def initial_oil_distribution(self, start_point: npt.NDArray[np.float32]):
         """
-        Gives intial distribution of oil around start point
+        Initializes the oil distribution across the mesh, centered around a given start point.
+
+        Args:
+            start_point (npt.NDArray[np.float32]): The starting point for oil distribution.
         """
         cells = self._cells
         for cell in cells:
@@ -183,7 +235,11 @@ class Mesh:
 
     def calculate_change(self, cell: object, dt: float):
         """
-        Calculates how much oil moves from a cell to it's neighbors
+        Calculates the change in oil distribution for a cell over a given time step.
+
+        Args:
+            cell (cls.Cell): The cell for which the oil change is calculated.
+            dt (float): Time step for the calculation.
         """
         flux = 0
         neighbors = cell.neighbors
@@ -205,12 +261,15 @@ class Mesh:
             flux = flux + (-(dt / cell.area) * _g(cell.oil_amount, neighbor.oil_amount, scaled_normal, v_mid))
         cell.oil_change += flux
         
+    def print_neighbors(self, cell: cls.Cell, object_output: bool = False) -> None:
+        """
+        Prints the neighbors of a given cell, either as objects or indices.
 
-    def print_neighbors(self, cell: Cell, object_output: bool=False) -> None:
+        Args:
+            cell (cls.Cell): The cell whose neighbors are printed.
+            object_output (bool): Whether to print neighbors as objects (default: False).
         """
-        Print the neighbors as indicies or objects depending of what is specified. Does not return anything
-        """
-        if object_output == True:
+        if object_output is True:
             try:
                 print(f"The neighbors of {cell.index} is {cell.neighbors}")
             except IndexError:

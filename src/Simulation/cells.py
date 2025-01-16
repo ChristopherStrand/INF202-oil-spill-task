@@ -19,12 +19,10 @@ import numpy.typing as npt
 class Cell:
     def __init__(self, index: int, points: npt.NDArray[np.float32]) -> None:
         """
-        Initiliazes a Cell with ID (its position in the Mesh Cells list)
-        and a list of points for the Cell
+        Represents a single cell in a mesh, defined by an index and a list of points.
 
-        Args:
-        - index:
-        - points:
+        A Cell holds properties such as midpoint, area, velocity,
+        and oil distribution, and maintains references to its neighboring cells.
         """
         self._index = index
         self._points = points
@@ -58,9 +56,6 @@ class Cell:
 
     @property
     def index(self) -> int:
-        """
-        Returns the index of the cell from the cell list
-        """
         return self._index
     
     @property
@@ -97,44 +92,29 @@ class Cell:
 
     @property
     def points(self) -> list[int]:
-        """
-        Returns all points contained within this cell with their index in the point list
-        """
         return self._points
 
     @property
     def neighbors(self) -> list[int]:
-        """
-        Returns neighbors if they have been stored previously
-        """
-        if len(self._neighbors) == 0:
-            print(f"Cell {self._index} does not contain a neighbor currently")
-
-        else:
-            return self._neighbors
+        return self._neighbors
 
     @neighbors.setter
     def neighbors(self, neighboring_cells: list[int]) -> None:
-        """
-        Stores the neighbors found in find_neighbors() from the mesh class in this cell
-        """
         self._neighbors = neighboring_cells
 
     def __str__(self):
-        return f"""Current cell is {self._index}: 
-                  midpoint: {self._midpoint}, 
-                  area: {self._area}, 
-                  normal: {self._scaled_normal}, 
+        return f"""Current cell is {self._index}:
+                  midpoint: {self._midpoint},
+                  area: {self._area},
+                  normal: {self._scaled_normal},
                   velocity: {self._velocity}
                   neighbors: {[ngh.index for ngh in self._neighbors]}"""
-    
 
-#------------------------------cells end---------------------------------------
+# ------------------------------cells end--------------------------------------
+
+
 class Point:
     def __init__(self, index: int, x: float, y: float) -> None:
-        """
-        Initializes a Point with x and y coordinates
-        """
         self._index = index
         self._coordinates = np.array([x, y])
 
@@ -146,15 +126,17 @@ class Point:
     def coordinates(self) -> npt.NDArray[np.float32]:
         return self._coordinates
 
+
 class Vertex(Cell):
     def __init__(self, index: int, points: npt.NDArray[np.float32]) -> None:
         super().__init__(index, points)
+
 
 class Line(Cell):
     def __init__(self, index: int, points: npt.NDArray[np.float32]) -> None:
         super().__init__(index, points)
 
+
 class Triangle(Cell):
     def __init__(self, index: int, points: npt.NDArray[np.float32]) -> None:
         super().__init__(index, points)
-
