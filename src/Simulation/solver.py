@@ -37,7 +37,7 @@ def find_and_plot(mesh_path: str, start_time: int, end_time: int, intervals: int
     print("Calculating...")
     for cell in cells:
         if type(cell) == cls.Triangle:
-            mesh.calculate(cell.index)
+            mesh.calculate(cell)
 
     current_time = start_time
     mf.initial_oil_distribution(cells, start_point)

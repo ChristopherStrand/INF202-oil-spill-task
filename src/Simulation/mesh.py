@@ -48,12 +48,12 @@ class Mesh:
         """
         return self._points
 
-    def _find_neighbors(self, cell_index: int) -> None:
+    def _find_neighbors(self, cell: Cell) -> list[Cell]:
         """
         Finds neighboring cells for the cell specified, neighbors share exactly two elements
         """
         neighboring_cells = []
-        points_in_cell = self._cells[cell_index].points
+        points_in_cell = cell.points
 
         # Assuming cells with more points than triangles have are neighbors if they share two points. 
         # This function is extendable for any cell type that meets that criteria
@@ -63,22 +63,22 @@ class Mesh:
         # Store neighbors in each cell, stores the neighbors in the cell that was checked
         return neighboring_cells
 
-    def _midpoint(self, cell_index: int) -> npt.NDArray[np.float32]:
+    def _midpoint(self, cell: Cell) -> npt.NDArray[np.float32]:
         """
         Same as X_mid from task description. Takes a cell of any shape and finds the midpoint
         """
-        point_coordinates = self._cells[cell_index].coordinates
+        point_coordinates = cell.coordinates
         number_of_points = len(point_coordinates)
         sum_coordinates = np.array([0, 0])
         for coordinates in point_coordinates:
             sum_coordinates = sum_coordinates + coordinates
         return (1 / number_of_points) * (sum_coordinates)
 
-    def _calculate_area(self, cell_index: int) -> float:
+    def _calculate_area(self, cell: Triangle) -> float:
         """
         Calculates the area of triangle cells
         """
-        point_coordinates = self._cells[cell_index].coordinates
+        point_coordinates = cell.coordinates
         if len(point_coordinates) == 3:
             x0, y0 = point_coordinates[0]
             x1, y1 = point_coordinates[1]
@@ -89,12 +89,11 @@ class Mesh:
             return None
     
 
-    def _unit_and_scaled_normal_vector(self, cell_index: int) -> list[npt.NDArray[np.float32]]:
+    def _unit_and_scaled_normal_vector(self, cell: Cell) -> list[npt.NDArray[np.float32]]:
         """
         Finds the unit normal vector based on two points. The points must must be on the same facet
         """
 
-        cell = self._cells[cell_index]
         cell_ngh = cell.neighbors
         
         scaled_normal_vectors = [0 for i in cell_ngh]
@@ -118,33 +117,32 @@ class Mesh:
         return scaled_normal_vectors
         
     
-    def _velocity(self, cell_index: int) -> npt.NDArray[np.float32]:
+    def _velocity(self, cell: Cell) -> npt.NDArray[np.float32]:
         """
         Finds the velocity of the oil in the midpoint of a cell. Returns a vector
         """
-        cell_midpoint = self._cells[cell_index].midpoint
+        cell_midpoint = cell.midpoint
         return np.array([cell_midpoint[1] - 0.2 * cell_midpoint[0], -cell_midpoint[0]])
 
-    def calculate(self, cell_index: int) -> npt.NDArray[np.float32]:
-        current_cell = self._cells[cell_index]
-        current_cell.neighbors = self._find_neighbors(cell_index)
-        current_cell.midpoint = self._midpoint(cell_index)
-        current_cell.area = self._calculate_area(cell_index)
-        current_cell.velocity = self._velocity(cell_index)
-        current_cell.scaled_normal = self._unit_and_scaled_normal_vector(cell_index)
+    def calculate(self, cell: Cell) -> npt.NDArray[np.float32]:
+        cell.neighbors = self._find_neighbors(cell)
+        cell.midpoint = self._midpoint(cell)
+        cell.area = self._calculate_area(cell)
+        cell.velocity = self._velocity(cell)
+        cell.scaled_normal = self._unit_and_scaled_normal_vector(cell)
         
 
-    def print_neighbors(self, cell_index: int, object_output: bool=False) -> None:
+    def print_neighbors(self, cell: Cell, object_output: bool=False) -> None:
         """
         Print the neighbors as indicies or objects depending of what is specified. Does not return anything
         """
         if object_output == True:
             try:
-                print(f"The neighbors of {cell_index} is {self._cells[cell_index].neighbors}")
+                print(f"The neighbors of {cell.index} is {cell.neighbors}")
             except IndexError:
-                print(f"Cell {cell_index} does not exist in cells")
+                print(f"Cell {cell} does not exist in cells")
         else:
             try:
-                print(f"""The neighbors of {cell_index} is {[ngh.index for ngh in self._cells[cell_index].neighbors]}""")
+                print(f"""The neighbors of {cell.index} is {[ngh.index for ngh in cell.neighbors]}""")
             except IndexError:
-                print(f"Cell {cell_index} does not exist in cells")
+                print(f"Cell {cell.index} does not exist in cells")
