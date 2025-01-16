@@ -1,12 +1,12 @@
 import numpy as np
-import time #remove
+import time  # remove
 import src.Simulation.math_function as mf
 import src.Simulation.plotting as plot
 import src.Simulation.mesh as msh
 import src.Simulation.cells as cls
 
 
-def calculate_time(func):   
+def calculate_time(func):
     # added arguments inside the inner1,
     # if function takes any arguments,
     # can be added like this.
@@ -14,23 +14,32 @@ def calculate_time(func):
 
         # storing time before function execution
         begin = time.time()
-        
+
         func(*args, **kwargs)
 
         # storing time after function execution
         end = time.time()
         print(f"Total time taken in : {func.__name__} {end - begin:.6f}")
+
     return inner1
 
+
 @calculate_time
-def find_and_plot(mesh_path: str, start_time: int, end_time: int, intervals: int, write_frequency: int, start_point) -> None:
+def find_and_plot(
+    mesh_path: str,
+    start_time: int,
+    end_time: int,
+    intervals: int,
+    write_frequency: int,
+    start_point,
+) -> None:
     """
     Plots and finds the change over the specified time
     """
     mesh = msh.Mesh(mesh_path)
     cells = mesh.cells
 
-    dt = (end_time-start_time)/intervals
+    dt = (end_time - start_time) / intervals
     print(f"dt is {dt}")
 
     print("Calculating...")
@@ -52,6 +61,7 @@ def find_and_plot(mesh_path: str, start_time: int, end_time: int, intervals: int
             if type(cell) == cls.Triangle:
                 cell.oil_amount += cell.oil_change
                 cell.oil_change = 0
-        current_time = round(current_time+dt, 4)
-    plot.plotting_mesh(cells, current_time)
+        current_time = round(current_time + dt, 4)
+    if write_frequency != -1000:
+        plot.plotting_mesh(cells, current_time)
     print(f"plotting number {intervals}...")
