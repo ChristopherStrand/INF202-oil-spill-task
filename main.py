@@ -14,6 +14,7 @@ if __name__ == "__main__":
     start_time = setting["t_start"]
     end_time = setting["t_end"]
     geometry = config["geometry"]
+    fish_area = geometry["fish_area"]
     mesh_path = geometry["filepath"]
     start_point = geometry["initial_oil_area"]
     IO = config["IO"]
