@@ -57,7 +57,7 @@ def calculate_time(func):
     return inner1
 
 @calculate_time #Remove this deco
-def find_and_plot(mesh_path: str, start_time: float, end_time: float, intervals: int, write_frequency: int, start_point: npt.NDArray[np.float32], cell_factory: msh.CellFactory) -> None:
+def find_and_plot(mesh_path: str, start_time: float, end_time: float, intervals: int, write_frequency: int, start_point: npt.NDArray[np.float32], cell_factory: msh.CellFactory, x_area: npt.NDArray[np.float32], y_area: npt.NDArray[np.float32]) -> None:
     """
     Plots and finds the change over the specified time
     """
@@ -72,6 +72,7 @@ def find_and_plot(mesh_path: str, start_time: float, end_time: float, intervals:
     for cell in cells:
         if isinstance(cell, cls.Triangle):
             mesh.calculate(cell)
+    mesh._cells_within_area(x_area, y_area)
 
     current_time = start_time
     mesh.initial_oil_distribution(start_point)
@@ -87,6 +88,8 @@ def find_and_plot(mesh_path: str, start_time: float, end_time: float, intervals:
             if isinstance(cell, cls.Triangle):
                 cell.oil_amount += cell.oil_change
                 cell.oil_change = 0
+
+
         current_time = round(current_time+dt, 4)
     plot.plotting_mesh(cells, intervals)
     print(f"plotting number {intervals}...")

@@ -108,6 +108,10 @@ class Mesh:
     @property
     def points(self) -> list[cls.Point]:
         return self._points
+    
+    def _cells_within_area(self, x_area: npt.NDArray[np.float32], y_area: npt.NDArray[np.float32]) -> list[cls.Cell]:
+        g = [cell for cell in self._cells if np.array(cell.coordinates).any(axis=0)]
+        print(len(g))
 
     def _find_neighbors(self, cell: cls.Cell) -> list[cls.Cell]:
         """

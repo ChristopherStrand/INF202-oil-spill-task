@@ -36,6 +36,7 @@ Output:
 import src.Simulation.solver as solve
 import src.Simulation.mesh as msh
 import src.Simulation.cells as cls
+import numpy as np
 from config import readConfig, parseInput
 import os
 
@@ -52,6 +53,8 @@ if __name__ == "__main__":
     start_point = geometry.get("initial_oil_area")
     IO = config["IO"]
     write_frequency = IO.get("writeFrequency")
+    x_area = np.array((0.0, 0.45))
+    y_area = np.array((0.0, 0.2))
 
     factory = msh.CellFactory()
     # -------Register Cells----------
@@ -60,6 +63,10 @@ if __name__ == "__main__":
     factory.register(3, cls.Triangle)
     # -------Register End------------
 
+    x = np.array([[0.0, 0.45], [0.1, 1.2], [0.11, 0.23]])
+    print(x[:, 0], "x")
+    print(x[:, 1], "y")
+
     solve.find_and_plot(
         mesh_path, 
         start_time, 
@@ -67,5 +74,7 @@ if __name__ == "__main__":
         intervals, 
         write_frequency, 
         start_point,
-        factory
+        factory,
+        x_area,
+        y_area
     )
