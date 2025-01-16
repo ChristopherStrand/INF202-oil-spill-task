@@ -1,7 +1,6 @@
 import numpy as np
 import numpy.typing as npt
 import time #remove
-import src.Simulation.math_function as mf
 import src.Simulation.plotting as plot
 import src.Simulation.mesh as msh
 import src.Simulation.cells as cls
@@ -32,7 +31,7 @@ def find_and_plot(mesh_path: str, start_time: int, end_time: int, intervals: int
     mesh = msh.Mesh(mesh_path, cell_factory)
     cells = mesh.cells
 
-    dt = (end_time-start_time)/intervals
+    dt = round((end_time-start_time)/intervals, 6)
     print(f"dt is {dt}")
 
     print("Calculating...")
@@ -43,14 +42,14 @@ def find_and_plot(mesh_path: str, start_time: int, end_time: int, intervals: int
             print(cell)
 
     current_time = start_time
-    mf.initial_oil_distribution(cells, start_point)
+    mesh.initial_oil_distribution(start_point)
     for steps in range(intervals):
         if steps % write_frequency == 0:
             plot.plotting_mesh(cells, current_time)
             print(f"plotting number {steps}...")
         for cell in cells:
             if type(cell) == cls.Triangle:
-                mf.calculate_change(cell, dt)
+                mesh.calculate_change(cell, dt)
 
         for cell in cells:
             if type(cell) == cls.Triangle:

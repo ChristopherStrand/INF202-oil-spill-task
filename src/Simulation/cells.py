@@ -1,3 +1,17 @@
+"""
+A module defining geometric for a 2D mesh, including Points, Cells, and specialized cell types.
+
+This module provides classes to represent Points and Cells in a 2D mesh, including properties and methods for managing their geometry and interactions. 
+It also includes specialized cell types such as Vertex, Line, and Triangle, which inherit from the base `Cell` class. Genrating objects is handled by the mesh.py module.
+
+Typical usage example:
+
+    print(triangle.index)
+    print(triangle.coordinates)
+    triangle.neighbors = [neighboring_cell1, neighboring_cell2]
+"""
+
+
 import numpy as np
 import numpy.typing as npt
 

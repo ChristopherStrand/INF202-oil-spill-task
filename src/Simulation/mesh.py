@@ -1,3 +1,32 @@
+"""
+A module for creating and simulating 2D meshes, including functionality for geometric calculations, oil distribution, and cell interaction.
+
+This module defines a `Mesh` class to represent 2D meshes with cells and points, a `CellFactory` for creating various types of cells, 
+and functions for simulation-related tasks such as calculating velocity, oil distribution, and neighbor relationships.
+
+Typical usage example:
+
+    from mesh import Mesh, CellFactory
+    from src.Simulation.cells import Triangle, Line
+
+    # Create a cell factory and register cell types
+    factory = CellFactory()
+    factory.register(3, Triangle)
+    factory.register(2, Line)
+
+    # Load a mesh file and initialize the mesh
+    mesh = Mesh("example.msh", factory)
+
+    # Access cells and points
+    cells = mesh.cells
+    points = mesh.points
+
+    # Perform calculations on a specific cell
+    mesh.calculate(cell)
+    print(cell.midpoint)
+"""
+
+
 import meshio
 import numpy.typing as npt
 from src.Simulation.cells import *
@@ -48,14 +77,14 @@ class Mesh:
     @property
     def cells(self) -> list[object]:
         """
-        Returns the list of all point objects
+        Returns a list of all cell objects
         """
         return self._cells
 
     @property
     def points(self) -> list[object]:
         """
-        Returns the list of all point objects
+        Returns a list of all point objects
         """
         return self._points
 
@@ -142,6 +171,39 @@ class Mesh:
         cell.area = self._calculate_area(cell)
         cell.velocity = self._velocity(cell)
         cell.scaled_normal = self._unit_and_scaled_normal_vector(cell)
+
+    def initial_oil_distribution(self, start_point: npt.NDArray[np.float32]):
+        """
+        Gives intial distribution of oil around start point
+        """
+        cells = self._cells
+        for cell in cells:
+            u = np.exp(-np.sum((cell.midpoint - start_point) ** 2) / 0.01)
+            cell.oil_amount = u
+
+    def calculate_change(self, cell: object, dt: float):
+        """
+        Calculates how much oil moves from a cell to it's neighbors
+        """
+        flux = 0
+        neighbors = cell.neighbors
+
+        def _g(a: float, b: float, v: npt.NDArray[np.float32], w: npt.NDArray[np.float32]):
+            """
+            Required part of calculate_area
+            """
+            dot_product = np.dot(v, w)
+
+            if dot_product > 0:
+                return a * dot_product
+            else:
+                return b * dot_product
+
+        for index, neighbor in enumerate(neighbors):
+            scaled_normal = cell.scaled_normal[index]
+            v_mid = 0.5*(cell.velocity + neighbor.velocity)
+            flux = flux + (-(dt / cell.area) * _g(cell.oil_amount, neighbor.oil_amount, scaled_normal, v_mid))
+        cell.oil_change += flux
         
 
     def print_neighbors(self, cell: Cell, object_output: bool=False) -> None:
