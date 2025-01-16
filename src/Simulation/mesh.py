@@ -2,6 +2,27 @@ import meshio
 import numpy.typing as npt
 from src.Simulation.cells import *
 
+class CellFactory:
+    def __init__(self):
+        self._cell_types = {}
+
+    def register(self, amount_of_points: int, cell_class: object):
+        """
+        Registers a new cell type with the factory
+        """
+        self._cell_types[amount_of_points] = cell_class
+
+    def __call__(self, cell: list[int], index: int, points_list: list[Point]):
+        """
+        Creates a cell object based on the input dictionary
+        """
+        key = len(cell)
+        if key not in self._cell_types:
+            raise Exception(f"Unkown cell type: {key}")
+        
+        points = [points_list[i] for i in cell]
+        return self._cell_types[key](index, points)
+
 class Mesh:
     """
     Initializes empty lists for points and cells and reads the mesh file. The initializer then makes Triangle and Line objects from the mesh file,
@@ -14,25 +35,15 @@ class Mesh:
         - Triangle and Line objects.
     """
 
-    def __init__(self, msh_file: str) -> None:
+    def __init__(self, msh_file: str, cell_factory: CellFactory) -> None:
         self._cell_index = -1  # The index of a cell in _cells
         msh = meshio.read(msh_file)  # Reads the meshfile
         # Generates a list containing point objects
         self._points = [Point(index, np.float32(points[0]), np.float32(points[1])) for index, points in enumerate(msh.points)]
-        # Generates a list containing cell objects of the type line or triangle
+        # Generates a list containing cell objects
         self._cells = []
         for cell_types in msh.cells:
-            # Ignores lines since they aren't relevant for the task
-            self._cells.extend([self._cell_factory(cell) for cell in cell_types.data])
-
-    def _cell_factory(self, cell: list[int]) -> object:  # Mainly used for extendability
-        cell_check = len(cell)
-        cell_map = {1:Vertex, 2: Line, 3: Triangle}
-
-        points = [self._points[i] for i in cell]
-        self._cell_index += 1
-
-        return cell_map[cell_check](self._cell_index, points)
+            self._cells.extend([cell_factory(cell, self._cell_index, self._points) for cell in cell_types.data])
     
     @property
     def cells(self) -> list[object]:
@@ -73,6 +84,7 @@ class Mesh:
         for coordinates in point_coordinates:
             sum_coordinates = sum_coordinates + coordinates
         return (1 / number_of_points) * (sum_coordinates)
+        # return np.mean(cell.coordinates)
 
     def _calculate_area(self, cell: Triangle) -> float:
         """
