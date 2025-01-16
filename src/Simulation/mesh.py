@@ -43,7 +43,7 @@ class CellFactory:
     """
     def __init__(self):
         self._cell_types = {}
-        self._cell_index = -1 # Minus -1 such that the index starts at 0
+        self._cell_index = -1  # Minus -1 such that the index starts at 0
 
     def register(self, amount_of_points: int, cell_class: object):
         """
@@ -102,11 +102,11 @@ class Mesh:
             self._cells.extend([cell_factory(cell, self._points) for cell in cell_types.data])
     
     @property
-    def cells(self) -> list[object]:
+    def cells(self) -> list[cls.Cell]:
         return self._cells
 
     @property
-    def points(self) -> list[object]:
+    def points(self) -> list[cls.Point]:
         return self._points
 
     def _find_neighbors(self, cell: cls.Cell) -> list[cls.Cell]:
@@ -233,7 +233,7 @@ class Mesh:
             u = np.exp(-np.sum((cell.midpoint - start_point) ** 2) / 0.01)
             cell.oil_amount = u
 
-    def calculate_change(self, cell: object, dt: float):
+    def calculate_change(self, cell: cls.Cell, dt: float):
         """
         Calculates the change in oil distribution for a cell over a given time step.
 

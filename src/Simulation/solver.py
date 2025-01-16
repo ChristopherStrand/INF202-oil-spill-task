@@ -70,25 +70,23 @@ def find_and_plot(mesh_path: str, start_time: int, end_time: int, intervals: int
 
     print("Calculating...")
     for cell in cells:
-        if type(cell) == cls.Triangle:
+        if isinstance(cell, cls.Triangle):
             mesh.calculate(cell)
-        if cell.index == 309:
-            print(cell)
 
     current_time = start_time
     mesh.initial_oil_distribution(start_point)
     for steps in range(intervals):
         if steps % write_frequency == 0:
-            plot.plotting_mesh(cells, current_time)
+            plot.plotting_mesh(cells, steps)
             print(f"plotting number {steps}...")
         for cell in cells:
-            if type(cell) == cls.Triangle:
+            if isinstance(cell, cls.Triangle):
                 mesh.calculate_change(cell, dt)
 
         for cell in cells:
-            if type(cell) == cls.Triangle:
+            if isinstance(cell, cls.Triangle):
                 cell.oil_amount += cell.oil_change
                 cell.oil_change = 0
         current_time = round(current_time+dt, 4)
-    plot.plotting_mesh(cells, current_time)
+    plot.plotting_mesh(cells, intervals)
     print(f"plotting number {intervals}...")

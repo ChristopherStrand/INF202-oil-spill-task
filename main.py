@@ -35,7 +35,7 @@ Output:
 
 import src.Simulation.solver as solve
 import src.Simulation.mesh as msh
-from src.Simulation.cells import *
+import src.Simulation.cells as cls
 from config import readConfig, parseInput
 import os
 
@@ -54,11 +54,11 @@ if __name__ == "__main__":
     write_frequency = IO.get("writeFrequency")
 
     factory = msh.CellFactory()
-    #-------Register Cells----------
-    factory.register(1, Vertex)
-    factory.register(2, Line)
-    factory.register(3, Triangle)
-    #-------Register End------------
+    # -------Register Cells----------
+    factory.register(1, cls.Vertex)
+    factory.register(2, cls.Line)
+    factory.register(3, cls.Triangle)
+    # -------Register End------------
 
     solve.find_and_plot(
         mesh_path, 

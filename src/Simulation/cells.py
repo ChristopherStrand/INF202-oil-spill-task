@@ -14,6 +14,21 @@ Typical usage example:
 
 import numpy as np
 import numpy.typing as npt
+from typing import Self
+
+
+class Point:
+    def __init__(self, index: int, x: float, y: float) -> None:
+        self._index = index
+        self._coordinates = np.array([x, y])
+
+    @property
+    def index(self) -> int:
+        return self._index
+
+    @property
+    def coordinates(self) -> npt.NDArray[np.float32]:
+        return self._coordinates
 
 
 class Cell:
@@ -35,23 +50,23 @@ class Cell:
         self._scaled_normal = []
 
     @property
-    def coordinates(self) -> list:
+    def coordinates(self) -> list[npt.NDArray[np.float32]]:
         return [point.coordinates for point in self._points]
 
     @property
-    def oil_amount(self):
+    def oil_amount(self) -> float:
         return self._oil_amount
 
     @oil_amount.setter
-    def oil_amount(self, value):
+    def oil_amount(self, value) -> None:
         self._oil_amount = value
 
     @property
-    def oil_change(self):
+    def oil_change(self) -> float:
         return self._oil_change
 
     @oil_change.setter
-    def oil_change(self, value):
+    def oil_change(self, value) -> None:
         self._oil_change = value
 
     @property
@@ -59,43 +74,43 @@ class Cell:
         return self._index
     
     @property
-    def midpoint(self):
+    def midpoint(self) -> npt.NDArray[np.float32]:
         return self._midpoint
     
     @midpoint.setter
-    def midpoint(self, mid_coordinates: npt.NDArray[np.float32]):
+    def midpoint(self, mid_coordinates: npt.NDArray[np.float32]) -> None:
         self._midpoint = mid_coordinates
     
     @property
-    def area(self):
+    def area(self) -> float:
         return self._area
     
     @area.setter
-    def area(self, area_of_cell: float):
+    def area(self, area_of_cell: float) -> None:
         self._area = area_of_cell
     
     @property
-    def scaled_normal(self):
+    def scaled_normal(self) -> npt.NDArray[np.float32]:
         return self._scaled_normal
 
     @scaled_normal.setter
-    def scaled_normal(self, scaled_vector: npt.NDArray[np.float32]):
+    def scaled_normal(self, scaled_vector: npt.NDArray[np.float32]) -> None:
         self._scaled_normal = scaled_vector
 
     @property
-    def velocity(self):
+    def velocity(self) -> npt.NDArray[np.float32]:
         return self._velocity
     
     @velocity.setter
-    def velocity(self, velocity_vector: npt.NDArray[np.float32]):
+    def velocity(self, velocity_vector: npt.NDArray[np.float32]) -> None:
         self._velocity = velocity_vector
 
     @property
-    def points(self) -> list[int]:
+    def points(self) -> list[Point]:
         return self._points
 
     @property
-    def neighbors(self) -> list[int]:
+    def neighbors(self) -> list[Self]:
         return self._neighbors
 
     @neighbors.setter
@@ -111,20 +126,6 @@ class Cell:
                   neighbors: {[ngh.index for ngh in self._neighbors]}"""
 
 # ------------------------------cells end--------------------------------------
-
-
-class Point:
-    def __init__(self, index: int, x: float, y: float) -> None:
-        self._index = index
-        self._coordinates = np.array([x, y])
-
-    @property
-    def index(self) -> int:
-        return self._index
-
-    @property
-    def coordinates(self) -> npt.NDArray[np.float32]:
-        return self._coordinates
 
 
 class Vertex(Cell):
