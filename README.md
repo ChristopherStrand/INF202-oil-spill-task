@@ -88,6 +88,7 @@ This project focuses on a fictional scenario involving an oil spill in “Bay Ci
    The simulation generates plots at regular intervals (specified in the configuration file) to show the oil spill’s movement over time.
 
 
+
 ---
 
 ## User Guide
