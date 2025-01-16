@@ -1,4 +1,5 @@
 import numpy as np
+import numpy.typing as npt
 import time #remove
 import src.Simulation.math_function as mf
 import src.Simulation.plotting as plot
@@ -23,11 +24,12 @@ def calculate_time(func):
     return inner1
 
 @calculate_time
-def find_and_plot(mesh_path: str, start_time: int, end_time: int, intervals: int, write_frequency: int, start_point) -> None:
+def find_and_plot(mesh_path: str, start_time: int, end_time: int, intervals: int, write_frequency: int, start_point: npt.NDArray[np.float32], cell_factory: msh.CellFactory) -> None:
     """
     Plots and finds the change over the specified time
     """
-    mesh = msh.Mesh(mesh_path)
+   
+    mesh = msh.Mesh(mesh_path, cell_factory)
     cells = mesh.cells
 
     dt = (end_time-start_time)/intervals
@@ -37,6 +39,8 @@ def find_and_plot(mesh_path: str, start_time: int, end_time: int, intervals: int
     for cell in cells:
         if type(cell) == cls.Triangle:
             mesh.calculate(cell)
+        if cell.index == 309:
+            print(cell)
 
     current_time = start_time
     mf.initial_oil_distribution(cells, start_point)
