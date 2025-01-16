@@ -129,15 +129,15 @@ class Cell:
 
 
 class Vertex(Cell):
-    def __init__(self, index: int, points: npt.NDArray[np.float32]) -> None:
+    def __init__(self, index: int, points: list[Point]) -> None:
         super().__init__(index, points)
 
 
 class Line(Cell):
-    def __init__(self, index: int, points: npt.NDArray[np.float32]) -> None:
+    def __init__(self, index: int, points: list[Point]) -> None:
         super().__init__(index, points)
 
 
 class Triangle(Cell):
-    def __init__(self, index: int, points: npt.NDArray[np.float32]) -> None:
+    def __init__(self, index: int, points: list[Point]) -> None:
         super().__init__(index, points)

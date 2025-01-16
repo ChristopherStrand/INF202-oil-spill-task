@@ -57,7 +57,7 @@ def calculate_time(func):
     return inner1
 
 @calculate_time #Remove this deco
-def find_and_plot(mesh_path: str, start_time: int, end_time: int, intervals: int, write_frequency: int, start_point: npt.NDArray[np.float32], cell_factory: msh.CellFactory) -> None:
+def find_and_plot(mesh_path: str, start_time: float, end_time: float, intervals: int, write_frequency: int, start_point: npt.NDArray[np.float32], cell_factory: msh.CellFactory) -> None:
     """
     Plots and finds the change over the specified time
     """
