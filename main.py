@@ -1,13 +1,22 @@
 import src.Simulation.solver as solve
 import numpy as np
+from config import readConfig, parseInput
+import os
 
 if __name__ == "__main__":
-    start_time = 0.0
-    end_time = 1
-    intervals = 100
-    write_frequency = 5
-    mesh_path = "./meshes/bay.msh"
-    start_point = np.array([0.35, 0.45])
+    os.makedirs("images", exist_ok=True)
+    args = parseInput()
+    config = readConfig(args.config)
+    setting = config["settings"]
+    intervals = setting["nSteps"]
+    start_time = setting["t_start"]
+    end_time = setting["t_end"]
+    geometry = config["geometry"]
+    mesh_path = geometry.get("filepath")
+    start_point = geometry.get("initial_oil_area")
+    IO = config["IO"]
+    write_frequency = IO.get("writeFrequency")
 
-    solve.find_and_plot(mesh_path, start_time, end_time, intervals, write_frequency, start_point)
-
+    solve.find_and_plot(
+        mesh_path, start_time, end_time, intervals, write_frequency, start_point
+    )
