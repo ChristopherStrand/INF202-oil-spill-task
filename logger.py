@@ -6,7 +6,7 @@ def setup_logger(logname):
     os.makedirs("logs", exist_ok=True)
 
     logging.basicConfig(
-        filename="logs/{logname}.log",
+        filename=f"logs/{logname}.log",
         level=logging.INFO,
         format="%(asctime)s - %(levelname)s - %(message)s",
         filemode="w",

@@ -1,3 +1,0 @@
-2025-01-16 13:29:08,950 - INFO - Simulation started
-2025-01-16 13:29:08,950 - INFO - {'settings': {'nSteps': 100, 't_start': 0.1, 't_end': 1.0}, 'geometry': {'filepath': 'meshes/bay.msh', 'fish_area': [[0.0, 0.45], [0.0, 0.2]], 'initial_oil_area': [0.35, 0.45]}, 'IO': {'logName': 'logs/logfile.log', 'writeFrequency': 5, 'restartFile': 'input/solution.txt'}}
-2025-01-16 13:29:33,293 - INFO - Simulation Ended
