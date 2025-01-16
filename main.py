@@ -1,5 +1,4 @@
 import src.Simulation.solver as solve
-import numpy as np
 import src.Simulation.mesh as msh
 from src.Simulation.cells import *
 from config import readConfig, parseInput
