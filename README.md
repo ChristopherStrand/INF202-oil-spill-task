@@ -1,7 +1,5 @@
 # The Art of the Spill
 
-## Modeling the Movement of Oil Spills Outside Bay City
-
 **Ludvik Høibjerg Aslaksen**  
 **Christopher Ljosland Strand**  
 **Frederic Ljosland Strand**  
