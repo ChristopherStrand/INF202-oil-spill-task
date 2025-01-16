@@ -23,7 +23,7 @@ def calculate_time(func):
     return inner1
 
 @calculate_time
-def find_and_plot(mesh_path: str, start_time: int, end_time: int, intervals: int, write_frequency: int) -> None:
+def find_and_plot(mesh_path: str, start_time: int, end_time: int, intervals: int, write_frequency: int, start_point) -> None:
     """
     Plots and finds the change over the specified time
     """
@@ -31,7 +31,6 @@ def find_and_plot(mesh_path: str, start_time: int, end_time: int, intervals: int
     cells = mesh.cells
 
     dt = (end_time-start_time)/intervals
-    start_point = np.array([0.35, 0.45])
     print(f"dt is {dt}")
 
     print("Calculating...")
