@@ -32,11 +32,13 @@ def readConfig(name):
 
     settings = config["settings"]
     steps = settings.get("nSteps")
-    t_start = settings.get("t_start")
+    t_start = settings.get("t_start", 0)
     t_end = settings.get("t_end")
 
     IO = config["IO"]
-    image_freq = IO.get("writeFrequency")
+    writeFrequency = IO["writeFrequency"]
+    restartFile = IO["restartFile"]
+    logName = IO["logName"]
 
     if not filepath or not os.path.exists(filepath):
         raise FileNotFoundError(f"The mesh file {filepath} does not exist.")
@@ -50,7 +52,19 @@ def readConfig(name):
     if not steps or steps <= 0:
         raise ValueError("Missing nSteps in settings section.")
 
-    if t_start is None or t_end is None or t_end <= t_start:
-        raise ValueError("Missing t_start or t_end in settings section.")
+    if restartFile and not t_start:
+        raise ValueError("if restarFile given, must give t_start.")
+
+    if t_end is None or t_end <= t_start:
+        raise ValueError("Missing t_end in or t_end <= t_start in settings section.")
+
+    if not writeFrequency:
+        writeFrequency = -1000
+
+    if not restartFile:
+        t_start = 0
+
+    if not logName:
+        logName = "logfile.log"
 
     return config

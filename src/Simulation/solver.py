@@ -54,6 +54,7 @@ def calculate_time(func):
         func(*args, **kwargs)
         end = time.time()
         print(f"Total time taken in : {func.__name__} {end - begin:.6f}")
+
     return inner1
 
 @calculate_time #Remove this deco

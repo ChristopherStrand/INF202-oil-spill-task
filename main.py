@@ -39,9 +39,11 @@ import src.Simulation.cells as cls
 import numpy as np
 from config import readConfig, parseInput
 import os
+from logger import setup_logger
 
 if __name__ == "__main__":
     os.makedirs("images", exist_ok=True)
+
     args = parseInput()
     config = readConfig(args.config)
     setting = config["settings"]
@@ -49,10 +51,17 @@ if __name__ == "__main__":
     start_time = setting["t_start"]
     end_time = setting["t_end"]
     geometry = config["geometry"]
-    mesh_path = geometry.get("filepath")
-    start_point = geometry.get("initial_oil_area")
+    fish_area = geometry["fish_area"]
+    mesh_path = geometry["filepath"]
+    start_point = geometry["initial_oil_area"]
     IO = config["IO"]
-    write_frequency = IO.get("writeFrequency")
+    write_frequency = IO["writeFrequency"]
+    logName = IO["logName"]
+
+    logger = setup_logger(logName)
+
+    logger.info("Simulation started")
+    logger.info(config)
     x_area = np.array((0.0, 0.45))
     y_area = np.array((0.0, 0.2))
 
@@ -68,13 +77,7 @@ if __name__ == "__main__":
     print(x[:, 1], "y")
 
     solve.find_and_plot(
-        mesh_path, 
-        start_time, 
-        end_time, 
-        intervals, 
-        write_frequency, 
-        start_point,
-        factory,
-        x_area,
-        y_area
+        mesh_path, start_time, end_time, intervals, write_frequency, start_point
     )
+
+    logger.info("Simulation Ended")
