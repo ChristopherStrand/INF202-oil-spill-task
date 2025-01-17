@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-def plotting_mesh(cells: list[object], dt: float):
+def plotting_mesh(cells: list[object], dt: float, cells_in_area: list[object]):
     """
     plots a mesh representing the oil distrobution at a spesific time and saves the plot as an image file
     """
@@ -34,6 +34,10 @@ def plotting_mesh(cells: list[object], dt: float):
         color = plt.cm.viridis((cell.oil_amount - min_oil) / (max_oil - min_oil))
         # adds the cell to the plot with the color determined by the oil amount
         plt.gca().add_patch(plt.Polygon(coords, color=color, alpha=0.9))
+
+    for cell in cells_in_area:
+        coords = np.array([point.coordinates for point in cell.points])
+        plt.gca().add_patch(plt.Polygon(coords, color="cyan", alpha=0.4))
 
     plt.title("Mesh Plot")
     plt.xlabel("X Coordinate")

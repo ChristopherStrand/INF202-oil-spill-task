@@ -106,7 +106,7 @@ def find_and_plot(
     for steps in range(intervals):
         if write_frequency is not None:
             if steps % write_frequency == 0:
-                plot.plotting_mesh(cells, steps)
+                plot.plotting_mesh(cells, steps, cells_in_area)
                 print(f"plotting number {steps}...")
 
         for cell in cells:
@@ -125,7 +125,7 @@ def find_and_plot(
             oil_in_area += cell.oil_amount
         oil_area_time[current_time] = oil_in_area
 
-    plot.plotting_mesh(cells, intervals)
+    plot.plotting_mesh(cells, intervals, cells_in_area)
     print(f"plotting number {intervals}...")
 
     # Stores the oil amount values such that the simulation can be started from a different time
