@@ -32,7 +32,6 @@ Output:
 - Executes the main function `find_and_plot` from the solver, which handles the core simulation and visualization tasks.
 """
 
-
 import src.Simulation.solver as solve
 import src.Simulation.mesh as msh
 import src.Simulation.cells as cls
@@ -72,16 +71,19 @@ if __name__ == "__main__":
     factory.register(3, cls.Triangle)
     # -------Register End------------
 
-    solve.find_and_plot(
-        mesh_path, 
-        start_time, 
-        end_time, 
-        intervals, 
-        write_frequency, 
+    oil_area_time = solve.find_and_plot(
+        mesh_path,
+        start_time,
+        end_time,
+        intervals,
+        write_frequency,
         start_point,
         factory,
         x_area,
-        y_area
+        y_area,
     )
 
+    logger.info("Oil distribution over time:")
+    for time_step, oil_value in oil_area_time.items():
+        logger.info(f"  Time step {time_step}: Oil amount {oil_value}")
     logger.info("Simulation Ended")

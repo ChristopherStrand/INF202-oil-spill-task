@@ -36,9 +36,9 @@ def readConfig(name):
     t_end = settings.get("t_end")
 
     IO = config["IO"]
-    writeFrequency = IO["writeFrequency"]
-    restartFile = IO["restartFile"]
-    logName = IO["logName"]
+    writeFrequency = IO.get("writeFrequency")
+    restartFile = IO.get("restartFile")
+    logName = IO.get("logName")
 
     if not filepath or not os.path.exists(filepath):
         raise FileNotFoundError(f"The mesh file {filepath} does not exist.")

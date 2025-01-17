@@ -39,34 +39,47 @@ Example:
     )
 """
 
-
 import numpy as np
 import numpy.typing as npt
-import time #remove
+import time  # remove
 import src.Simulation.plotting as plot
 import src.Simulation.mesh as msh
 import src.Simulation.cells as cls
 
-#Remove this func
-def calculate_time(func):   
+
+# Remove this func
+def calculate_time(func):
     def inner1(*args, **kwargs):
         begin = time.time()
-        func(*args, **kwargs)
+        result = func(*args, **kwargs)
         end = time.time()
         print(f"Total time taken in : {func.__name__} {end - begin:.6f}")
+        return result
 
     return inner1
 
-@calculate_time #Remove this deco
-def find_and_plot(mesh_path: str, start_time: float, end_time: float, intervals: int, write_frequency: int, start_point: npt.NDArray[np.float32], cell_factory: msh.CellFactory, x_area: npt.NDArray[np.float32], y_area: npt.NDArray[np.float32], restartFile=None) -> None:
+
+@calculate_time  # Remove this deco
+def find_and_plot(
+    mesh_path: str,
+    start_time: float,
+    end_time: float,
+    intervals: int,
+    write_frequency: int,
+    start_point: npt.NDArray[np.float32],
+    cell_factory: msh.CellFactory,
+    x_area: npt.NDArray[np.float32],
+    y_area: npt.NDArray[np.float32],
+    restartFile=None,
+) -> dict[str, float]:
     """
     Plots and finds the change over the specified time
     """
-   
+
     mesh = msh.Mesh(mesh_path, cell_factory)
     cells = mesh.cells
 
-    dt = round((end_time-start_time)/intervals, 6)
+    dt = round((end_time - start_time) / intervals, 6)
     print(f"dt is {dt}")
 
     # Calculates area, midpoint, neighbors etc
@@ -74,8 +87,7 @@ def find_and_plot(mesh_path: str, start_time: float, end_time: float, intervals:
     for cell in cells:
         if isinstance(cell, cls.Triangle):
             mesh.calculate(cell)
-    
-    
+
     # Runs if the simulation is suppose to start from a different time
     if restartFile is not None:
         with open(restartFile, "r") as file:
@@ -84,10 +96,12 @@ def find_and_plot(mesh_path: str, start_time: float, end_time: float, intervals:
                 index, oil_amount = line.split(";")
                 cells[int(index)].oil_amount = float(oil_amount)
             print(f"Restarting from {header}")
-    
+
     # Calculates change and plots
     current_time = start_time
     mesh.initial_oil_distribution(start_point)
+    cells_in_area = mesh.cells_within_area(x_area, y_area)
+    oil_area_time = {}
     for steps in range(intervals):
         if steps % write_frequency == 0:
             plot.plotting_mesh(cells, steps)
@@ -102,19 +116,20 @@ def find_and_plot(mesh_path: str, start_time: float, end_time: float, intervals:
                 cell.oil_amount += cell.oil_change
                 cell.oil_change = 0
 
-        current_time = round(current_time+dt, 4)
+        current_time = round(current_time + dt, 4)
+
+        oil_in_area = 0
+        for cell in cells_in_area:
+            oil_in_area += cell.oil_amount
+        oil_area_time[current_time] = oil_in_area
+
     plot.plotting_mesh(cells, intervals)
     print(f"plotting number {intervals}...")
-
-    cells_in_area = mesh.cells_within_area(x_area, y_area)
-    oil_in_area = 0
-    for cell in cells_in_area:
-        oil_in_area += cell.oil_amount
-    print(f"The amount of oil in the specified area is {round(oil_in_area, 4)}")
-        
 
     # Stores the oil amount values such that the simulation can be started from a different time
     with open("input/restartFile.csv", "w") as file:
         file.write(f"{end_time}\n")
         for cell in cells:
             file.write(f"{cell.index};{cell.oil_amount}\n")
+
+    return oil_area_time
