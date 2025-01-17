@@ -4,14 +4,12 @@ import argparse
 
 
 def parseInput():
-    parser = argparse.ArgumentParser(
-        description=" input config file name with -f or --file"
-    )
+    parser = argparse.ArgumentParser(description=" input config file name with -f ")
     parser.add_argument(
         "-c", "--config", default="input.toml", type=str, help="input config file name"
     )
     parser.add_argument(
-        "-f", "--file", type=str, help="folder including the config file"
+        "-f", "--folder", type=str, help="folder including the config file"
     )
     parser.add_argument("--find-all", action="store_true", help="find all files")
     args = parser.parse_args()

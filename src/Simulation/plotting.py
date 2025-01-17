@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+
 def plotting_mesh(cells: list[object], dt: float):
     """
     plots a mesh representing the oil distrobution at a spesific time and saves the plot as an image file
@@ -43,5 +44,4 @@ def plotting_mesh(cells: list[object], dt: float):
     plt.ylim(0, 1)
     filename = f"./images/mesh_plot{dt}.png"
     plt.savefig(filename)
-    #plt.show()
-    
+    # plt.show()
