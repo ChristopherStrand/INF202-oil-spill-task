@@ -32,7 +32,7 @@ def readConfig(name):
 
     settings = config["settings"]
     steps = settings.get("nSteps")
-    t_start = settings.get("t_start", 0)
+    t_start = settings.get("t_start")
     t_end = settings.get("t_end")
 
     IO = config["IO"]
@@ -52,7 +52,7 @@ def readConfig(name):
     if not steps or steps <= 0:
         raise ValueError("Missing nSteps in settings section.")
 
-    if restartFile and not t_start:
+    if restartFile and t_start is None:
         raise ValueError("if restarFile given, must give t_start.")
 
     if t_end is None or t_end <= t_start:

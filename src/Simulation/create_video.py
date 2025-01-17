@@ -22,22 +22,26 @@ Output:
 """
 
 import cv2 as cv
+import os
 
-# list for all image names
-images = [f"images/{i}.png" for i in range(0, 20)]
 
-# reads in first image and gets dimensions
-frame = cv.imread(images[0])
-height, width, layers = frame.shape
+def make_video(image_folder="images"):
+    # list for all image names
+    images = [f"{image_folder}/mesh_plot{i}.png" for i in range(0, 100, 5)]
+    valid_images = [image for image in images if os.path.exists(image)]
 
-# defines codec (mp4) and creates video object
-fourcc = cv.VideoWriter_fourcc(*"mp4v")
-video = cv.VideoWriter("video.avi", fourcc, 1, (width, height))
+    # reads in first image and gets dimensions
+    frame = cv.imread(valid_images[0])
+    height, width, layers = frame.shape
 
-# writes each image to video object
-for image in images:
-    video.write(cv.imread(image))
+    # defines codec (mp4) and creates video object
+    fourcc = cv.VideoWriter_fourcc(*"mp4v")
+    video = cv.VideoWriter("video.mp4", fourcc, 1, (width, height))
 
-# closes all windows and releases video object
-cv.destroyAllWindows()
-video.release()
+    # writes each image to video object
+    for image in valid_images:
+        video.write(cv.imread(image))
+
+    # closes all windows and releases video object
+    cv.destroyAllWindows()
+    video.release()

@@ -1,7 +1,7 @@
 [settings]
 nSteps = 50
-t_start = 0.5
-t_end = 1.0
+t_start = 0.0
+t_end = 0.5
 
 [geometry]
 filepath = "meshes/bay.msh"

@@ -47,15 +47,15 @@ if __name__ == "__main__":
     config = readConfig(args.config)
     setting = config["settings"]
     intervals = setting["nSteps"]
-    start_time = setting["t_start"]
+    start_time = setting.get("t_start")
     end_time = setting["t_end"]
     geometry = config["geometry"]
     fish_area = geometry["fish_area"]
     mesh_path = geometry["filepath"]
     start_point = geometry["initial_oil_area"]
     IO = config["IO"]
-    write_frequency = IO["writeFrequency"]
-    logName = IO["logName"]
+    write_frequency = IO.get("writeFrequency")
+    logName = IO.get("logName")
 
     logger = setup_logger(logName)
 

@@ -45,6 +45,7 @@ import time  # remove
 import src.Simulation.plotting as plot
 import src.Simulation.mesh as msh
 import src.Simulation.cells as cls
+from .create_video import make_video
 
 
 # Remove this func
@@ -103,9 +104,10 @@ def find_and_plot(
     cells_in_area = mesh.cells_within_area(x_area, y_area)
     oil_area_time = {}
     for steps in range(intervals):
-        if steps % write_frequency == 0:
-            plot.plotting_mesh(cells, steps)
-            print(f"plotting number {steps}...")
+        if write_frequency is not None:
+            if steps % write_frequency == 0:
+                plot.plotting_mesh(cells, steps)
+                print(f"plotting number {steps}...")
 
         for cell in cells:
             if isinstance(cell, cls.Triangle):
@@ -131,5 +133,7 @@ def find_and_plot(
         file.write(f"{end_time}\n")
         for cell in cells:
             file.write(f"{cell.index};{cell.oil_amount}\n")
+    if write_frequency is not None:
+        make_video()
 
     return oil_area_time
