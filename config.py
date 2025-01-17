@@ -16,6 +16,19 @@ def parseInput():
     return args
 
 
+def find_config_files(folder):
+    """
+    Find all TOML configuration files in the specified folder.
+    """
+    if not os.path.exists(folder):
+        raise FileNotFoundError(f"The folder {folder} does not exist.")
+    return [
+        os.path.join(folder, file)
+        for file in os.listdir(folder)
+        if file.endswith(".toml")
+    ]
+
+
 def readConfig(name):
     if not os.path.exists(name):
         raise FileNotFoundError(f"The config file {name} does not exist.")
