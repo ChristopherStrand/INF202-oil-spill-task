@@ -45,7 +45,7 @@ import time  # remove
 import src.Simulation.plotting as plot
 import src.Simulation.mesh as msh
 import src.Simulation.cells as cls
-from .create_video import make_video
+import src.Simulation.create_video as cv
 
 
 # Remove this func
@@ -92,11 +92,11 @@ def find_and_plot(
     # Runs if the simulation is suppose to start from a different time
     if restartFile is not None:
         with open(restartFile, "r") as file:
-            header = file.readlines()
+            current_time = float(file.readline().strip())
             for line in file:
                 index, oil_amount = line.split(";")
                 cells[int(index)].oil_amount = float(oil_amount)
-            print(f"Restarting from {header}")
+            print(f"Restarting from {current_time}")
 
     # Calculates change and plots
     current_time = start_time
@@ -104,10 +104,9 @@ def find_and_plot(
     cells_in_area = mesh.cells_within_area(x_area, y_area)
     oil_area_time = {}
     for steps in range(intervals):
-        if write_frequency is not None:
-            if steps % write_frequency == 0:
-                plot.plotting_mesh(cells, steps)
-                print(f"plotting number {steps}...")
+        if steps % write_frequency == 0:
+            plot.plotting_mesh(cells, steps)
+            print(f"plotting number {steps}...")
 
         for cell in cells:
             if isinstance(cell, cls.Triangle):
@@ -133,7 +132,6 @@ def find_and_plot(
         file.write(f"{end_time}\n")
         for cell in cells:
             file.write(f"{cell.index};{cell.oil_amount}\n")
-    if write_frequency is not None:
-        make_video(None, intervals, write_frequency)
+    cv.make_video()
 
     return oil_area_time
