@@ -78,6 +78,19 @@ def find_and_plot(
     """
     Plots and finds the change over the specified time
     """
+    root_folder = "results"
+    os.makedirs(root_folder, exist_ok=True)
+
+    if toml_file:
+        base_name = os.path.splitext(os.path.basename(toml_file))[0]
+    else:
+        base_name = "default_experiment"
+
+    experiment_folder = os.path.join(root_folder, f"{base_name}_results")
+    os.makedirs(experiment_folder, exist_ok=True)
+    os.makedirs(os.path.join(experiment_folder, "input"), exist_ok=True)
+    images_folder = os.path.join(experiment_folder, "images")
+    os.makedirs(images_folder, exist_ok=True)
 
     mesh = msh.Mesh(mesh_path, cell_factory)
     cells = mesh.cells
@@ -108,7 +121,7 @@ def find_and_plot(
     for steps in range(intervals):
         if write_frequency is not None:
             if steps % write_frequency == 0:
-                plot.plotting_mesh(cells, steps, cells_in_area)
+                plot.plotting_mesh(cells, steps, cells_in_area, images_folder)
                 print(f"plotting number {steps}...")
 
         for cell in cells:
@@ -127,7 +140,7 @@ def find_and_plot(
             oil_in_area += cell.oil_amount
         oil_area_time[current_time] = oil_in_area
 
-    plot.plotting_mesh(cells, intervals, cells_in_area)
+    plot.plotting_mesh(cells, intervals, cells_in_area, images_folder)
     print(f"plotting number {intervals}...")
 
     if toml_file:
@@ -137,8 +150,7 @@ def find_and_plot(
         restart_filename = "restartFile.csv"
 
     # Stores the oil amount values such that the simulation can be started from a different time
-    os.makedirs("input", exist_ok=True)
-    with open(os.path.join("input/", restart_filename), "w") as file:
+    with open(os.path.join(experiment_folder, "input/", restart_filename), "w") as file:
         file.write(f"{end_time}\n")
         for cell in cells:
             file.write(f"{cell.index};{cell.oil_amount}\n")

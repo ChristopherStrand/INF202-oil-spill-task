@@ -1,7 +1,8 @@
 import numpy as np
+import os
 import matplotlib.pyplot as plt
 
-def plotting_mesh(cells: list[object], dt: float, cells_in_area: list[object]):
+def plotting_mesh(cells: list[object], dt: float, cells_in_area: list[object], images_folder: str):
     """
     plots a mesh representing the oil distrobution at a spesific time and saves the plot as an image file
     """
@@ -45,7 +46,7 @@ def plotting_mesh(cells: list[object], dt: float, cells_in_area: list[object]):
     plt.gca().set_aspect("equal")
     plt.xlim(0, 1)
     plt.ylim(0, 1)
-    filename = f"./images/mesh_plot{dt}.png"
+    filename = os.path.join(images_folder, f"mesh_plot{dt}.png")
     plt.savefig(filename)
     #plt.show()
     
