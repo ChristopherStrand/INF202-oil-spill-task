@@ -1,5 +1,5 @@
 [settings]
-nSteps = 500
+nSteps = 50
 t_start = 0.0
 t_end = 1.0
 

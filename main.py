@@ -85,6 +85,7 @@ if __name__ == "__main__":
                 factory,
                 x_area,
                 y_area,
+                toml_file=toml_file,
             )
 
             logger.info("Oil distribution over time:")

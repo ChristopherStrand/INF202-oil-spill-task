@@ -77,7 +77,6 @@ def process_all_configs(folder):
     toml_files = [os.path.join(folder, f) for f in os.listdir(folder) if f.endswith(".toml")]
     if not toml_files:
         print("No .toml files found in the specified folder.")
-        return []
 
     return toml_files
 

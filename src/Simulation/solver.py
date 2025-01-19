@@ -42,6 +42,7 @@ Example:
 import numpy as np
 import numpy.typing as npt
 import time  # remove
+import os
 import src.Simulation.plotting as plot
 import src.Simulation.mesh as msh
 import src.Simulation.cells as cls
@@ -72,6 +73,7 @@ def find_and_plot(
     x_area: npt.NDArray[np.float32],
     y_area: npt.NDArray[np.float32],
     restartFile=None,
+    toml_file=None,
 ) -> dict[str, float]:
     """
     Plots and finds the change over the specified time
@@ -128,11 +130,19 @@ def find_and_plot(
     plot.plotting_mesh(cells, intervals, cells_in_area)
     print(f"plotting number {intervals}...")
 
+    if toml_file:
+        base_name = os.path.splitext(os.path.basename(toml_file))[0]
+        restart_filename = f"{base_name}_restartFile.csv"
+    else:
+        restart_filename = "restartFile.csv"
+
     # Stores the oil amount values such that the simulation can be started from a different time
-    with open("input/restartFile.csv", "w") as file:
+    os.makedirs("input", exist_ok=True)
+    with open(os.path.join("input/", restart_filename), "w") as file:
         file.write(f"{end_time}\n")
         for cell in cells:
             file.write(f"{cell.index};{cell.oil_amount}\n")
+
     if write_frequency is not None:
         make_video()
 
