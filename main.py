@@ -36,7 +36,7 @@ import src.Simulation.solver as solve
 import src.Simulation.mesh as msh
 import src.Simulation.cells as cls
 import numpy as np
-from config import readConfig, parseInput
+from config import readConfig, parseInput, process_all_configs
 import os
 from logger import setup_logger
 
@@ -44,46 +44,94 @@ if __name__ == "__main__":
     os.makedirs("images", exist_ok=True)
 
     args = parseInput()
-    config = readConfig(args.config)
-    setting = config["settings"]
-    intervals = setting["nSteps"]
-    start_time = setting.get("t_start")
-    end_time = setting["t_end"]
-    geometry = config["geometry"]
-    fish_area = geometry["fish_area"]
-    mesh_path = geometry["filepath"]
-    start_point = geometry["initial_oil_area"]
-    IO = config["IO"]
-    write_frequency = IO.get("writeFrequency")
-    logName = IO.get("logName")
 
-    logger = setup_logger(logName)
+    if args.find_all and args.file:
+        toml_files = process_all_configs(args.file)
+        for toml_file in toml_files:
+            config = readConfig(toml_file)
+            setting = config["settings"]
+            intervals = setting["nSteps"]
+            start_time = setting.get("t_start")
+            end_time = setting["t_end"]
+            geometry = config["geometry"]
+            fish_area = geometry["fish_area"]
+            mesh_path = geometry["filepath"]
+            start_point = geometry["initial_oil_area"]
+            IO = config["IO"]
+            write_frequency = IO.get("writeFrequency")
+            logName = IO.get("logName")
 
-    logger.info("Simulation started")
-    logger.info(config)
-    x_area = np.array((0.0, 0.45))
-    y_area = np.array((0.0, 0.2))
+            logger = setup_logger(logName)
 
-    factory = msh.CellFactory()
-    # -------Register Cells----------
-    factory.register(1, cls.Vertex)
-    factory.register(2, cls.Line)
-    factory.register(3, cls.Triangle)
-    # -------Register End------------
+            logger.info("Simulation started")
+            logger.info(config)
+            x_area = np.array((0.0, 0.45))
+            y_area = np.array((0.0, 0.2))
 
-    oil_area_time = solve.find_and_plot(
-        mesh_path,
-        start_time,
-        end_time,
-        intervals,
-        write_frequency,
-        start_point,
-        factory,
-        x_area,
-        y_area,
-    )
+            factory = msh.CellFactory()
+            # -------Register Cells----------
+            factory.register(1, cls.Vertex)
+            factory.register(2, cls.Line)
+            factory.register(3, cls.Triangle)
+            # -------Register End------------
 
-    logger.info("Oil distribution over time:")
-    for time_step, oil_value in oil_area_time.items():
-        logger.info(f"  Time step {time_step}: Oil amount {oil_value}")
-    logger.info("Simulation Ended")
+            oil_area_time = solve.find_and_plot(
+                mesh_path,
+                start_time,
+                end_time,
+                intervals,
+                write_frequency,
+                start_point,
+                factory,
+                x_area,
+                y_area,
+            )
+
+            logger.info("Oil distribution over time:")
+            for time_step, oil_value in oil_area_time.items():
+                logger.info(f"  Time step {time_step}: Oil amount {oil_value}")
+            logger.info("Simulation Ended")
+    else:
+        config = readConfig(args.config)
+        setting = config["settings"]
+        intervals = setting["nSteps"]
+        start_time = setting.get("t_start")
+        end_time = setting["t_end"]
+        geometry = config["geometry"]
+        fish_area = geometry["fish_area"]
+        mesh_path = geometry["filepath"]
+        start_point = geometry["initial_oil_area"]
+        IO = config["IO"]
+        write_frequency = IO.get("writeFrequency")
+        logName = IO.get("logName")
+
+        logger = setup_logger(logName)
+
+        logger.info("Simulation started")
+        logger.info(config)
+        x_area = np.array((0.0, 0.45))
+        y_area = np.array((0.0, 0.2))
+
+        factory = msh.CellFactory()
+        # -------Register Cells----------
+        factory.register(1, cls.Vertex)
+        factory.register(2, cls.Line)
+        factory.register(3, cls.Triangle)
+        # -------Register End------------
+
+        oil_area_time = solve.find_and_plot(
+            mesh_path,
+            start_time,
+            end_time,
+            intervals,
+            write_frequency,
+            start_point,
+            factory,
+            x_area,
+            y_area,
+        )
+
+        logger.info("Oil distribution over time:")
+        for time_step, oil_value in oil_area_time.items():
+            logger.info(f"  Time step {time_step}: Oil amount {oil_value}")
+        logger.info("Simulation Ended")
