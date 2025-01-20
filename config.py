@@ -8,7 +8,11 @@ def parseInput():
         description=" input config file name with -f or --file"
     )
     parser.add_argument(
-        "-c", "--config", default="input.toml", type=str, help="input config file name"
+        "-c",
+        "--config",
+        default="examples/input.toml",
+        type=str,
+        help="input config file name",
     )
     parser.add_argument(
         "-f", "--file", type=str, help="folder including the config file"
