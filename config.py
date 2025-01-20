@@ -13,7 +13,7 @@ def parseInput():
     parser.add_argument(
         "-f", "--file", type=str, help="folder including the config file"
     )
-    parser.add_argument("--find-all", action="store_true", help="find all toml files")
+    parser.add_argument("--find_all", action="store_true", help="find all toml files")
     args = parser.parse_args()
     return args
 
@@ -70,15 +70,19 @@ def readConfig(name):
     print(f"Successfully read config file {name}")
     return config
 
+
 def process_all_configs(folder):
     if not os.path.exists(folder):
         raise FileNotFoundError(f"The folder {folder} does not exist.")
 
-    toml_files = [os.path.join(folder, f) for f in os.listdir(folder) if f.endswith(".toml")]
+    toml_files = [
+        os.path.join(folder, f) for f in os.listdir(folder) if f.endswith(".toml")
+    ]
     if not toml_files:
         print("No .toml files found in the specified folder.")
 
     return toml_files
+
 
 def main():
     args = parse_input()
@@ -91,7 +95,10 @@ def main():
     elif args.config:
         read_config(args.config)
     else:
-        print("Please provide either --find-all with a folder (-f) or a specific config file with -c.")
+        print(
+            "Please provide either --find-all with a folder (-f) or a specific config file with -c."
+        )
+
 
 if __name__ == "__main__":
     main()
