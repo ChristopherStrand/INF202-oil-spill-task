@@ -155,7 +155,7 @@ def find_and_plot(
         for cell in cells:
             file.write(f"{cell.index};{cell.oil_amount}\n")
 
-    if write_frequency is not None:
-        make_video()
+    if write_frequency:
+        make_video(f"{experiment_folder}/images")
 
     return oil_area_time

@@ -25,7 +25,7 @@ import cv2 as cv
 import os
 
 
-def make_video(image_folder="default_experiment_results/images"):
+def make_video(image_folder="results/default_experiment_results/images"):
     # list for all image names
     images = [f"{image_folder}/mesh_plot{i}.png" for i in range(0, 100, 5)]
     valid_images = [image for image in images if os.path.exists(image)]
