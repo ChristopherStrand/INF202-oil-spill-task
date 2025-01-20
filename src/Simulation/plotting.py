@@ -29,7 +29,7 @@ def plotting_mesh(cells: list[object], dt: float):
 
     for cell in cells:
         coords = [point.coordinates for point in cell.points]
-        coords = np.array(coords)
+        # coords = np.array(coords)
 
         # maps the oil_amoount to a color in the colormap
         color = plt.cm.viridis((cell.oil_amount - min_oil) / (max_oil - min_oil))

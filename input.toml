@@ -11,4 +11,4 @@ initial_oil_area = [0.35, 0.45]
 [IO]
 logName = "logfile"
 writeFrequency = 5
-restartFile = "input/solution.txt"
+restartFile = "input/restartFile.csv"

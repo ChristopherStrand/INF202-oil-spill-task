@@ -26,7 +26,8 @@ import cv2 as cv
 
 def make_video(image_folder="images", intervals=100, steps=10):
     # list for all image names
-    images = [f"images/{i}.png" for i in range(0, intervals, steps)]
+    images = [f"images/mesh_plot{i}.png" for i in range(0, intervals, steps)]
+    print(images)
 
     # reads in first image and gets dimensions
     frame = cv.imread(images[0])

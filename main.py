@@ -67,6 +67,7 @@ if __name__ == "__main__":
         IO = config["IO"]
         write_frequency = IO.get("writeFrequency")
         logName = IO.get("logName", "logfile.log")
+        restartFile = IO.get("restartFile", None)
 
         logger = setup_logger(logName)
 
@@ -93,6 +94,7 @@ if __name__ == "__main__":
             factory,
             x_area,
             y_area,
+            restartFile=restartFile,
         )
 
         logger.info("Oil distribution over time:")

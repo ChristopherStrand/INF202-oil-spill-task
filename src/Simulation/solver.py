@@ -90,7 +90,7 @@ def find_and_plot(
             mesh.calculate(cell)
 
     # Runs if the simulation is suppose to start from a different time
-    if restartFile is not None:
+    if restartFile:
         with open(restartFile, "r") as file:
             current_time = float(file.readline().strip())
             for line in file:
@@ -132,6 +132,6 @@ def find_and_plot(
         file.write(f"{end_time}\n")
         for cell in cells:
             file.write(f"{cell.index};{cell.oil_amount}\n")
-    cv.make_video()
+    cv.make_video(None, intervals, steps)
 
     return oil_area_time
