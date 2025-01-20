@@ -110,6 +110,16 @@ class Mesh:
         return self._points
     
     def cells_within_area(self, x_area: npt.NDArray[np.float32], y_area: npt.NDArray[np.float32]) -> list[cls.Cell]:
+        """
+        Finds and returns a list of cells that have at least one point within a specified rectangular area.
+
+        Args:
+            x_area (npt.NDArray[np.float32]): A 2-element array specifying the [min, max] range of the area along the x-axis.
+            y_area (npt.NDArray[np.float32]): A 2-element array specifying the [min, max] range of the area along the y-axis.
+
+        Returns:
+            list[cls.Cell]: A list of cells that intersect with the specified area. A cell is included if at least one of its points lies within the area.
+        """
         cells_within = []
         for cell in self._cells:
             for coordinates in cell.coordinates:
