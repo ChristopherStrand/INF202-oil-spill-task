@@ -1,12 +1,12 @@
 [settings]
-nSteps = 10
+nSteps = 100
 t_start = 0.0
 t_end = 1.0
 
 [geometry]
-filepath = "meshes/simple.msh"
+filepath = "meshes/bay.msh"
 fish_area = [[0.0, 0.45], [0.0, 0.2]]
-initial_oil_area = [0.35, 0.6]
+initial_oil_area = [0.4, 0.6]
 
 [IO]
 logName = "logfile"

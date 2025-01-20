@@ -18,7 +18,7 @@ def plotting_mesh(cells: list[object], dt: float, cells_in_area: list[object], i
     min_oil = min(oil_values)
     # maps oil amounts to colors using viridis colormap and normalized
     sm = plt.cm.ScalarMappable(
-        cmap="viridis", norm=plt.Normalize(vmin=min_oil, vmax=max_oil)
+        cmap="viridis", norm=plt.Normalize(vmin=0, vmax=1)
     )
     # oil amount as the data for the colormap
     sm.set_array(oil_values)

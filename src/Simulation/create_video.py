@@ -36,7 +36,7 @@ def make_video(image_folder="results/default_experiment_results/images"):
 
     # defines codec (mp4) and creates video object
     fourcc = cv.VideoWriter_fourcc(*"mp4v")
-    video = cv.VideoWriter("video.mp4", fourcc, 1, (width, height))
+    video = cv.VideoWriter(os.path.join(image_folder, "video.mp4"), fourcc, 1, (width, height))
 
     # writes each image to video object
     for image in valid_images:
