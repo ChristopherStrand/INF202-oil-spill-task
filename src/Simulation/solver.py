@@ -93,6 +93,8 @@ def find_and_plot(
     if restartFile:
         with open(restartFile, "r") as file:
             current_time = float(file.readline().strip())
+            if current_time > end_time:
+                raise ValueError("Restart time is greater than end time")
             for line in file:
                 index, oil_amount = line.split(";")
                 cells[int(index)].oil_amount = float(oil_amount)
@@ -128,7 +130,7 @@ def find_and_plot(
     print(f"plotting number {intervals}...")
 
     # Stores the oil amount values such that the simulation can be started from a different time
-    with open("input/restartFile.csv", "w") as file:
+    with open(f"input/{restartFile}.csv", "w") as file:
         file.write(f"{end_time}\n")
         for cell in cells:
             file.write(f"{cell.index};{cell.oil_amount}\n")
