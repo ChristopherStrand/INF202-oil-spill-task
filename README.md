@@ -65,3 +65,6 @@ Replace `example.toml` with the path to your custom configuration file.
 
 To run the program, use the following command in the terminal
 `python main.py -c example.toml`
+
+Or to run a folder with toml files, you can run:
+`python main.py --find_all -f examples/`
