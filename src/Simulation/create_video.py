@@ -25,9 +25,15 @@ import cv2 as cv
 import os
 
 
-def make_video(image_folder="results/default_experiment_results/images"):
+def make_video(
+    image_folder="results/default_experiment_results/images",
+    writeFrequency=5,
+    intervals=100,
+):
     # list for all image names
-    images = [f"{image_folder}/mesh_plot{i}.png" for i in range(0, 100, 5)]
+    images = [
+        f"{image_folder}/mesh_plot{i}.png" for i in range(0, intervals, writeFrequency)
+    ]
     valid_images = [image for image in images if os.path.exists(image)]
 
     # reads in first image and gets dimensions
@@ -36,7 +42,9 @@ def make_video(image_folder="results/default_experiment_results/images"):
 
     # defines codec (mp4) and creates video object
     fourcc = cv.VideoWriter_fourcc(*"mp4v")
-    video = cv.VideoWriter(os.path.join(image_folder, "video.mp4"), fourcc, 1, (width, height))
+    video = cv.VideoWriter(
+        os.path.join(image_folder, "video.mp4"), fourcc, 1, (width, height)
+    )
 
     # writes each image to video object
     for image in valid_images:
