@@ -2,15 +2,12 @@ import numpy as np
 import os
 import matplotlib.pyplot as plt
 
-def plotting_mesh(cells: list[object], dt: float, cells_in_area: list[object], images_folder: str):
+def plotting_mesh(cells: list[object], dt: float, cells_in_area: set, images_folder: str):
     """
     plots a mesh representing the oil distrobution at a spesific time and saves the plot as an image file
     """
     # defines size and makes an empty numpy array
     plt.figure()
-    h = 1000
-    w = 1000
-    image = np.zeros((h, w, 3), np.uint8)
     # retrieves the oil amount from each cell object
     oil_values = [cell.oil_amount for cell in cells]
     # finds max/min values of all oil amounts
@@ -28,7 +25,7 @@ def plotting_mesh(cells: list[object], dt: float, cells_in_area: list[object], i
     plt.colorbar(sm, cax=cbar_ax, label="Oil Amount")
 
     for cell in cells:
-        coords = [point.coordinates for point in cell.points]
+        coords = cell.coordinates
 
         # maps the oil_amoount to a color in the colormap
         color = plt.cm.viridis((cell.oil_amount - min_oil) / (max_oil - min_oil))

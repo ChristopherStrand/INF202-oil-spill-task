@@ -116,7 +116,7 @@ def find_and_plot(
     # Calculates change and plots
     current_time = start_time
     mesh.initial_oil_distribution(start_point)
-    cells_in_area = mesh.cells_within_area(x_area, y_area)
+    cells_in_area = set(mesh.cells_within_area(x_area, y_area))
     oil_area_time = {}
     for steps in range(intervals):
         if write_frequency is not None:
