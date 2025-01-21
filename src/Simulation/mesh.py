@@ -291,24 +291,3 @@ class Mesh:
                 cell.oil_amount, neighbor.oil_amount, scaled_normal, v_mid
             )
         cell.oil_change += flux
-
-    def print_neighbors(self, cell: cls.Cell, object_output: bool = False) -> None:
-        """
-        Prints the neighbors of a given cell, either as objects or indices.
-
-        Args:
-            cell (cls.Cell): The cell whose neighbors are printed.
-            object_output (bool): Whether to print neighbors as objects (default: False).
-        """
-        if object_output is True:
-            try:
-                print(f"The neighbors of {cell.index} is {cell.neighbors}")
-            except IndexError:
-                print(f"Cell {cell} does not exist in cells")
-        else:
-            try:
-                print(
-                    f"""The neighbors of {cell.index} is {[ngh.index for ngh in cell.neighbors]}"""
-                )
-            except IndexError:
-                print(f"Cell {cell.index} does not exist in cells")
