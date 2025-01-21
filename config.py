@@ -63,7 +63,7 @@ def readConfig(name):
         raise ValueError("Missing t_end in or t_end <= t_start in settings section.")
 
     if not writeFrequency:
-        writeFrequency = -1000
+        writeFrequency = None
 
     if not restartFile:
         t_start = 0
@@ -86,23 +86,3 @@ def process_all_configs(folder):
         print("No .toml files found in the specified folder.")
 
     return toml_files
-
-
-def main():
-    args = parse_input()
-
-    if args.find_all:
-        if args.file:
-            process_all_configs(args.file)
-        else:
-            print("Please provide a folder with -f to find all .toml files.")
-    elif args.config:
-        read_config(args.config)
-    else:
-        print(
-            "Please provide either --find-all with a folder (-f) or a specific config file with -c."
-        )
-
-
-if __name__ == "__main__":
-    main()
