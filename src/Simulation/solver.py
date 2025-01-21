@@ -43,7 +43,7 @@ import numpy as np
 import numpy.typing as npt
 import time  # remove
 import os
-import src.Simulation.plotting as plot
+import src.Simulation.plotting_cairo as plot
 import src.Simulation.mesh as msh
 import src.Simulation.cells as cls
 from .create_video import make_video
@@ -105,7 +105,7 @@ def find_and_plot(
             mesh.calculate(cell)
 
     # Runs if the simulation is suppose to start from a different time
-    if restartFile is not None:
+    if restartFile:
         with open(restartFile, "r") as file:
             header = file.readlines()
             for line in file:
@@ -119,10 +119,9 @@ def find_and_plot(
     cells_in_area = set(mesh.cells_within_area(x_area, y_area))
     oil_area_time = {}
     for steps in range(intervals):
-        if write_frequency is not None:
-            if steps % write_frequency == 0:
-                plot.plotting_mesh(cells, steps, cells_in_area, images_folder)
-                print(f"plotting number {steps}...")
+        if steps % write_frequency == 0:
+            plot.plotting_mesh(cells, steps, cells_in_area, images_folder)
+            print(f"plotting number {steps}...")
 
         for cell in cells:
             if isinstance(cell, cls.Triangle):
