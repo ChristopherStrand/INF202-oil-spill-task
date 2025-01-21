@@ -26,7 +26,6 @@ Typical usage example:
     print(cell.midpoint)
 """
 
-
 import meshio
 import numpy as np
 import numpy.typing as npt
@@ -41,6 +40,7 @@ class CellFactory:
     to a specific number of points. Once registered, the factory can create instances
     of these cell types dynamically based on input data.
     """
+
     def __init__(self):
         self._cell_types = {}
         self._cell_index = -1  # Minus -1 such that the index starts at 0
@@ -96,11 +96,16 @@ class Mesh:
     def __init__(self, msh_file: str, cell_factory: CellFactory) -> None:
         msh = meshio.read(msh_file)
         # Makes a list of points objects
-        self._points = [cls.Point(index, points[0], points[1]) for index, points in enumerate(msh.points)]
+        self._points = [
+            cls.Point(index, points[0], points[1])
+            for index, points in enumerate(msh.points)
+        ]
         self._cells = []
         for cell_types in msh.cells:
-            self._cells.extend([cell_factory(cell, self._points) for cell in cell_types.data])
-    
+            self._cells.extend(
+                [cell_factory(cell, self._points) for cell in cell_types.data]
+            )
+
     @property
     def cells(self) -> list[cls.Cell]:
         return self._cells
@@ -108,8 +113,10 @@ class Mesh:
     @property
     def points(self) -> list[cls.Point]:
         return self._points
-    
-    def cells_within_area(self, x_area: npt.NDArray[np.float64], y_area: npt.NDArray[np.float64]) -> list[cls.Cell]:
+
+    def cells_within_area(
+        self, x_area: npt.NDArray[np.float64], y_area: npt.NDArray[np.float64]
+    ) -> list[cls.Cell]:
         """
         Finds and returns a list of cells that have at least one point within a specified rectangular area.
 
@@ -123,11 +130,12 @@ class Mesh:
         cells_within = []
         for cell in self._cells:
             for coordinates in cell.coordinates:
-                if (coordinates[0] > x_area[0] and coordinates[0] < x_area[1]) and (coordinates[1] > y_area[0] and coordinates[1] < y_area[1]):
+                if (coordinates[0] > x_area[0] and coordinates[0] < x_area[1]) and (
+                    coordinates[1] > y_area[0] and coordinates[1] < y_area[1]
+                ):
                     cells_within.append(cell)
                     break
         return cells_within
-
 
     def _find_neighbors(self, cell: cls.Cell) -> list[cls.Cell]:
         """
@@ -140,8 +148,11 @@ class Mesh:
             list[cls.Cell]: List of neighboring cells.
         """
         points_in_cell = set(cell.points)
-        return [internal_cell for internal_cell in self._cells if len(points_in_cell & set(internal_cell.points)) == 2]
-    
+        return [
+            internal_cell
+            for internal_cell in self._cells
+            if len(points_in_cell & set(internal_cell.points)) == 2
+        ]
 
     def _midpoint(self, cell: cls.Cell) -> npt.NDArray[np.float64]:
         """
@@ -174,8 +185,10 @@ class Mesh:
             return 0.5 * abs((x0 - x2) * (y1 - y0) - (x0 - x1) * (y2 - y0))
         else:
             return None
-  
-    def _unit_and_scaled_normal_vector(self, cell: cls.Cell) -> list[npt.NDArray[np.float64]]:
+
+    def _unit_and_scaled_normal_vector(
+        self, cell: cls.Cell
+    ) -> list[npt.NDArray[np.float64]]:
         """
         Computes unit and scaled normal vectors for the edges of a cell.
 
@@ -192,12 +205,13 @@ class Mesh:
             # Finds the normal vector
             point2, point1 = set(ngh.points) & set(cell.points)
             edge_vector = point2.coordinates - point1.coordinates
-            normal_vector = np.array([-edge_vector[1], edge_vector[0]]) 
+            normal_vector = np.flip(edge_vector.copy())
+            normal_vector[0] = -normal_vector[0]
 
             # Finds unit normal and scaled normal
             unit_normal_vector = normal_vector / np.linalg.norm(normal_vector)
             scaled_normal = unit_normal_vector * np.linalg.norm(edge_vector)
-            midpoint_edge = (point1.coordinates + point2.coordinates)/2
+            midpoint_edge = (point1.coordinates + point2.coordinates) / 2
             middle = midpoint_edge - cell.midpoint
 
             # Check if the normal is pointing outwards or inwards, flips it if it points inwards.
@@ -206,7 +220,7 @@ class Mesh:
             else:
                 scaled_normal_vectors[index] = scaled_normal
         return scaled_normal_vectors
-    
+
     def _velocity(self, cell: cls.Cell) -> npt.NDArray[np.float64]:
         """
         Computes the velocity at the midpoint of a cell.
@@ -257,7 +271,9 @@ class Mesh:
         flux = 0
         neighbors = cell.neighbors
 
-        def _g(a: float, b: float, v: npt.NDArray[np.float64], w: npt.NDArray[np.float64]):
+        def _g(
+            a: float, b: float, v: npt.NDArray[np.float64], w: npt.NDArray[np.float64]
+        ):
             """
             Required part of calculate_area
             """
@@ -270,10 +286,12 @@ class Mesh:
 
         for index, neighbor in enumerate(neighbors):
             scaled_normal = cell.scaled_normal[index]
-            v_mid = 0.5*(cell.velocity + neighbor.velocity)
-            flux += (-(dt / cell.area) * _g(cell.oil_amount, neighbor.oil_amount, scaled_normal, v_mid))
+            v_mid = 0.5 * (cell.velocity + neighbor.velocity)
+            flux += -(dt / cell.area) * _g(
+                cell.oil_amount, neighbor.oil_amount, scaled_normal, v_mid
+            )
         cell.oil_change += flux
-        
+
     def print_neighbors(self, cell: cls.Cell, object_output: bool = False) -> None:
         """
         Prints the neighbors of a given cell, either as objects or indices.
@@ -289,6 +307,8 @@ class Mesh:
                 print(f"Cell {cell} does not exist in cells")
         else:
             try:
-                print(f"""The neighbors of {cell.index} is {[ngh.index for ngh in cell.neighbors]}""")
+                print(
+                    f"""The neighbors of {cell.index} is {[ngh.index for ngh in cell.neighbors]}"""
+                )
             except IndexError:
                 print(f"Cell {cell.index} does not exist in cells")
