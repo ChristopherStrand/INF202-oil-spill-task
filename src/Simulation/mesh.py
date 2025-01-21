@@ -184,7 +184,7 @@ class Mesh:
 
             return 0.5 * abs((x0 - x2) * (y1 - y0) - (x0 - x1) * (y2 - y0))
         else:
-            return None
+            raise Exception(f"Calculate area for cell type with amount of points {cell.type} has not been implemented")
 
     def _unit_and_scaled_normal_vector(
         self, cell: cls.Cell

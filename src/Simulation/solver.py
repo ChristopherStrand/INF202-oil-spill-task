@@ -101,7 +101,7 @@ def find_and_plot(
     # Calculates area, midpoint, neighbors etc
     print("Calculating...")
     for cell in cells:
-        if isinstance(cell, cls.Triangle):
+        if not isinstance(cell, cls.Vertex) and not isinstance(cell, cls.Line):
             mesh.calculate(cell)
 
     # Runs if the simulation is suppose to start from a different time
@@ -125,11 +125,11 @@ def find_and_plot(
                 print(f"plotting number {steps}...")
 
         for cell in cells:
-            if isinstance(cell, cls.Triangle):
+            if not isinstance(cell, cls.Vertex) and not isinstance(cell, cls.Line):
                 mesh.calculate_change(cell, dt)
 
         for cell in cells:
-            if isinstance(cell, cls.Triangle):
+            if not isinstance(cell, cls.Vertex) and not isinstance(cell, cls.Line):
                 cell.oil_amount += cell.oil_change
                 cell.oil_change = 0
 
