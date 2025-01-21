@@ -29,16 +29,18 @@ def plotting_mesh(cells: list[object], dt: float, cells_in_area: list[object], i
 
     for cell in cells:
         coords = [point.coordinates for point in cell.points]
-        coords = np.array(coords)
 
         # maps the oil_amoount to a color in the colormap
         color = plt.cm.viridis((cell.oil_amount - min_oil) / (max_oil - min_oil))
         # adds the cell to the plot with the color determined by the oil amount
         plt.gca().add_patch(plt.Polygon(coords, color=color, alpha=0.9))
+        
+        # plots the fishing area
+        if cell in cells_in_area:
+            plt.gca().add_patch(plt.Polygon(coords, alpha=0, hatch=r"\\")) #new
+            #plt.gca().add_patch(plt.Polygon(coords, color="cyan", alpha=0.4)) old
 
-    for cell in cells_in_area:
-        coords = np.array([point.coordinates for point in cell.points])
-        plt.gca().add_patch(plt.Polygon(coords, color="cyan", alpha=0.4))
+
 
     plt.title("Mesh Plot")
     plt.xlabel("X Coordinate")

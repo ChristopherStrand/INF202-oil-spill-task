@@ -27,12 +27,12 @@ class Point:
         return self._index
 
     @property
-    def coordinates(self) -> npt.NDArray[np.float32]:
+    def coordinates(self) -> npt.NDArray[np.float64]:
         return self._coordinates
 
 
 class Cell:
-    def __init__(self, index: int, points: npt.NDArray[np.float32], type: int) -> None:
+    def __init__(self, index: int, points: npt.NDArray[np.float64], type: int) -> None:
         """
         Represents a single cell in a mesh, defined by an index and a list of points.
 
@@ -44,9 +44,9 @@ class Cell:
         self._neighbors = []
         self._oil_amount = 0.0 
         self._oil_change = 0.0
-        self._midpoint = np.float32([0, 0]) 
+        self._midpoint = np.float64([0, 0]) 
         self._area = 0.0 
-        self._velocity = np.float32([0, 0]) 
+        self._velocity = np.float64([0, 0]) 
         self._scaled_normal = []
         self._type = type
 
@@ -55,7 +55,7 @@ class Cell:
         return self._type
 
     @property
-    def coordinates(self) -> list[npt.NDArray[np.float32]]:
+    def coordinates(self) -> list[npt.NDArray[np.float64]]:
         return [point.coordinates for point in self._points]
 
     @property
@@ -79,11 +79,11 @@ class Cell:
         return self._index
     
     @property
-    def midpoint(self) -> npt.NDArray[np.float32]:
+    def midpoint(self) -> npt.NDArray[np.float64]:
         return self._midpoint
     
     @midpoint.setter
-    def midpoint(self, mid_coordinates: npt.NDArray[np.float32]) -> None:
+    def midpoint(self, mid_coordinates: npt.NDArray[np.float64]) -> None:
         self._midpoint = mid_coordinates
     
     @property
@@ -99,15 +99,15 @@ class Cell:
         return self._scaled_normal
 
     @scaled_normal.setter
-    def scaled_normal(self, scaled_vector: npt.NDArray[np.float32]) -> None:
+    def scaled_normal(self, scaled_vector: npt.NDArray[np.float64]) -> None:
         self._scaled_normal = scaled_vector
 
     @property
-    def velocity(self) -> npt.NDArray[np.float32]:
+    def velocity(self) -> npt.NDArray[np.float64]:
         return self._velocity
     
     @velocity.setter
-    def velocity(self, velocity_vector: npt.NDArray[np.float32]) -> None:
+    def velocity(self, velocity_vector: npt.NDArray[np.float64]) -> None:
         self._velocity = velocity_vector
 
     @property

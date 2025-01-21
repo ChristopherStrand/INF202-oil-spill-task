@@ -6,3 +6,4 @@ os
 argparse
 toml
 opencv-python
+python>=3.13

@@ -220,7 +220,7 @@ class Mesh:
         cell_midpoint = cell.midpoint
         return np.array([cell_midpoint[1] - 0.2 * cell_midpoint[0], -cell_midpoint[0]])
 
-    def calculate(self, cell: cls.Cell) -> npt.NDArray[np.float32]:
+    def calculate(self, cell: cls.Cell) -> npt.NDArray[np.float64]:
         """
         Computes and assigns properties (neighbors, midpoint, area, velocity, normals) for a cell.
 
@@ -234,7 +234,7 @@ class Mesh:
         cell.velocity = self._velocity(cell)
         cell.scaled_normal = self._unit_and_scaled_normal_vector(cell)
 
-    def initial_oil_distribution(self, start_point: npt.NDArray[np.float32]):
+    def initial_oil_distribution(self, start_point: npt.NDArray[np.float64]):
         """
         Initializes the oil distribution across the mesh, centered around a given start point.
 
@@ -257,7 +257,7 @@ class Mesh:
         flux = 0
         neighbors = cell.neighbors
 
-        def _g(a: float, b: float, v: npt.NDArray[np.float32], w: npt.NDArray[np.float32]):
+        def _g(a: float, b: float, v: npt.NDArray[np.float64], w: npt.NDArray[np.float64]):
             """
             Required part of calculate_area
             """
