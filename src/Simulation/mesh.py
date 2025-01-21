@@ -72,7 +72,7 @@ class CellFactory:
         if key not in self._cell_types:
             raise Exception(f"Unkown cell type: {key}")
         points = [points_list[i] for i in cell]
-        return self._cell_types[key](self._cell_index, points)
+        return self._cell_types[key](self._cell_index, points, key)
 
 
 class Mesh:
@@ -96,7 +96,7 @@ class Mesh:
     def __init__(self, msh_file: str, cell_factory: CellFactory) -> None:
         msh = meshio.read(msh_file)
         # Makes a list of points objects
-        self._points = [cls.Point(index, np.float32(points[0]), np.float32(points[1])) for index, points in enumerate(msh.points)]
+        self._points = [cls.Point(index, points[0], points[1]) for index, points in enumerate(msh.points)]
         self._cells = []
         for cell_types in msh.cells:
             self._cells.extend([cell_factory(cell, self._points) for cell in cell_types.data])
@@ -109,7 +109,7 @@ class Mesh:
     def points(self) -> list[cls.Point]:
         return self._points
     
-    def cells_within_area(self, x_area: npt.NDArray[np.float32], y_area: npt.NDArray[np.float32]) -> list[cls.Cell]:
+    def cells_within_area(self, x_area: npt.NDArray[np.float64], y_area: npt.NDArray[np.float64]) -> list[cls.Cell]:
         """
         Finds and returns a list of cells that have at least one point within a specified rectangular area.
 
@@ -139,12 +139,11 @@ class Mesh:
         Returns:
             list[cls.Cell]: List of neighboring cells.
         """
-        neighboring_cells = []
-        points_in_cell = cell.points
-        neighboring_cells = [cells for cells in self._cells if len(set(points_in_cell) & set(cells.points)) == 2]
-        return neighboring_cells
+        points_in_cell = set(cell.points)
+        return [internal_cell for internal_cell in self._cells if len(points_in_cell & set(internal_cell.points)) == 2]
+    
 
-    def _midpoint(self, cell: cls.Cell) -> npt.NDArray[np.float32]:
+    def _midpoint(self, cell: cls.Cell) -> npt.NDArray[np.float64]:
         """
         Computes the midpoint of a cell based on its points.
 
@@ -154,12 +153,7 @@ class Mesh:
         Returns:
             npt.NDArray[np.float32]: Coordinates of the cell's midpoint.
         """
-        point_coordinates = cell.coordinates
-        number_of_points = len(point_coordinates)
-        sum_coordinates = np.array([0, 0])
-        for coordinates in point_coordinates:
-            sum_coordinates = sum_coordinates + coordinates
-        return (1 / number_of_points) * (sum_coordinates)
+        return (1 / cell.type) * (np.sum(cell.coordinates, axis=0))
 
     def _calculate_area(self, cell: cls.Triangle) -> float:
         """
@@ -171,8 +165,8 @@ class Mesh:
         Returns:
             float: Area of the triangle, or None if the cell is not triangular.
         """
-        point_coordinates = cell.coordinates
-        if len(point_coordinates) == 3:
+        if cell.type == 3:
+            point_coordinates = cell.coordinates
             x0, y0 = point_coordinates[0]
             x1, y1 = point_coordinates[1]
             x2, y2 = point_coordinates[2]
@@ -181,7 +175,7 @@ class Mesh:
         else:
             return None
   
-    def _unit_and_scaled_normal_vector(self, cell: cls.Cell) -> list[npt.NDArray[np.float32]]:
+    def _unit_and_scaled_normal_vector(self, cell: cls.Cell) -> list[npt.NDArray[np.float64]]:
         """
         Computes unit and scaled normal vectors for the edges of a cell.
 
@@ -213,7 +207,7 @@ class Mesh:
                 scaled_normal_vectors[index] = scaled_normal
         return scaled_normal_vectors
     
-    def _velocity(self, cell: cls.Cell) -> npt.NDArray[np.float32]:
+    def _velocity(self, cell: cls.Cell) -> npt.NDArray[np.float64]:
         """
         Computes the velocity at the midpoint of a cell.
 
@@ -277,7 +271,7 @@ class Mesh:
         for index, neighbor in enumerate(neighbors):
             scaled_normal = cell.scaled_normal[index]
             v_mid = 0.5*(cell.velocity + neighbor.velocity)
-            flux = flux + (-(dt / cell.area) * _g(cell.oil_amount, neighbor.oil_amount, scaled_normal, v_mid))
+            flux += (-(dt / cell.area) * _g(cell.oil_amount, neighbor.oil_amount, scaled_normal, v_mid))
         cell.oil_change += flux
         
     def print_neighbors(self, cell: cls.Cell, object_output: bool = False) -> None:

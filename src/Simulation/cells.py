@@ -32,7 +32,7 @@ class Point:
 
 
 class Cell:
-    def __init__(self, index: int, points: npt.NDArray[np.float32]) -> None:
+    def __init__(self, index: int, points: npt.NDArray[np.float32], type: int) -> None:
         """
         Represents a single cell in a mesh, defined by an index and a list of points.
 
@@ -48,6 +48,11 @@ class Cell:
         self._area = 0.0 
         self._velocity = np.float32([0, 0]) 
         self._scaled_normal = []
+        self._type = type
+
+    @property
+    def type(self) -> float:
+        return self._type
 
     @property
     def coordinates(self) -> list[npt.NDArray[np.float32]]:
@@ -123,21 +128,20 @@ class Cell:
                   area: {self._area},
                   normal: {self._scaled_normal},
                   velocity: {self._velocity}
-                  neighbors: {[ngh.index for ngh in self._neighbors]}"""
+                  neighbors: {[ngh.index for ngh in self._neighbors]}
+                  type: {self._type}
+                    """
 
 # ------------------------------cells end--------------------------------------
 
 
 class Vertex(Cell):
-    def __init__(self, index: int, points: list[Point]) -> None:
-        super().__init__(index, points)
+    pass
 
 
 class Line(Cell):
-    def __init__(self, index: int, points: list[Point]) -> None:
-        super().__init__(index, points)
+    pass
 
 
 class Triangle(Cell):
-    def __init__(self, index: int, points: list[Point]) -> None:
-        super().__init__(index, points)
+    pass

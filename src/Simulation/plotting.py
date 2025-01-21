@@ -48,5 +48,5 @@ def plotting_mesh(cells: list[object], dt: float, cells_in_area: list[object], i
     plt.ylim(0, 1)
     filename = os.path.join(images_folder, f"mesh_plot{dt}.png")
     plt.savefig(filename)
-    #plt.show()
+    plt.close()
     

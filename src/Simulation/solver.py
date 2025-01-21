@@ -68,10 +68,10 @@ def find_and_plot(
     end_time: float,
     intervals: int,
     write_frequency: int,
-    start_point: npt.NDArray[np.float32],
+    start_point: npt.NDArray[np.float64],
     cell_factory: msh.CellFactory,
-    x_area: npt.NDArray[np.float32],
-    y_area: npt.NDArray[np.float32],
+    x_area: npt.NDArray[np.float64],
+    y_area: npt.NDArray[np.float64],
     restartFile=None,
     toml_file=None,
 ) -> dict[str, float]:
