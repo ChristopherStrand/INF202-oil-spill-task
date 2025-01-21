@@ -65,15 +65,13 @@ def plotting_mesh(cells, dt, cells_in_area, images_folder):
             context.fill()
 
     # defining size for colorbar
-    colorbar_x_start = plot_x + plot_width + 20
-    colorbar_y_start = plot_y
-    colorbar_height = plot_height
+    colorbar_x_start = plot_x + plot_width
 
     # drawing the colorbar
     for i, value in enumerate(np.linspace(0, 1, 100)):
         color = map_color(value)
-        y_start = colorbar_y_start + (99 - i) * (colorbar_height / 100)
-        y_end = colorbar_y_start + (100 - i) * (colorbar_height / 100)
+        y_start = plot_y + (99 - i) * (plot_height / 100)
+        y_end = plot_y + (100 - i) * (plot_height / 100)
 
         context.set_source_rgb(*color)
         context.rectangle(colorbar_x_start, y_start, colorbar_width, y_end - y_start)
@@ -83,7 +81,7 @@ def plotting_mesh(cells, dt, cells_in_area, images_folder):
     context.set_source_rgb(0, 0, 0)
     context.set_font_size(15)
     for i, tick in enumerate(np.linspace(0, 1, 11)):
-        label_y = colorbar_y_start + colorbar_height - i * (colorbar_height / 10)
+        label_y = plot_y + plot_height - i * (plot_height / 10)
         context.move_to(colorbar_x_start + colorbar_width + 10, label_y)
         context.show_text(f"{tick:.1f}")
 
