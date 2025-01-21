@@ -10,7 +10,7 @@ def parseInput():
     parser.add_argument(
         "-c",
         "--config",
-        default="examples/input.toml",
+        default="input.toml",
         type=str,
         help="input config file name",
     )
