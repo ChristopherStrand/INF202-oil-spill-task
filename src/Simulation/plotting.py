@@ -6,7 +6,7 @@ def plotting_mesh(cells: list[object], dt: float, cells_in_area: set, images_fol
     """
     plots a mesh representing the oil distrobution at a spesific time and saves the plot as an image file
     """
-    # defines size and makes an empty numpy array
+    plt.rcParams["hatch.color"] = "cyan"
     plt.figure()
     # retrieves the oil amount from each cell object
     oil_values = [cell.oil_amount for cell in cells]
