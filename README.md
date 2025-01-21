@@ -18,13 +18,13 @@ This project focuses on a fictional scenario involving an oil spill in “Bay Ci
 ---
 
 ## Main Idea
-This simulation models the movement of an oil spill outside Bay City. Using a computational mesh and a dynamic velocity field, it predicts how oil spreads over time, helping to assess its impact on fishing areas and the environment. Results are visualized to aid decision-making.
+This simulation models the movement of an oil spill outside Bay City. Using a computational mesh and a dynamic velocity field, it predicts how oil spreads over time, helping to assess its impact on fishing areas and the environment. 
 
 ---
 
 ## Folder Structure
 - **meshes/**: Contains computational mesh files used for simulations.
-- **src/**: Source code for the simulation, including:
+- **src/Simulation**: Source code for the simulation, including:
   - `cells.py`: Handles cells, points, and oil distribution.
   - `mesh.py`: Reads mesh files and calculates geometric properties.
   - `solver.py`: Core simulation logic.
@@ -62,5 +62,6 @@ restartFile = "input/solution.txt"
 ```
 
 Replace `example.toml` with the path to your custom configuration file.
+
 To run the program, use the following command in the terminal
 `python main.py -c example.toml`
