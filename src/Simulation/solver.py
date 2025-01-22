@@ -11,7 +11,7 @@ Args:
     end_time (int): Ending time of the simulation.
     intervals (int): Number of simulation time steps.
     write_frequency (int): Frequency (in steps) at which the state of the mesh is plotted.
-    start_point (npt.NDArray[np.float32]): Coordinates of the initial oil distribution area.
+    start_point (npt.NDArray[np.float64]): Coordinates of the initial oil distribution area.
     cell_factory (msh.CellFactory): Factory for creating cell objects from the mesh data.
 
 Key Steps:

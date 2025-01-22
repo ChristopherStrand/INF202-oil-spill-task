@@ -32,7 +32,7 @@ class Point:
 
 
 class Cell:
-    def __init__(self, index: int, points: npt.NDArray[np.float64], type: int) -> None:
+    def __init__(self, index: int, points: npt.NDArray[np.float64], num_points: int) -> None:
         """
         Represents a single cell in a mesh, defined by an index and a list of points.
 
@@ -48,11 +48,11 @@ class Cell:
         self._area = 0.0 
         self._velocity = np.float64([0, 0]) 
         self._scaled_normal = []
-        self._type = type
+        self._num_points = num_points
 
     @property
-    def type(self) -> float:
-        return self._type
+    def num_points(self) -> float:
+        return self._num_points
 
     @property
     def coordinates(self) -> list[npt.NDArray[np.float64]]:
@@ -95,7 +95,7 @@ class Cell:
         self._area = area_of_cell
     
     @property
-    def scaled_normal(self) -> npt.NDArray[np.float32]:
+    def scaled_normal(self) -> npt.NDArray[np.float64]:
         return self._scaled_normal
 
     @scaled_normal.setter

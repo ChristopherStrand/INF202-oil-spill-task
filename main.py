@@ -63,8 +63,8 @@ if __name__ == "__main__":
 
         logger.info("Simulation started")
         logger.info(config)
-        x_area = fish_area[0]
-        y_area = fish_area[1]
+        x_area = np.float64(fish_area[0])
+        y_area = np.float64(fish_area[1])
 
         factory = msh.CellFactory()
         # -------Register Cells----------

@@ -121,8 +121,8 @@ class Mesh:
         Finds and returns a list of cells that have at least one point within a specified rectangular area.
 
         Args:
-            x_area (npt.NDArray[np.float32]): A 2-element array specifying the [min, max] range of the area along the x-axis.
-            y_area (npt.NDArray[np.float32]): A 2-element array specifying the [min, max] range of the area along the y-axis.
+            x_area (npt.NDArray[np.float64]): A 2-element array specifying the [min, max] range of the area along the x-axis.
+            y_area (npt.NDArray[np.float64]): A 2-element array specifying the [min, max] range of the area along the y-axis.
 
         Returns:
             list[cls.Cell]: A list of cells that intersect with the specified area. A cell is included if at least one of its points lies within the area.
@@ -162,9 +162,9 @@ class Mesh:
             cell (cls.Cell): The cell for which the midpoint is calculated.
 
         Returns:
-            npt.NDArray[np.float32]: Coordinates of the cell's midpoint.
+            npt.NDArray[np.float64]: Coordinates of the cell's midpoint.
         """
-        return (1 / cell.type) * (np.sum(cell.coordinates, axis=0))
+        return (1 / cell.num_points) * (np.sum(cell.coordinates, axis=0))
 
     def _calculate_area(self, cell: cls.Triangle) -> float:
         """
@@ -176,7 +176,7 @@ class Mesh:
         Returns:
             float: Area of the triangle, or None if the cell is not triangular.
         """
-        if cell.type == 3:
+        if cell.num_points == 3:
             point_coordinates = cell.coordinates
             x0, y0 = point_coordinates[0]
             x1, y1 = point_coordinates[1]
@@ -184,7 +184,7 @@ class Mesh:
 
             return 0.5 * abs((x0 - x2) * (y1 - y0) - (x0 - x1) * (y2 - y0))
         else:
-            raise Exception(f"Calculate area for cell type with amount of points {cell.type} has not been implemented")
+            raise Exception(f"Calculate area for cell type with amount of points {cell.num_points} has not been implemented")
 
     def _unit_and_scaled_normal_vector(
         self, cell: cls.Cell
@@ -196,7 +196,7 @@ class Mesh:
             cell (cls.Cell): The cell for which normal vectors are calculated.
 
         Returns:
-            list[npt.NDArray[np.float32]]: List of scaled normal vectors for the cell's edges.
+            list[npt.NDArray[np.float64]]: List of scaled normal vectors for the cell's edges.
         """
 
         cell_ngh = cell.neighbors
@@ -229,7 +229,7 @@ class Mesh:
             cell (cls.Cell): The cell for which velocity is calculated.
 
         Returns:
-            npt.NDArray[np.float32]: Velocity vector at the cell's midpoint.
+            npt.NDArray[np.float64]: Velocity vector at the cell's midpoint.
         """
         cell_midpoint = cell.midpoint
         return np.array([cell_midpoint[1] - 0.2 * cell_midpoint[0], -cell_midpoint[0]])
@@ -253,7 +253,7 @@ class Mesh:
         Initializes the oil distribution across the mesh, centered around a given start point.
 
         Args:
-            start_point (npt.NDArray[np.float32]): The starting point for oil distribution.
+            start_point (npt.NDArray[np.float64]): The starting point for oil distribution.
         """
         cells = self._cells
         for cell in cells:
