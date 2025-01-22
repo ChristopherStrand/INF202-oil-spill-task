@@ -41,7 +41,6 @@ Example:
 
 import numpy as np
 import numpy.typing as npt
-import time  # remove
 import os
 import src.Simulation.plotting as plot
 import src.Simulation.mesh as msh
@@ -49,19 +48,6 @@ import src.Simulation.cells as cls
 from .create_video import make_video
 
 
-# Remove this func
-def calculate_time(func):
-    def inner1(*args, **kwargs):
-        begin = time.time()
-        result = func(*args, **kwargs)
-        end = time.time()
-        print(f"Total time taken in : {func.__name__} {end - begin:.6f}")
-        return result
-
-    return inner1
-
-
-@calculate_time  # Remove this deco
 def find_and_plot(
     mesh_path: str,
     start_time: float,

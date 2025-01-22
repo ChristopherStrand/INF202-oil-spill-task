@@ -37,7 +37,6 @@ import src.Simulation.mesh as msh
 import src.Simulation.cells as cls
 import numpy as np
 from config import readConfig, parseInput, process_all_configs
-import os
 from logger import setup_logger
 
 if __name__ == "__main__":
