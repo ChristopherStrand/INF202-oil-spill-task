@@ -2,8 +2,7 @@ numpy
 meshio[all]
 pytest
 matplotlib
-os
 argparse
 toml
 opencv-python
-python>=3.13
+pycairo
