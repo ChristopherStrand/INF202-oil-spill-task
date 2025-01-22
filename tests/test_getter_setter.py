@@ -9,7 +9,7 @@ def mesh():
     factory.register(1, cls.Vertex)
     factory.register(2, cls.Line)
     factory.register(3, cls.Triangle)
-    return msh.Mesh("tests\simple.msh", factory)
+    return msh.Mesh("meshes\simple.msh", factory)
 
 @pytest.fixture
 def cells(mesh):

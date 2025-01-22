@@ -16,12 +16,12 @@ def factory():
 
 @pytest.fixture
 def mesh_meshio():
-    return meshio.read("tests\simple.msh")
+    return meshio.read("meshes\simple.msh")
 
 
 @pytest.fixture
 def mesh_class(factory):
-    return msh.Mesh("tests\simple.msh", factory)
+    return msh.Mesh("meshes\simple.msh", factory)
 
 
 @pytest.fixture
