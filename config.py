@@ -44,7 +44,6 @@ def readConfig(name):
     steps = settings.get("nSteps")
     t_start = settings.get("t_start")
     t_end = settings.get("t_end")
-    fast = bool(settings.get("fast", 0))
 
     IO = config["IO"]
     writeFrequency = IO.get("writeFrequency")
