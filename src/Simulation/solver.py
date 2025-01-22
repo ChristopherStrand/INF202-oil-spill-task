@@ -43,7 +43,7 @@ import numpy as np
 import numpy.typing as npt
 import time  # remove
 import os
-import src.Simulation.plotting_cairo as plot
+import src.Simulation.plotting as plot
 import src.Simulation.mesh as msh
 import src.Simulation.cells as cls
 from .create_video import make_video
