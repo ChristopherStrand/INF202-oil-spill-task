@@ -98,8 +98,9 @@ if __name__ == "__main__":
         fast = 1
     else:
         fast = 0
-    if args.find_all and args.file:
-        toml_files = process_all_configs(args.file)
+
+    if args.find_all and args.folder:
+        toml_files = process_all_configs(args.folder)
         for toml_file in toml_files:
             run(toml_file, fast=fast)
     else:

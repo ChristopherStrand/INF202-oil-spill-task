@@ -5,7 +5,7 @@ import argparse
 
 def parseInput():
     parser = argparse.ArgumentParser(
-        description=" input config file name with -f or --file"
+        description="Run the simulation with the given config file."
     )
     parser.add_argument(
         "-c",
@@ -15,7 +15,10 @@ def parseInput():
         help="input config file name",
     )
     parser.add_argument(
-        "-f", "--file", type=str, help="folder including the config file"
+        "-f",
+        "--folder",
+        default=None,
+        help="Process all TOML files in the specified folder",
     )
     parser.add_argument("--find_all", action="store_true", help="find all toml files")
 
@@ -68,6 +71,9 @@ def readConfig(name):
 
     if not writeFrequency:
         writeFrequency = None
+
+    if not t_start:
+        t_start = 0
 
     if not restartFile:
         t_start = 0
