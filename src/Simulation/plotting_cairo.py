@@ -4,7 +4,7 @@ import os
 import matplotlib.pyplot as plt
 
 
-def plotting_mesh(cells, dt, cells_in_area, images_folder):
+def plotting_mesh_cairo(cells, dt, cells_in_area, images_folder):
     """
     Plots a mesh using Cairo for effecient plotting of large meshes.
     """
