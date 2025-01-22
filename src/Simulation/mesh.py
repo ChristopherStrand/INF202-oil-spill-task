@@ -49,7 +49,10 @@ class CellFactory:
         """
         Registers a new cell type with the factory.
         """
-        self._cell_types[amount_of_points] = cell_class
+        if issubclass(cell_class, cls.Cell):
+            self._cell_types[amount_of_points] = cell_class
+        else:
+            raise Exception(f"{cell_class} does not inherit from the cell class")
 
     def __call__(self, cell: list[int], points_list: list[cls.Point]):
         """
@@ -70,7 +73,7 @@ class CellFactory:
         self._cell_index += 1
         key = len(cell)
         if key not in self._cell_types:
-            raise Exception(f"Unkown cell type: {key}")
+            raise Exception(f"Unkown cell type: {key}, please register the cell type")
         points = [points_list[i] for i in cell]
         return self._cell_types[key](self._cell_index, points, key)
 
