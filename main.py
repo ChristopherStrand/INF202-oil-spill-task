@@ -41,7 +41,6 @@ import os
 from logger import setup_logger
 
 if __name__ == "__main__":
-    os.makedirs("images", exist_ok=True)
 
     args = parseInput()
 
