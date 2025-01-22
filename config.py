@@ -18,6 +18,9 @@ def parseInput():
         "-f", "--file", type=str, help="folder including the config file"
     )
     parser.add_argument("--find_all", action="store_true", help="find all toml files")
+
+    parser.add_argument("--fast", action="store_true", help="run fast")
+
     args = parser.parse_args()
     return args
 

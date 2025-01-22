@@ -74,7 +74,7 @@ def find_and_plot(
     y_area: npt.NDArray[np.float64],
     restartFile=None,
     toml_file=None,
-    fast=None,
+    fast=0,
 ) -> dict[str, float]:
     """
     Plots and finds the change over the specified time
@@ -121,7 +121,7 @@ def find_and_plot(
     oil_area_time = {}
     for steps in range(intervals):
         if steps % write_frequency == 0:
-            if fast:
+            if fast == 1:
                 plot.plotting_mesh_cairo(cells, steps, cells_in_area, images_folder)
                 print(f"fast: plotting number {steps}...")
             else:
@@ -144,7 +144,7 @@ def find_and_plot(
             oil_in_area += cell.oil_amount
         oil_area_time[current_time] = oil_in_area
 
-    if fast:
+    if fast == 1:
         plot.plotting_mesh_cairo(cells, steps, cells_in_area, images_folder)
         print(f"fast: plotting number {steps}...")
     else:
