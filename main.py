@@ -45,12 +45,13 @@ if __name__ == "__main__":
 
     args = parseInput()
 
-    def run():
+    def run(toml_file=None):
         config = readConfig(args.config)
         setting = config["settings"]
         intervals = setting["nSteps"]
         start_time = setting.get("t_start")
         end_time = setting["t_end"]
+        fast = setting.get("fast")
         geometry = config["geometry"]
         fish_area = geometry["fish_area"]
         mesh_path = geometry["filepath"]
@@ -58,6 +59,7 @@ if __name__ == "__main__":
         IO = config["IO"]
         write_frequency = IO.get("writeFrequency")
         logName = IO.get("logName")
+        restartFile = IO.get("restartFile")
 
         logger = setup_logger(logName)
 
@@ -83,6 +85,9 @@ if __name__ == "__main__":
             factory,
             x_area,
             y_area,
+            restartFile,
+            toml_file,
+            fast,
         )
 
         logger.info("Oil distribution over time:")
@@ -90,12 +95,9 @@ if __name__ == "__main__":
             logger.info(f"  Time step {time_step}: Oil amount {oil_value}")
         logger.info("Simulation Ended")
 
-
     if args.find_all and args.file:
         toml_files = process_all_configs(args.file)
         for toml_file in toml_files:
-            run()
+            run(toml_file)
     else:
         run()
-
-
