@@ -48,20 +48,21 @@ def plotting_mesh_cairo(cells, dt, cells_in_area, images_folder):
             for x, y in coords
         ]
 
-        # goes through the coordinates and draws the cell
+        # Draw cell with oil amount color
         context.move_to(corrected_coords[0][0], corrected_coords[0][1])
         for x, y in corrected_coords[1:]:
             context.line_to(x, y)
         context.close_path()
-
-        # then fills the cells with the color based on the oil amount/colormap (viridis)
-        color = map_color(cell.oil_amount)
-        context.set_source_rgb(*color)
+        context.set_source_rgb(*map_color(cell.oil_amount))
         context.fill()
 
-        # if cell in fish areas, draw a black border around the cell
+        # Highlight fish area with blue color
         if cell in cells_in_area:
-            context.set_source_rgb(102, 178, 255)
+            context.set_source_rgb(102 / 255, 178 / 255, 255 / 255)
+            context.move_to(corrected_coords[0][0], corrected_coords[0][1])
+            for x, y in corrected_coords[1:]:
+                context.line_to(x, y)
+            context.close_path()
             context.fill()
 
     # defining size for colorbar
