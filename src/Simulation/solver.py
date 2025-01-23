@@ -92,13 +92,13 @@ def find_and_plot(
             mesh.calculate(cell)
 
     # Runs if the simulation is suppose to start from a different time
-    if restartFile:
-        with open(restartFile, "r") as file:
-            header = file.readlines()
-            for line in file:
-                index, oil_amount = line.split(";")
-                cells[int(index)].oil_amount = float(oil_amount)
-            print(f"Restarting from {header}")
+    # if restartFile:
+    #     with open(restartFile, "r") as file:
+    #         header = file.readlines()
+    #         for line in file:
+    #             index, oil_amount = line.split(";")
+    #             cells[int(index)].oil_amount = float(oil_amount)
+    #         print(f"Restarting from {header}")
 
     # Calculates change and plots
     current_time = start_time

@@ -44,7 +44,7 @@ if __name__ == "__main__":
     args = parseInput()
 
     def run(toml_file=None, fast=0):
-        config = readConfig(args.config)
+        config = readConfig(toml_file)
         setting = config["settings"]
         intervals = setting["nSteps"]
         start_time = setting.get("t_start")
