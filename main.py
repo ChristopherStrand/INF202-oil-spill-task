@@ -102,4 +102,4 @@ if __name__ == "__main__":
         for toml_file in toml_files:
             run(toml_file, fast=fast)
     else:
-        run(None, fast=fast)
+        run(args.config, fast=fast)
