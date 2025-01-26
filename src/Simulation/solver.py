@@ -82,9 +82,6 @@ def find_and_plot(
     mesh = msh.Mesh(mesh_path, cell_factory)
     cells = mesh.cells
 
-    dt = round((end_time - start_time) / intervals, 6)
-    print(f"dt is {dt}")
-
     # Calculates area, midpoint, neighbors etc
     print("Calculating...")
     for cell in cells:
@@ -92,26 +89,34 @@ def find_and_plot(
             mesh.calculate(cell)
 
     # Runs if the simulation is suppose to start from a different time
-    # if restartFile:
-    #     with open(restartFile, "r") as file:
-    #         header = file.readlines()
-    #         for line in file:
-    #             index, oil_amount = line.split(";")
-    #             cells[int(index)].oil_amount = float(oil_amount)
-    #         print(f"Restarting from {header}")
+    if restartFile:
+        with open(restartFile, "r") as file:
+            lines = file.readlines()
+            start_time = float(lines[0])
+            for line in lines[1:]:
+                index, oil_amount = line.split(";")
+                cells[int(index)].oil_amount = float(oil_amount)
+    else:
+        mesh.initial_oil_distribution(start_point)
 
+    if start_time == end_time:
+        start_time = 0
+        dt = round((end_time - start_time) / intervals, 6)
+        print(f'end_time is equal to start_time, dt is {dt}. This is because of you restartFile')
+    else:
+        dt = round((end_time - start_time) / intervals, 6)
+        
     # Calculates change and plots
     current_time = start_time
-    mesh.initial_oil_distribution(start_point)
     cells_in_area = set(mesh.cells_within_area(x_area, y_area))
     oil_area_time = {}
     for steps in range(intervals):
         if steps % write_frequency == 0:
             if fast == 1:
-                plot.plotting_mesh_cairo(cells, steps, cells_in_area, images_folder)
+                plot.plotting_mesh_cairo(cells, current_time, cells_in_area, images_folder)
                 print(f"fast: plotting number {steps}...")
             else:
-                plot.plotting_mesh(cells, steps, cells_in_area, images_folder)
+                plot.plotting_mesh(cells, current_time, cells_in_area, images_folder)
                 print(f"plotting number {steps}...")
 
         for cell in cells:
@@ -131,17 +136,17 @@ def find_and_plot(
         oil_area_time[current_time] = oil_in_area
 
     if fast == 1:
-        plot.plotting_mesh_cairo(cells, steps, cells_in_area, images_folder)
+        plot.plotting_mesh_cairo(cells, current_time, cells_in_area, images_folder)
         print(f"fast: plotting number {steps}...")
     else:
-        plot.plotting_mesh(cells, steps, cells_in_area, images_folder)
+        plot.plotting_mesh(cells,current_time, cells_in_area, images_folder)
         print(f"plotting number {steps}...")
 
     if toml_file:
         base_name = os.path.splitext(os.path.basename(toml_file))[0]
-        restart_filename = f"{base_name}_restartFile.csv"
+        restart_filename = f"{base_name}_restartFile.txt"
     else:
-        restart_filename = "restartFile.csv"
+        restart_filename = "restartFile.txt"
 
     # Stores the oil amount values such that the simulation can be started from a different time
     with open(os.path.join(experiment_folder, "input/", restart_filename), "w") as file:

@@ -38,13 +38,23 @@ import src.Simulation.cells as cls
 import numpy as np
 from config import readConfig, parseInput, process_all_configs
 from logger import setup_logger
+import os
 
 if __name__ == "__main__":
 
     args = parseInput()
 
+    if args.fast:
+        fast = 1
+    else:
+        fast = 0
+
     def run(toml_file=None, fast=0):
         config = readConfig(toml_file)
+        
+        if toml_file is None:
+            toml_file = args.config
+
         setting = config["settings"]
         intervals = setting["nSteps"]
         start_time = setting.get("t_start")
@@ -57,6 +67,10 @@ if __name__ == "__main__":
         write_frequency = IO.get("writeFrequency")
         logName = IO.get("logName")
         restartFile = IO.get("restartFile")
+
+        if restartFile:
+            if not os.path.exists(restartFile):
+                restartFile = None
 
         logger = setup_logger(logName)
 
@@ -82,9 +96,9 @@ if __name__ == "__main__":
             factory,
             x_area,
             y_area,
-            restartFile,
-            toml_file,
-            fast,
+            restartFile=restartFile,
+            toml_file=toml_file,
+            fast=fast
         )
 
         logger.info("Oil distribution over time:")
@@ -92,10 +106,6 @@ if __name__ == "__main__":
             logger.info(f"  Time step {time_step}: Oil amount {oil_value}")
         logger.info("Simulation Ended")
 
-    if args.fast:
-        fast = 1
-    else:
-        fast = 0
 
     if args.find_all and args.folder:
         toml_files = process_all_configs(args.folder)

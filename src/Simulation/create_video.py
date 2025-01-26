@@ -32,12 +32,13 @@ def make_video(
 ):
     # list for all image names
     images = [
-        f"{image_folder}/mesh_plot{i}.png" for i in range(0, intervals, writeFrequency)
+        f for f in os.listdir(image_folder) if f.lower().endswith((".png", ".jpg", ".jpeg"))
     ]
-    valid_images = [image for image in images if os.path.exists(image)]
+    images.sort()
 
     # reads in first image and gets dimensions
-    frame = cv.imread(valid_images[0])
+    first_image = os.path.join(image_folder, images[0])
+    frame = cv.imread(first_image)
     height, width, layers = frame.shape
 
     # defines codec (mp4) and creates video object
@@ -47,8 +48,10 @@ def make_video(
     )
 
     # writes each image to video object
-    for image in valid_images:
-        video.write(cv.imread(image))
+    for image in images:
+        full_path = os.path.join(image_folder, image)
+        frame = cv.imread(full_path)
+        video.write(frame)
 
     # closes all windows and releases video object
     cv.destroyAllWindows()

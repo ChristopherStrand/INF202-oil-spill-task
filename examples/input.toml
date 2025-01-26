@@ -1,7 +1,7 @@
 [settings]
 nSteps = 100
 t_start = 0.0
-t_end = 1.0
+t_end = 2.0
 
 [geometry]
 filepath = "meshes/bay.msh"
@@ -11,4 +11,4 @@ initial_oil_area = [0.35, 0.45]
 [IO]
 logName = "logfile"
 writeFrequency = 5
-restartFile = "input/solution.txt"
+restartFile = "results/input_results/input/input_restartFile.txt"

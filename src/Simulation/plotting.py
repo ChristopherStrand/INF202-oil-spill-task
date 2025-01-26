@@ -4,7 +4,7 @@ import os
 import matplotlib.pyplot as plt
 
 
-def plotting_mesh_cairo(cells, dt, cells_in_area, images_folder):
+def plotting_mesh_cairo(cells, current_time, cells_in_area, images_folder):
     """
     Plots a mesh using Cairo for effecient plotting of large meshes.
     """
@@ -87,12 +87,12 @@ def plotting_mesh_cairo(cells, dt, cells_in_area, images_folder):
         context.show_text(f"{tick:.1f}")
 
     # saving the plot to a file
-    filename = os.path.join(images_folder, f"mesh_plot{dt}.png")
+    filename = os.path.join(images_folder, f"mesh_plot{current_time:.2f}.png")
     surface.write_to_png(filename)
 
 
 def plotting_mesh(
-    cells: list[object], dt: float, cells_in_area: set, images_folder: str
+    cells: list[object], current_time: float, cells_in_area: set, images_folder: str
 ):
     """
     plots a mesh representing the oil distrobution at a spesific time and saves the plot as an image file
@@ -132,6 +132,6 @@ def plotting_mesh(
     plt.gca().set_aspect("equal")
     plt.xlim(0, 1)
     plt.ylim(0, 1)
-    filename = os.path.join(images_folder, f"mesh_plot{dt}.png")
+    filename = os.path.join(images_folder, f"mesh_plot{current_time:.2f}.png")
     plt.savefig(filename)
     plt.close()
